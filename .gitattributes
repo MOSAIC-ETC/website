@@ -1,0 +1,2 @@
+prisma/seed-data/objects/**/cube.fits filter=lfs diff=lfs merge=lfs -text
+**/cube.fits filter=lfs diff=lfs merge=lfs -text
