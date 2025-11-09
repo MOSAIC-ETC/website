@@ -1,7 +1,6 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { Link, usePathname } from "@/i18n/navigation";
 import { User2 } from "lucide-react";
 
 import { MosaicIcon } from "@/components/icons";
@@ -9,17 +8,19 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { Search } from "@/components//search";
-
-const navigation = [
-  { name: "Home", href: "/" },
-  { name: "ETC", href: "/etc" },
-  { name: "Documentation", href: "/documentation" },
-  { name: "About", href: "/about" },
-  { name: "Administration", href: "/admin" },
-];
+import { useTranslations } from "next-intl";
 
 export function Navbar() {
   const pathname = usePathname();
+  const t = useTranslations("Navbar");
+
+  const navigation = [
+    { name: t("home"), href: "/" },
+    { name: t("etc"), href: "/etc" },
+    { name: t("documentation"), href: "/documentation" },
+    { name: t("about"), href: "/about" },
+    { name: t("administration"), href: "/admin" },
+  ];
 
   return (
     <nav className="flex justify-between items-center gap-12 bg-background px-24 border-border border-b h-16 text-primary">

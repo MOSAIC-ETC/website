@@ -1,0 +1,13 @@
+{
+  "Navbar": {
+    "home": "Início",
+    "etc": "ETC",
+    "documentation": "Documentação",
+    "about": "Sobre",
+    "administration": "Administração"
+  },
+  "Metadata": {
+    "title": "Calculadora de Tempo de Exposição | MOSAIC",
+    "description": "Calculadora de Tempo de Exposição para MOSAIC no ELT"
+  }
+}
