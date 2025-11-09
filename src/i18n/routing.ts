@@ -1,18 +1,21 @@
 import { defineRouting } from "next-intl/routing";
 
 // Mapping of internal locales to short public prefixes
-export const localePrefixes: Record<string, string> = {
-  "pt-BR": "/pt",
-  "en-US": "/en",
-  "fr-FR": "/fr",
+export const locales: Record<string, { name: string; flag: string; pathPrefix: string }> = {
+  "pt-BR": { name: "Português", flag: "/assets/pt-BR.svg", pathPrefix: "/pt" },
+  "en-US": { name: "English", flag: "/assets/en-US.svg", pathPrefix: "/en" },
+  "fr-FR": { name: "Français", flag: "/assets/fr-FR.svg", pathPrefix: "/fr" },
 };
 
 export const routing = defineRouting({
-  locales: Object.keys(localePrefixes),
+  locales: Object.keys(locales),
   defaultLocale: "pt-BR",
   localePrefix: {
     mode: "as-needed",
-    prefixes: localePrefixes,
+    prefixes: Object.entries(locales).reduce((acc, [locale, meta]) => {
+      acc[locale] = meta.pathPrefix;
+      return acc;
+    }, {} as Record<string, string>),
   },
   localeCookie: {
     name: "USER_LOCALE",
@@ -29,6 +32,6 @@ export function normalizeRequestedLocale(requested: string | undefined): string 
   const trimmed = requested.replace(/^\//, "");
 
   // Find matching locale by prefix value (without leading slash)
-  const entry = Object.entries(localePrefixes).find(([, prefix]) => prefix.slice(1) === trimmed);
+  const entry = Object.entries(locales).find(([, meta]) => meta.pathPrefix.slice(1) === trimmed);
   return entry ? entry[0] : undefined;
 }
