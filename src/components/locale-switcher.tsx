@@ -1,6 +1,8 @@
 "use client";
 
 import Image from "next/image";
+import { useLocale } from "next-intl";
+import { useRouter, usePathname } from "@/i18n/navigation";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -9,34 +11,47 @@ import {
   DropdownMenuTrigger,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
+import { routing } from "@/i18n/routing";
 
-const locales = [
-  { code: "en", name: "English (US)", flag: "/flags/en.svg" },
-  { code: "pt", name: "Português (BR)", flag: "/flags/pt.svg" },
-  { code: "fr", name: "Français", flag: "/flags/fr.svg" },
-];
+const localeMeta: Record<string, { name: string; flag: string }> = {
+  "pt-BR": { name: "Português", flag: "/assets/pt-BR.svg" },
+  "en-US": { name: "English", flag: "/assets/en-US.svg" },
+  "fr-FR": { name: "Français", flag: "/assets/fr-FR.svg" },
+};
 
 export function LocaleSwitcher() {
-  const currentLocale = locales[0]; // Placeholder
+  const currentLocale = useLocale(); // Full locale code
+  const router = useRouter();
+  const pathname = usePathname(); // Path without a locale prefix
+
+  const current = localeMeta[currentLocale];
+
+  function switchTo(locale: string) {
+    router.replace(pathname || "/", { locale });
+  }
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="rounded-full select-none">
-          <Image src={currentLocale.flag} alt={currentLocale.name} width={24} height={24} />
+          {current && <Image src={current.flag} alt={current.name} width={24} height={24} />}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        {locales.map((locale) => (
-          <DropdownMenuItem
-            key={locale.code}
-            className="flex items-center gap-2"
-            disabled={locale.code === currentLocale.code} // Disable current locale
-          >
-            <Image src={locale.flag} alt={locale.name} width={24} height={24} />
-            <span>{locale.name}</span>
-          </DropdownMenuItem>
-        ))}
+        {routing.locales.map((locale) => {
+          const meta = localeMeta[locale];
+          return (
+            <DropdownMenuItem
+              key={locale}
+              className="flex items-center gap-2"
+              disabled={locale === currentLocale}
+              onSelect={() => switchTo(locale)}
+            >
+              <Image src={meta.flag} alt={meta.name} width={24} height={24} />
+              <span>{meta.name}</span>
+            </DropdownMenuItem>
+          );
+        })}
       </DropdownMenuContent>
     </DropdownMenu>
   );
