@@ -11,8 +11,7 @@ import { Search } from "@/components//search";
 import { useTranslations } from "next-intl";
 
 export function Navbar() {
-  const pathname = usePathname();
-  const t = useTranslations("Navbar");
+  const t = useTranslations("navbar");
 
   const navigation = [
     { name: t("home"), href: "/" },
@@ -21,6 +20,8 @@ export function Navbar() {
     { name: t("about"), href: "/about" },
     { name: t("administration"), href: "/admin" },
   ];
+
+  const pathname = usePathname();
 
   return (
     <nav className="flex justify-between items-center gap-12 bg-background px-24 border-border border-b h-16 text-primary">

@@ -1,13 +1,13 @@
 {
-  "Navbar": {
+  "metadata": {
+    "title": "Exposure Time Calculator | MOSAIC",
+    "description": "Exposure Time Calculator for MOSAIC on the ELT"
+  },
+  "navbar": {
     "home": "Home",
     "etc": "ETC",
     "documentation": "Documentation",
     "about": "About",
     "administration": "Administration"
-  },
-  "Metadata": {
-    "title": "Exposure Time Calculator | MOSAIC",
-    "description": "Exposure Time Calculator for MOSAIC on the ELT"
   }
 }
