@@ -3,11 +3,21 @@
     "title": "Calculateur de Temps d'Exposition | MOSAIC",
     "description": "Calculateur de Temps d'Exposition pour MOSAIC sur l'ELT"
   },
-  "navbar": {
+  "navigation": {
     "home": "Accueil",
     "etc": "ETC",
     "documentation": "Documentation",
     "about": "À propos",
-    "administration": "Administration"
+    "administration": "Administration",
+    "users": "Utilisateurs",
+    "settings": "Paramètres"
+  },
+  "sidebar": {
+    "navigation": "Navigation",
+    "guestUser": "Invité",
+    "signIn": "Se connecter"
+  },
+  "localeSwitcher": {
+    "sidebarText": "Sélectionnez la langue"
   }
 }
