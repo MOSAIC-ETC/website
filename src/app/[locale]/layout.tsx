@@ -4,9 +4,11 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 
-import { ThemeProvider } from "@/components/theme-provider";
-import { Navbar } from "@/components/navbar";
 import { normalizeRequestedLocale, routing } from "@/i18n/routing";
+import { ThemeProvider } from "@/components/theme-provider";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { Navbar } from "@/components/navbar";
+import { Sidebar } from "@/components/sidebar";
 import "../globals.css";
 
 const geistSans = Geist({
@@ -56,8 +58,13 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
           disableTransitionOnChange
         >
           <NextIntlClientProvider>
-            <Navbar />
-            {children}
+            <SidebarProvider>
+              <Sidebar className="lg:hidden" />
+              <main className="w-full min-h-screen">
+                <Navbar />
+                {children}
+              </main>
+            </SidebarProvider>
           </NextIntlClientProvider>
         </ThemeProvider>
       </body>
