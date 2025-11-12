@@ -21,6 +21,45 @@ export const routing = defineRouting({
     name: "USER_LOCALE",
     maxAge: 60 * 60 * 24 * 365, // 1 year
   },
+  pathnames: {
+    "/": "/",
+    "/etc": "/etc",
+    "/docs": "/docs",
+
+    "/login": {
+      "pt-BR": "/entrar",
+      "en-US": "/login",
+      "fr-FR": "/connexion",
+    },
+    "/register": {
+      "pt-BR": "/registrar",
+      "en-US": "/register",
+      "fr-FR": "/inscription",
+    },
+    "/logout": {
+      "pt-BR": "/sair",
+      "en-US": "/logout",
+      "fr-FR": "/deconnexion",
+    },
+
+    "/admin": "/admin",
+    "/admin/users": {
+      "pt-BR": "/admin/usuarios",
+      "en-US": "/admin/users",
+      "fr-FR": "/admin/utilisateurs",
+    },
+    "/admin/settings": {
+      "pt-BR": "/admin/configuracoes",
+      "en-US": "/admin/settings",
+      "fr-FR": "/admin/parametres",
+    },
+
+    "/about": {
+      "pt-BR": "/sobre",
+      "en-US": "/about",
+      "fr-FR": "/a-propos",
+    },
+  },
 });
 
 // Helper to normalize something that could be a public prefix (without slash) or full code
