@@ -43,7 +43,7 @@ export function Navbar() {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Link
-                      href={item.href}
+                      href={item.href as any}
                       className={`flex items-center gap-2 hover:text-primary transition-colors select-none [&[aria-expanded="true"]_svg]:rotate-180 focus-visible:outline-none ${
                         isActive && "text-primary"
                       }`}
@@ -59,7 +59,7 @@ export function Navbar() {
                     {item.dropdown.map((subItem) => (
                       <Link
                         key={subItem.name}
-                        href={subItem.href}
+                        href={subItem.href as any}
                         className="flex items-center gap-2 hover:bg-accent/50 px-2.5 py-1.5 rounded-md text-sm"
                       >
                         <subItem.icon size={16} />
@@ -75,7 +75,7 @@ export function Navbar() {
           return (
             <li key={item.name} className="flex justify-center items-center mx-3 my-2.5">
               <Link
-                href={item.href}
+                href={item.href as any}
                 className={`hover:text-primary transition-colors select-none ${
                   isActive && "text-primary"
                 }`}

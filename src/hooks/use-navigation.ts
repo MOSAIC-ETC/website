@@ -17,7 +17,7 @@ export function useNavigation() {
   const navigation = [
     { name: t("home"), href: "/", icon: HomeIcon },
     { name: t("etc"), href: "/etc", icon: CalculatorIcon },
-    { name: t("documentation"), href: "/documentation", icon: BookTextIcon },
+    { name: t("documentation"), href: "/docs", icon: BookTextIcon },
     { name: t("about"), href: "/about", icon: InfoIcon },
     {
       name: t("administration"),

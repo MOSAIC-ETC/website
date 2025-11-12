@@ -34,7 +34,7 @@ export function Sidebar(props: React.ComponentProps<"div">) {
       <SidebarHeader>
         <Link href="/" className="flex items-center gap-3 mx-3 my-4 select-none">
           <MosaicIcon height={32} className="fill-primary" />
-          <span className="font-semibold text-2xl uppercase tracking-wider">MOSAIC</span>
+          <span className="font-semibold text-2xl uppercase tracking-wider">MOSAIC ETC</span>
         </Link>
       </SidebarHeader>
 
@@ -67,7 +67,7 @@ export function Sidebar(props: React.ComponentProps<"div">) {
                               <SidebarMenuSubItem key={subItem.name}>
                                 <SidebarMenuSubButton asChild>
                                   <Link
-                                    href={subItem.href}
+                                    href={subItem.href as any}
                                     className="flex items-center gap-2 hover:bg-accent py-2 rounded w-full"
                                   >
                                     <subItem.icon size={16} />
@@ -87,7 +87,7 @@ export function Sidebar(props: React.ComponentProps<"div">) {
                   <SidebarMenuItem key={item.name}>
                     <SidebarMenuButton asChild>
                       <Link
-                        href={item.href}
+                        href={item.href as any}
                         className="flex items-center gap-2 hover:bg-accent py-2 rounded w-full"
                       >
                         <item.icon size={16} />
