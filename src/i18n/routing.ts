@@ -2,9 +2,9 @@ import { defineRouting } from "next-intl/routing";
 
 // Mapping of internal locales to short public prefixes
 export const locales: Record<string, { name: string; flag: string; pathPrefix: string }> = {
-  "pt-BR": { name: "Português", flag: "/assets/pt-BR.svg", pathPrefix: "/pt" },
-  "en-US": { name: "English", flag: "/assets/en-US.svg", pathPrefix: "/en" },
-  "fr-FR": { name: "Français", flag: "/assets/fr-FR.svg", pathPrefix: "/fr" },
+  "pt-BR": { name: "Português", flag: "/assets/images/flags/pt-BR.svg", pathPrefix: "/pt" },
+  "en-US": { name: "English", flag: "/assets/images/flags/en-US.svg", pathPrefix: "/en" },
+  "fr-FR": { name: "Français", flag: "/assets/images/flags/fr-FR.svg", pathPrefix: "/fr" },
 };
 
 export const routing = defineRouting({
@@ -58,6 +58,21 @@ export const routing = defineRouting({
       "pt-BR": "/sobre",
       "en-US": "/about",
       "fr-FR": "/a-propos",
+    },
+    "/contact": {
+      "pt-BR": "/contato",
+      "en-US": "/contact",
+      "fr-FR": "/contact",
+    },
+    "/privacy-policy": {
+      "pt-BR": "/politica-de-privacidade",
+      "en-US": "/privacy-policy",
+      "fr-FR": "/politique-de-confidentialite",
+    },
+    "/terms-of-service": {
+      "pt-BR": "/termos-de-servico",
+      "en-US": "/terms-of-service",
+      "fr-FR": "/conditions-dutilisation",
     },
   },
 });

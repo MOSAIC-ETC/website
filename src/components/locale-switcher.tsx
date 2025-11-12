@@ -32,7 +32,7 @@ export function LocaleSwitcher({ variant = "icon", ...props }: LocaleSwitcherPro
   const router = useRouter();
   const pathname = usePathname(); // Path without a locale prefix
 
-  const t = useTranslations("localeSwitcher");
+  const t = useTranslations("locale-switcher");
 
   const current = locales[currentLocale];
 
@@ -80,7 +80,7 @@ export function LocaleSwitcher({ variant = "icon", ...props }: LocaleSwitcherPro
           <SidebarMenuButton className="group flex justify-between w-full">
             <div className="flex items-center gap-2">
               <LanguagesIcon size={16} />
-              <span>{t("sidebarText")}</span>
+              <span>{t("select-language")}</span>
             </div>
 
             <ChevronRightIcon

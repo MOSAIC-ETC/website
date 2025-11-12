@@ -1,10 +1,15 @@
 "use client";
 
-import { ChevronRightIcon, EllipsisVerticalIcon, User2Icon } from "lucide-react";
+import { ChevronRightIcon, EllipsisVerticalIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
+import Image from "next/image";
 
 import { useNavigation } from "@/hooks/use-navigation";
 import { Link } from "@/i18n/navigation";
+import { MosaicLogo } from "@/components/icons";
+import { Button } from "@/components/ui/button";
+import { LocaleSwitcher } from "@/components/locale-switcher";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   Sidebar as SidebarWrapper,
   SidebarContent,
@@ -20,10 +25,6 @@ import {
   SidebarHeader,
   SidebarFooter,
 } from "@/components/ui/sidebar";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { MosaicIcon } from "@/components/icons";
-import { Button } from "@/components//ui/button";
-import { LocaleSwitcher } from "./locale-switcher";
 
 export function Sidebar(props: React.ComponentProps<"div">) {
   const t = useTranslations("sidebar");
@@ -33,7 +34,7 @@ export function Sidebar(props: React.ComponentProps<"div">) {
     <SidebarWrapper {...props}>
       <SidebarHeader>
         <Link href="/" className="flex items-center gap-3 mx-3 my-4 select-none">
-          <MosaicIcon height={32} className="fill-primary" />
+          <MosaicLogo height={32} className="fill-primary" />
           <span className="font-semibold text-2xl uppercase tracking-wider">MOSAIC ETC</span>
         </Link>
       </SidebarHeader>
@@ -107,16 +108,22 @@ export function Sidebar(props: React.ComponentProps<"div">) {
 
         <div className="flex items-center gap-3 bg-muted/80 p-3 rounded-md">
           <Button variant="outline" size="icon-lg" className="rounded-full">
-            <User2Icon />
+            <Image
+              src="/assets/images/default-avatar.png"
+              alt="User Avatar"
+              width={128}
+              height={128}
+              className="rounded-full w-full h-full"
+            />
           </Button>
 
           <div className="w-full">
-            <p className="font-medium">{t("guestUser")}</p>
+            <p className="font-medium">{t("guest-user")}</p>
             <Link
               href="/login"
               className="flex items-center gap-1 text-primary text-sm hover:underline"
             >
-              {t("signIn")}
+              {t("sign-in")}
               <ChevronRightIcon size={12} />
             </Link>
           </div>

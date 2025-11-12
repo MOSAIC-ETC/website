@@ -7,8 +7,10 @@ import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { normalizeRequestedLocale, routing } from "@/i18n/routing";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SidebarProvider } from "@/components/ui/sidebar";
-import { Navbar } from "@/components/navbar";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sidebar } from "@/components/sidebar";
+import { Navbar } from "@/components/navbar";
+import { Footer } from "@/components/footer";
 import "../globals.css";
 
 const geistSans = Geist({
@@ -35,12 +37,12 @@ export async function generateMetadata({ params }: MetadataProps): Promise<Metad
   };
 }
 
-type RootLayoutProps = Readonly<{
+type LocaleLayoutProps = Readonly<{
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
 }>;
 
-export default async function RootLayout({ children, params }: RootLayoutProps) {
+export default async function LocaleLayout({ children, params }: LocaleLayoutProps) {
   const { locale: rawLocale } = await params;
   const locale = normalizeRequestedLocale(rawLocale);
 
@@ -62,7 +64,10 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
               <Sidebar className="lg:hidden" />
               <main className="w-full min-h-screen">
                 <Navbar />
-                {children}
+                <ScrollArea className="h-[calc(100vh-4rem)]">
+                  <div className="min-h-[calc(100vh-4rem)]">{children}</div>
+                  <Footer />
+                </ScrollArea>
               </main>
             </SidebarProvider>
           </NextIntlClientProvider>
