@@ -15,6 +15,19 @@ export function Footer() {
     { href: "/terms-of-service", text: t("terms-of-service") },
   ];
 
+  const sponsors = [
+    {
+      name: "UESC",
+      href: "https://uesc.br",
+      logo: "/assets/images/uesc.png",
+    },
+    {
+      name: "FAPESB",
+      href: "https://www.fapesb.ba.gov.br/",
+      logo: "/assets/images/fapesb.png",
+    },
+  ];
+
   return (
     <footer>
       <Separator />
@@ -27,7 +40,7 @@ export function Footer() {
           </span>
         </div>
 
-        <div className="flex lg:flex-row flex-col items-center gap-2 lg:gap-4 font-medium whitespace-nowrap">
+        <div className="flex lg:flex-row flex-col items-center gap-2 lg:gap-4 whitespace-nowrap">
           {items.map((item) => (
             <Link
               key={item.href}
@@ -39,36 +52,25 @@ export function Footer() {
           ))}
         </div>
 
-        <div className="flex items-center gap-6 pointer-events-none select-none">
-          <a
-            href="https://uesc.br"
-            aria-label="UESC Website"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              src="/assets/images/uesc.png"
-              alt="UESC Logo"
-              width={64}
-              height={64}
-              className="w-full h-16"
-            />
-          </a>
-
-          <a
-            href="https://uesc.br"
-            aria-label="FAPESB Website"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              src="/assets/images/fapesb.png"
-              alt="FAPESB Logo"
-              width={64}
-              height={64}
-              className="w-full h-16"
-            />
-          </a>
+        <div className="flex items-center gap-6 select-none">
+          {sponsors.map((sponsor) => (
+            <a
+              key={sponsor.name}
+              href={sponsor.href}
+              aria-label={`${sponsor.name} Website`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Image
+                src={sponsor.logo}
+                alt={sponsor.name}
+                width={64}
+                height={64}
+                className="w-auto h-16"
+                draggable={false}
+              />
+            </a>
+          ))}
         </div>
       </div>
 

@@ -26,5 +26,10 @@
     "privacy-policy": "Politique de Confidentialité",
     "terms-of-service": "Conditions d'utilisation",
     "developed-by": "Développé par"
+  },
+  "not-found": {
+    "lost-in-space": "Perdu dans l'Espace?",
+    "alien-abducted-page": "Des extraterrestres pourraient avoir volé cette page. Revenons à un territoire familier.",
+    "go-back-to-earth": "Retourne sur Terre"
   }
 }
