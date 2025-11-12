@@ -165,8 +165,8 @@ export default function NotFound() {
         <h1 className="flex justify-center items-center gap-2 h-24 md:h-48 font-mono font-bold text-[6rem] md:text-[12rem] select-none">
           4
           <Image
-            src="/assets/images/planets/moon.svg"
-            alt="Moon"
+            src="/assets/images/planets/uranus.svg"
+            alt="Uranus Planet"
             width={128}
             height={128}
             className="w-24 md:w-48 h-24 md:h-48"
