@@ -2,37 +2,37 @@
 
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
+import { ChevronRightIcon, LanguagesIcon } from "lucide-react";
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-  DropdownMenuItem,
-} from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { locales, routing } from "@/i18n/routing";
-import { useRouter, usePathname } from "@/i18n/navigation";
-import { cn } from "@/lib/utils";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./ui/collapsible";
+import { useRouter, usePathname, redirect } from "@/i18n/navigation";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
-} from "./ui/sidebar";
-import { ChevronRightIcon, LanguagesIcon } from "lucide-react";
+} from "@/components/ui/sidebar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 
 type LocaleSwitcherProps = React.ComponentProps<"button"> & {
   variant?: "icon" | "sidebar";
 };
 
 export function LocaleSwitcher({ variant = "icon", ...props }: LocaleSwitcherProps) {
-  const currentLocale = useLocale(); // Full locale code
-  const router = useRouter();
-  const pathname = usePathname(); // Path without a locale prefix
-
   const t = useTranslations("locale-switcher");
+
+  const router = useRouter();
+  const pathname = usePathname();
+  const currentLocale = useLocale();
 
   const current = locales[currentLocale];
 
