@@ -657,7 +657,7 @@ function SidebarMenuSubButton({
       data-active={isActive}
       aria-disabled={disabled}
       className={cn(
-        "flex items-center gap-2 hover:bg-sidebar-accent active:bg-sidebar-accent aria-disabled:opacity-50 disabled:opacity-50 px-2 rounded-md outline-hidden ring-sidebar-ring focus-visible:ring-2 min-w-0 h-7 [&>svg]:size-4 overflow-hidden text-sidebar-foreground [&>span:last-child]:truncate -translate-x-px [&>svg]:text-sidebar-accent-foreground hover:text-sidebar-accent-foreground active:text-sidebar-accent-foreground aria-disabled:pointer-events-none disabled:pointer-events-none [&>svg]:shrink-0",
+        "flex items-center gap-2 hover:bg-sidebar-accent active:bg-sidebar-accent aria-disabled:opacity-50 disabled:opacity-50 px-2 rounded-md outline-hidden ring-sidebar-ring focus-visible:ring-2 min-w-0 h-7 [&>svg]:size-4 overflow-hidden text-sidebar-foreground [&>span:last-child]:truncate -translate-x-px [&>svg]:text-sidebar-accent-foreground hover:text-sidebar-accent-foreground active:text-sidebar-accent-foreground cursor-pointer aria-disabled:pointer-events-none disabled:pointer-events-none select-none [&>svg]:shrink-0",
         "data-[active=true]:bg-sidebar-accent data-[active=true]:text-sidebar-accent-foreground",
         size === "sm" && "text-xs",
         size === "md" && "text-sm",

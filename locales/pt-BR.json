@@ -14,10 +14,17 @@
   },
   "sidebar": {
     "navigation": "Navegação",
-    "guestUser": "Convidado",
-    "signIn": "Entrar"
+    "guest-user": "Convidado",
+    "sign-in": "Entrar"
   },
-  "localeSwitcher": {
-    "sidebarText": "Selecione o idioma"
+  "locale-switcher": {
+    "select-language": "Selecione o idioma"
+  },
+  "footer": {
+    "about": "Sobre",
+    "contact": "Contato",
+    "privacy-policy": "Politica de Privacidade",
+    "terms-of-service": "Termos de Serviço",
+    "developed-by": "Desenvolvido por"
   }
 }

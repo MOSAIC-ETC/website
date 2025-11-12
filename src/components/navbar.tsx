@@ -1,21 +1,21 @@
 "use client";
 
-import { useLocale, useTranslations } from "next-intl";
-import { ChevronDownIcon, SettingsIcon, User2Icon } from "lucide-react";
+import Image from "next/image";
+import { ChevronDownIcon } from "lucide-react";
 
+import { useNavigation } from "@/hooks/use-navigation";
 import { Link, usePathname } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Search } from "@/components/search";
-import { MosaicIcon } from "@/components/icons";
+import { MosaicLogo } from "@/components/icons";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LocaleSwitcher } from "@/components/locale-switcher";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { SidebarTrigger } from "./ui/sidebar";
-import { useNavigation } from "@/hooks/use-navigation";
 
 export function Navbar() {
   const navigation = useNavigation();
@@ -29,7 +29,7 @@ export function Navbar() {
 
       <div className="flex lg:flex-none justify-center lg:justify-start">
         <a href="/">
-          <MosaicIcon height={32} className="fill-primary select-none" />
+          <MosaicLogo height={32} className="fill-primary select-none" />
         </a>
       </div>
 
@@ -90,11 +90,17 @@ export function Navbar() {
       <div className="flex flex-1 justify-end items-center gap-4">
         <Search />
         <ThemeToggle />
-        <LocaleSwitcher className="hidden md:flex" />
+        <LocaleSwitcher className="hidden lg:flex" />
 
         {/* Default user (swap with profile pic when ready) */}
-        <Button variant="outline" size="icon-lg" className="hidden md:flex rounded-full">
-          <User2Icon />
+        <Button variant="outline" size="icon-lg" className="hidden lg:flex rounded-full">
+          <Image
+            src="/assets/images/default-avatar.png"
+            alt="User Avatar"
+            width={128}
+            height={128}
+            className="rounded-full w-full h-full"
+          />
         </Button>
       </div>
     </nav>
