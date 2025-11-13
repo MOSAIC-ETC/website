@@ -158,7 +158,7 @@ export default function NotFound() {
   }, []);
 
   return (
-    <div className="relative w-full min-h-screen overflow-hidden x-5">
+    <div className="relative w-full min-h-[calc(100vh-4rem)] overflow-hidden x-5">
       <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
 
       <div className="relative flex flex-col justify-center items-center gap-4 min-h-[calc(100vh-4rem)] text-center">
