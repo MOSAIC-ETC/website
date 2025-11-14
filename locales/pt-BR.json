@@ -7,6 +7,14 @@
     "home": {
       "title": "Início | MOSAIC",
       "description": "Página inicial da calculadora de tempo de exposição para MOSAIC no ELT"
+    },
+    "docs": {
+      "title": "Documentação | MOSAIC",
+      "description": "Documentação da Calculadora de Tempo de Exposição para MOSAIC no ELT"
+    },
+    "about": {
+      "title": "Sobre | MOSAIC",
+      "description": "Sobre a Calculadora de Tempo de Exposição para MOSAIC no ELT"
     }
   },
   "navigation": {
