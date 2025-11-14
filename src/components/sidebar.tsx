@@ -118,7 +118,7 @@ export function Sidebar(props: React.ComponentProps<"div">) {
           </Button>
 
           <div className="w-full">
-            <p className="font-medium">{t("guest-user")}</p>
+            <p className="font-medium">{t("anonymous-user")}</p>
             <Link
               href="/login"
               className="flex items-center gap-1 text-primary text-sm hover:underline"
