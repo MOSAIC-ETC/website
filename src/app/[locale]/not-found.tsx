@@ -162,26 +162,28 @@ export default function NotFound() {
       <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
 
       <div className="relative flex flex-col justify-center items-center gap-4 min-h-[calc(100vh-4rem)] text-center">
-        <h1 className="flex justify-center items-center gap-2 h-24 md:h-48 font-mono font-bold text-[6rem] md:text-[12rem] select-none">
+        <h1 className="flex justify-center items-center gap-2 h-24 md:h-48 font-mono font-bold text-[6rem] md:text-[12rem] animate-fade-in-up select-none">
           4
           <Image
-            src="/assets/images/planets/uranus.svg"
+            src="/assets/images/space/uranus.svg"
             alt="Uranus Planet"
-            width={128}
-            height={128}
+            width={256}
+            height={256}
             className="w-24 md:w-48 h-24 md:h-48"
             draggable={false}
           />
           4
         </h1>
 
-        <h2 className="font-mono font-semibold text-2xl md:text-4xl">{t("lost-in-space")}</h2>
+        <h2 className="font-mono font-semibold text-2xl md:text-4xl animate-fade-in-up delay-[90ms]">
+          {t("lost-in-space")}
+        </h2>
 
-        <p className="px-4 max-w-lg text-muted-foreground text-lg md:text-xl text-center">
+        <p className="px-4 max-w-lg text-muted-foreground text-lg md:text-xl text-center animate-fade-in-up delay-[180ms]">
           {t("alien-abducted-page")}
         </p>
 
-        <Button variant="default" className="mt-4" size="lg" asChild>
+        <Button className="mt-4 animate-fade-in-up delay-[270ms]" size="lg" asChild>
           <Link href="/">
             <ArrowLeftIcon />
             {t("go-back-to-earth")}
