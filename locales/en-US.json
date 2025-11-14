@@ -31,5 +31,12 @@
     "lost-in-space": "Lost in space?",
     "alien-abducted-page": "Aliens might have abducted this page. Let's get you back to a familiar territory.",
     "go-back-to-earth": "Go back to Earth"
+  },
+  "home": {
+    "hero": {
+      "built-with-open-source-technologies": "Built with open-source technologies",
+      "get-started": "Get Started Now",
+      "learn-more": "Learn More"
+    }
   }
 }

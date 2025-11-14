@@ -31,5 +31,12 @@
     "lost-in-space": "Perdu dans l'espace?",
     "alien-abducted-page": "Des extraterrestres pourraient avoir volé cette page. Revenons à un territoire familier.",
     "go-back-to-earth": "Retourne sur Terre"
+  },
+  "home": {
+    "hero": {
+      "built-with-open-source-technologies": "Construit avec des technologies open source",
+      "learn-more": "Apprendre Encore Plus",
+      "get-started": "Commencez Maintenant"
+    }
   }
 }
