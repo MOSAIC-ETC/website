@@ -31,9 +31,9 @@ export const routing = defineRouting({
       "en-US": "/login",
       "fr-FR": "/connexion",
     },
-    "/register": {
-      "pt-BR": "/registrar",
-      "en-US": "/register",
+    "/sign-up": {
+      "pt-BR": "/cadastrar",
+      "en-US": "/sign-up",
       "fr-FR": "/inscription",
     },
     "/logout": {
