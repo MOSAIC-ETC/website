@@ -1,13 +1,11 @@
 "use client";
 
-import { ChevronRightIcon, EllipsisVerticalIcon } from "lucide-react";
+import { ChevronRightIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import Image from "next/image";
 
 import { useNavigation } from "@/hooks/use-navigation";
 import { Link } from "@/i18n/navigation";
 import { MosaicLogo } from "@/components/icons";
-import { Button } from "@/components/ui/button";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
@@ -25,6 +23,7 @@ import {
   SidebarHeader,
   SidebarFooter,
 } from "@/components/ui/sidebar";
+import { User } from "@/components/user";
 
 export function Sidebar(props: React.ComponentProps<"div">) {
   const t = useTranslations("sidebar");
@@ -105,33 +104,7 @@ export function Sidebar(props: React.ComponentProps<"div">) {
 
       <SidebarFooter className="flex flex-col gap-4 mb-2">
         <LocaleSwitcher variant="sidebar" />
-
-        <div className="flex items-center gap-3 bg-muted/80 p-3 rounded-md">
-          <Button variant="outline" size="icon-lg" className="rounded-full">
-            <Image
-              src="/assets/images/default-avatar.png"
-              alt="User Avatar"
-              width={128}
-              height={128}
-              className="rounded-full w-full h-full"
-            />
-          </Button>
-
-          <div className="w-full">
-            <p className="font-medium">{t("anonymous-user")}</p>
-            <Link
-              href="/login"
-              className="flex items-center gap-1 text-primary text-sm hover:underline"
-            >
-              {t("sign-in")}
-              <ChevronRightIcon size={12} />
-            </Link>
-          </div>
-
-          <Button variant="ghost" size="icon">
-            <EllipsisVerticalIcon size={16} />
-          </Button>
-        </div>
+        <User variant="sidebar" />
       </SidebarFooter>
     </SidebarWrapper>
   );

@@ -15,6 +15,14 @@
     "about": {
       "title": "Sobre | MOSAIC",
       "description": "Sobre a Calculadora de Tempo de Exposição para MOSAIC no ELT"
+    },
+    "login": {
+      "title": "Entrar | MOSAIC",
+      "description": "Página de login para Calculadora de Tempo de Exposição para MOSAIC no ELT"
+    },
+    "register": {
+      "title": "Registrar | MOSAIC",
+      "description": "Página de registro da Calculadora de Tempo de Exposição para MOSAIC no ELT"
     }
   },
   "navigation": {
@@ -26,10 +34,12 @@
     "users": "Usuários",
     "settings": "Configurações"
   },
-  "sidebar": {
-    "navigation": "Navegação",
+  "user": {
     "sign-in": "Entrar",
-    "anonymous-user": "Anônimo"
+    "anonymous": "Anônimo"
+  },
+  "sidebar": {
+    "navigation": "Navegação"
   },
   "locale-switcher": {
     "select-language": "Selecione o idioma"
@@ -51,6 +61,37 @@
       "built-with-open-source-technologies": "Feito com tecnologias de código aberto",
       "learn-more": "Saber Mais",
       "get-started": "Comece Agora"
+    }
+  },
+  "login": {
+    "welcome": "Bem-vindo de volta",
+    "subtitle": "Entre na sua conta para continuar",
+    "email": {
+      "label": "Endereço de e-mail",
+      "placeholder": "mosaic.etc@uesc.br"
+    },
+    "password": {
+      "label": "Senha",
+      "placeholder": "***********"
+    },
+    "remember-me": "Lembrar de mim",
+    "forgot-password": "Esqueceu a senha?",
+    "submit": "Entrar",
+    "submitting": "Entrando...",
+    "or-continue-with": "ou continue com",
+    "google": "Google",
+    "no-account": "Não tem uma conta?",
+    "sign-up": "Registrar-se",
+    "errors": {
+      "email-required": "O e-mail é obrigatório",
+      "email-invalid": "Por favor, insira um e-mail válido",
+      "password-min": "A senha deve ter pelo menos 8 caracteres"
+    },
+    "footer": {
+      "agree-prefix": "Ao entrar, você concorda com nossos",
+      "terms-of-service": "Termos de Serviço",
+      "and": "e",
+      "privacy-policy": "Política de Privacidade"
     }
   }
 }

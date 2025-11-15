@@ -7,7 +7,7 @@ import { ChevronRightIcon, LanguagesIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { locales, routing } from "@/i18n/routing";
-import { useRouter, usePathname, redirect } from "@/i18n/navigation";
+import { useRouter, usePathname } from "@/i18n/navigation";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   SidebarMenuButton,
