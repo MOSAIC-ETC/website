@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { Geist, Geist_Mono } from "next/font/google";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
+import Script from "next/script";
 
 import { normalizeRequestedLocale, routing } from "@/i18n/routing";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -52,6 +53,11 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
 
   return (
     <html lang={locale} suppressHydrationWarning>
+      <head>
+        {process.env.NODE_ENV !== "production" && (
+          <Script src="/perf-measure-guard.js" strategy="beforeInteractive" />
+        )}
+      </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <ThemeProvider
           attribute="class"
