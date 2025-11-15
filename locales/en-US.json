@@ -20,9 +20,9 @@
       "title": "Login | MOSAIC",
       "description": "Login page for Exposure Time Calculator for MOSAIC on the ELT"
     },
-    "register": {
-      "title": "Register | MOSAIC",
-      "description": "Register page for Exposure Time Calculator for MOSAIC on the ELT"
+    "sign-up": {
+      "title": "Sign up | MOSAIC",
+      "description": "Sign up page for Exposure Time Calculator for MOSAIC on the ELT"
     }
   },
   "navigation": {
@@ -79,7 +79,6 @@
     "submit": "Sign In",
     "submitting": "Signing in...",
     "or-continue-with": "or continue with",
-    "google": "Google",
     "no-account": "Don't have an account?",
     "sign-up": "Sign up",
     "errors": {
@@ -92,6 +91,39 @@
       "terms-of-service": "Terms of Service",
       "and": "and",
       "privacy-policy": "Privacy Policy"
+    }
+  },
+  "sign-up": {
+    "welcome": "Create your account",
+    "subtitle": "Start your journey with MOSAIC ETC",
+    "name": {
+      "label": "Full name",
+      "placeholder": "Jane Doe"
+    },
+    "email": {
+      "label": "Email address",
+      "placeholder": "mosaic.etc@uesc.br"
+    },
+    "password": {
+      "label": "Password",
+      "placeholder": "***********"
+    },
+    "confirm-password": {
+      "label": "Confirm password",
+      "placeholder": "***********"
+    },
+    "accept-terms": "I accept the Terms of Service and Privacy Policy",
+    "submit": "Create account",
+    "submitting": "Creating account...",
+    "or-continue-with": "or continue with",
+    "have-account": "Already have an account?",
+    "sign-in": "Sign in",
+    "errors": {
+      "name-required": "Name is required",
+      "email-required": "Email is required",
+      "email-invalid": "Please enter a valid email",
+      "password-min": "Password must be at least 8 characters",
+      "passwords-dont-match": "Passwords don't match"
     }
   }
 }

@@ -20,32 +20,40 @@ import {
 } from "@/components/ui/form";
 import { LoaderCircleIcon } from "lucide-react";
 
-export default function LoginPage() {
-  const t = useTranslations("login");
+export default function SignUpPage() {
+  const t = useTranslations("sign-up");
 
-  const formSchema = z.object({
-    email: z.string().min(1, t("errors.email-required")).email(t("errors.email-invalid")),
-    password: z.string().min(8, t("errors.password-min")),
-    remember: z.boolean().default(false).optional(),
-  });
+  const formSchema = z
+    .object({
+      name: z.string().min(1, t("errors.name-required")),
+      email: z.email(t("errors.email-invalid")).min(1, t("errors.email-required")),
+      password: z.string().min(8, t("errors.password-min")),
+      confirmPassword: z.string().min(8, t("errors.password-min")),
+      acceptTerms: z.boolean().refine((val) => val === true),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+      message: t("errors.passwords-dont-match"),
+      path: ["confirmPassword"],
+    });
 
   type FormValues = z.infer<typeof formSchema>;
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      name: "",
       email: "",
       password: "",
-      remember: false,
+      confirmPassword: "",
+      acceptTerms: false,
     },
     mode: "onSubmit",
   });
 
   async function onSubmit(values: FormValues) {
-    // TODO: Replace with real authentication logic
-    // You can call your auth API here
+    // TODO: Replace with real registration logic
     // eslint-disable-next-line no-console
-    console.log("Login submit", values);
+    console.log("Register submit", values);
   }
 
   return (
@@ -61,6 +69,22 @@ export default function LoginPage() {
         <Form {...form}>
           <form noValidate onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="gap-0.5">
+                      {t("name.label")} <span className="text-destructive">*</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Input type="text" placeholder={t("name.placeholder")} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               <FormField
                 control={form.control}
                 name="email"
@@ -92,28 +116,42 @@ export default function LoginPage() {
                   </FormItem>
                 )}
               />
-            </div>
 
-            <div className="flex justify-between items-center">
               <FormField
                 control={form.control}
-                name="remember"
+                name="confirmPassword"
                 render={({ field }) => (
-                  <FormItem className="flex items-center">
-                    <FormControl>
-                      <Checkbox checked={field.value} onCheckedChange={field.onChange} />
-                    </FormControl>
-                    <FormLabel className="font-normal text-muted-foreground text-sm cursor-pointer select-none">
-                      {t("remember-me")}
+                  <FormItem>
+                    <FormLabel className="gap-0.5">
+                      {t("confirm-password.label")} <span className="text-destructive">*</span>
                     </FormLabel>
+                    <FormControl>
+                      <Input
+                        type="password"
+                        placeholder={t("confirm-password.placeholder")}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
-
-              <Button variant="link" size="sm" className="px-0" asChild>
-                <Link href="/forgot-password">{t("forgot-password")}</Link>
-              </Button>
             </div>
+
+            <FormField
+              control={form.control}
+              name="acceptTerms"
+              render={({ field }) => (
+                <FormItem className="flex items-center">
+                  <FormControl>
+                    <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                  </FormControl>
+                  <FormLabel className="font-normal text-muted-foreground text-sm cursor-pointer select-none">
+                    {t("accept-terms")}
+                  </FormLabel>
+                </FormItem>
+              )}
+            />
 
             <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
               <LoaderCircleIcon
@@ -137,23 +175,11 @@ export default function LoginPage() {
         </Form>
 
         <p className="text-muted-foreground text-sm text-center">
-          {t("no-account")}{" "}
+          {t("have-account")}{" "}
           <Button variant="link" size="sm" className="px-0" asChild>
-            <Link href="/sign-up">{t("sign-up")}</Link>
+            <Link href="/login">{t("sign-in")}</Link>
           </Button>
         </p>
-
-        <div className="mt-12 text-muted-foreground text-xs text-center">
-          {t("footer.agree-prefix")}{" "}
-          <Link href="/terms-of-service" className="hover:text-primary underline">
-            {t("footer.terms-of-service")}
-          </Link>{" "}
-          {t("footer.and")}{" "}
-          <Link href="/privacy-policy" className="hover:text-primary underline">
-            {t("footer.privacy-policy")}
-          </Link>
-          .
-        </div>
       </div>
     </div>
   );

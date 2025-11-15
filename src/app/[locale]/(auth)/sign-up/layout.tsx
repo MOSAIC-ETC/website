@@ -7,7 +7,7 @@ type MetadataProps = Readonly<{
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: "metadata.register" });
+  const t = await getTranslations({ locale, namespace: "metadata.sign-up" });
 
   return {
     title: t("title"),

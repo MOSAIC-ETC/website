@@ -20,9 +20,9 @@
       "title": "Entrar | MOSAIC",
       "description": "Página de login para Calculadora de Tempo de Exposição para MOSAIC no ELT"
     },
-    "register": {
-      "title": "Registrar | MOSAIC",
-      "description": "Página de registro da Calculadora de Tempo de Exposição para MOSAIC no ELT"
+    "sign-up": {
+      "title": "Cadastrar | MOSAIC",
+      "description": "Página de cadastro da Calculadora de Tempo de Exposição para MOSAIC no ELT"
     }
   },
   "navigation": {
@@ -79,9 +79,8 @@
     "submit": "Entrar",
     "submitting": "Entrando...",
     "or-continue-with": "ou continue com",
-    "google": "Google",
     "no-account": "Não tem uma conta?",
-    "sign-up": "Registrar-se",
+    "sign-up": "Cadastre-se",
     "errors": {
       "email-required": "O e-mail é obrigatório",
       "email-invalid": "Por favor, insira um e-mail válido",
@@ -92,6 +91,39 @@
       "terms-of-service": "Termos de Serviço",
       "and": "e",
       "privacy-policy": "Política de Privacidade"
+    }
+  },
+  "sign-up": {
+    "welcome": "Crie sua conta",
+    "subtitle": "Comece sua jornada com o MOSAIC ETC",
+    "name": {
+      "label": "Nome completo",
+      "placeholder": "João Silva"
+    },
+    "email": {
+      "label": "Endereço de e-mail",
+      "placeholder": "mosaic.etc@uesc.br"
+    },
+    "password": {
+      "label": "Senha",
+      "placeholder": "***********"
+    },
+    "confirm-password": {
+      "label": "Confirmar senha",
+      "placeholder": "***********"
+    },
+    "accept-terms": "Eu aceito os Termos de Serviço e a Política de Privacidade",
+    "submit": "Criar conta",
+    "submitting": "Criando conta...",
+    "or-continue-with": "ou continue com",
+    "have-account": "Já tem uma conta?",
+    "sign-in": "Entrar",
+    "errors": {
+      "name-required": "O nome é obrigatório",
+      "email-required": "O e-mail é obrigatório",
+      "email-invalid": "Por favor, insira um e-mail válido",
+      "password-min": "A senha deve ter pelo menos 8 caracteres",
+      "passwords-dont-match": "As senhas não coincidem"
     }
   }
 }
