@@ -13,6 +13,7 @@ import { Sidebar } from "@/components/sidebar";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import "../globals.css";
+import { PerfMeasureGuard } from "@/components/perf-measure-guard";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -53,12 +54,8 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
 
   return (
     <html lang={locale} suppressHydrationWarning>
-      <head>
-        {process.env.NODE_ENV !== "production" && (
-          <Script src="/perf-measure-guard.js" strategy="beforeInteractive" />
-        )}
-      </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <PerfMeasureGuard />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
