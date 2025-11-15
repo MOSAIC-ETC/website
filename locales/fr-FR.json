@@ -15,6 +15,14 @@
     "about": {
       "title": "À propos | MOSAIC",
       "description": "À propos du calculateur de temps d'exposition pour MOSAIC sur l'ELT"
+    },
+    "login": {
+      "title": "Connexion | MOSAIC",
+      "description": "Page de connexion pour le calculateur de temps d'exposition pour MOSAIC sur l'ELT"
+    },
+    "register": {
+      "title": "S'inscrire | MOSAIC",
+      "description": "Page d'inscription au calculateur de temps d'exposition pour MOSAIC sur l'ELT"
     }
   },
   "navigation": {
@@ -26,10 +34,12 @@
     "users": "Utilisateurs",
     "settings": "Paramètres"
   },
+  "user": {
+    "sign-in": "Se Connecter",
+    "anonymous": "Anonyme"
+  },
   "sidebar": {
-    "navigation": "Navigation",
-    "sign-in": "Se connecter",
-    "anonymous-user": "Anonyme"
+    "navigation": "Navigation"
   },
   "locale-switcher": {
     "select-language": "Sélectionnez la langue"
@@ -51,6 +61,37 @@
       "built-with-open-source-technologies": "Construit avec des technologies open source",
       "learn-more": "Apprendre Encore Plus",
       "get-started": "Commencez Maintenant"
+    }
+  },
+  "login": {
+    "welcome": "Bon retour",
+    "subtitle": "Connectez-vous à votre compte pour continuer",
+    "email": {
+      "label": "Adresse e-mail",
+      "placeholder": "mosaic.etc@uesc.br"
+    },
+    "password": {
+      "label": "Mot de passe",
+      "placeholder": "***********"
+    },
+    "remember-me": "Se souvenir de moi",
+    "forgot-password": "Mot de passe oublié ?",
+    "submit": "Se connecter",
+    "submitting": "Connexion...",
+    "or-continue-with": "ou continuer avec",
+    "google": "Google",
+    "no-account": "Vous n'avez pas de compte ?",
+    "sign-up": "S'inscrire",
+    "errors": {
+      "email-required": "L'adresse e-mail est requise",
+      "email-invalid": "Veuillez saisir une adresse e-mail valide",
+      "password-min": "Le mot de passe doit comporter au moins 8 caractères"
+    },
+    "footer": {
+      "agree-prefix": "En vous connectant, vous acceptez nos",
+      "terms-of-service": "Conditions d'utilisation",
+      "and": "et",
+      "privacy-policy": "politique de confidentialité"
     }
   }
 }

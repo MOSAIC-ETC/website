@@ -41,6 +41,16 @@ export const routing = defineRouting({
       "en-US": "/logout",
       "fr-FR": "/deconnexion",
     },
+    "/forgot-password": {
+      "pt-BR": "/esqueci-minha-senha",
+      "en-US": "/forgot-password",
+      "fr-FR": "/mot-de-passe-oublie",
+    },
+    "/reset-password": {
+      "pt-BR": "/redefinir-senha",
+      "en-US": "/reset-password",
+      "fr-FR": "/reinitialiser-le-mot-de-passe",
+    },
 
     "/admin": "/admin",
     "/admin/users": {

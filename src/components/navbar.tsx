@@ -1,11 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import { ChevronDownIcon } from "lucide-react";
 
 import { useNavigation } from "@/hooks/use-navigation";
 import { Link, usePathname } from "@/i18n/navigation";
-import { Button } from "@/components/ui/button";
 import { Search } from "@/components/search";
 import { MosaicLogo } from "@/components/icons";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -16,6 +14,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { User } from "@/components/user";
 
 export function Navbar() {
   const navigation = useNavigation();
@@ -55,7 +54,7 @@ export function Navbar() {
                       />
                     </Link>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className="mt-1.5 min-w-48">
+                  <DropdownMenuContent align="start" className="w-56">
                     {item.dropdown.map((subItem) => (
                       <Link
                         key={subItem.name}
@@ -91,17 +90,7 @@ export function Navbar() {
         <Search />
         <ThemeToggle />
         <LocaleSwitcher className="hidden lg:flex" />
-
-        {/* Default user (swap with profile pic when ready) */}
-        <Button variant="outline" size="icon-lg" className="hidden lg:flex rounded-full">
-          <Image
-            src="/assets/images/default-avatar.png"
-            alt="User Avatar"
-            width={128}
-            height={128}
-            className="rounded-full w-full h-full"
-          />
-        </Button>
+        <User />
       </div>
     </nav>
   );
