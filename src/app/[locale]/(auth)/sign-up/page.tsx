@@ -52,7 +52,6 @@ export default function SignUpPage() {
 
   async function onSubmit(values: FormValues) {
     // TODO: Replace with real registration logic
-    // eslint-disable-next-line no-console
     console.log("Register submit", values);
   }
 

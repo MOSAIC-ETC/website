@@ -43,8 +43,6 @@ export default function LoginPage() {
 
   async function onSubmit(values: FormValues) {
     // TODO: Replace with real authentication logic
-    // You can call your auth API here
-    // eslint-disable-next-line no-console
     console.log("Login submit", values);
   }
 
