@@ -68,7 +68,7 @@
     "subtitle": "Sign in to your account to continue",
     "email": {
       "label": "Email address",
-      "placeholder": "mosaic.etc@uesc.br"
+      "placeholder": "johndoe@mail.com"
     },
     "password": {
       "label": "Password",
@@ -98,11 +98,11 @@
     "subtitle": "Start your journey with MOSAIC ETC",
     "name": {
       "label": "Full name",
-      "placeholder": "Jane Doe"
+      "placeholder": "John Doe"
     },
     "email": {
       "label": "Email address",
-      "placeholder": "mosaic.etc@uesc.br"
+      "placeholder": "johndoe@mail.com"
     },
     "password": {
       "label": "Password",
