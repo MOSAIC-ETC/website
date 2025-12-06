@@ -68,7 +68,7 @@
     "subtitle": "Connectez-vous à votre compte pour continuer",
     "email": {
       "label": "Adresse e-mail",
-      "placeholder": "mosaic.etc@uesc.br"
+      "placeholder": "jeandupont@mail.com.fr"
     },
     "password": {
       "label": "Mot de passe",
@@ -98,7 +98,7 @@
     "subtitle": "Commencez votre parcours avec MOSAIC ETC",
     "name": {
       "label": "Nom complet",
-      "placeholder": "Jean Dupont"
+      "placeholder": "jeandupont@mail.com.fr"
     },
     "email": {
       "label": "Adresse e-mail",

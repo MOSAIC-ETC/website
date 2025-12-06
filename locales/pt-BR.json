@@ -68,7 +68,7 @@
     "subtitle": "Entre na sua conta para continuar",
     "email": {
       "label": "Endereço de e-mail",
-      "placeholder": "mosaic.etc@uesc.br"
+      "placeholder": "joaosilva@mail.com.br"
     },
     "password": {
       "label": "Senha",
@@ -102,7 +102,7 @@
     },
     "email": {
       "label": "Endereço de e-mail",
-      "placeholder": "mosaic.etc@uesc.br"
+      "placeholder": "joaosilva@mail.com.br"
     },
     "password": {
       "label": "Senha",
