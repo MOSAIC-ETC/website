@@ -40,6 +40,17 @@ export interface HeatmapCellData {
   color: string;
 }
 
+export interface HeatmapSelection {
+  /** Start X coordinate (row) */
+  startX: number;
+  /** Start Y coordinate (column) */
+  startY: number;
+  /** End X coordinate (row) */
+  endX: number;
+  /** End Y coordinate (column) */
+  endY: number;
+}
+
 type HeatmapProps = {
   /** 2D array of values (rows x cols) */
   values: number[][];
@@ -59,6 +70,10 @@ type HeatmapProps = {
   tooltip?: boolean;
   /** Custom tooltip renderer function. Receives cell data and returns React node */
   renderTooltip?: (data: HeatmapCellData) => ReactNode;
+  /** Current selection (controlled) */
+  selection?: HeatmapSelection | null;
+  /** Callback when selection changes */
+  onSelectionChange?: (selection: HeatmapSelection | null) => void;
 } & React.HTMLAttributes<HTMLDivElement>;
 
 export function Heatmap({
@@ -71,13 +86,29 @@ export function Heatmap({
   showAxes = true,
   tooltip = true,
   renderTooltip,
+  selection,
+  onSelectionChange,
   className,
   ...props
 }: HeatmapProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [hoverInfo, setHoverInfo] = useState<HeatmapCellData | null>(null);
   const [hoveredCell, setHoveredCell] = useState<{ x: number; y: number } | null>(null);
+  const [isSelecting, setIsSelecting] = useState(false);
+  const [selectionStart, setSelectionStart] = useState<{ x: number; y: number } | null>(null);
+  const [internalSelection, setInternalSelection] = useState<HeatmapSelection | null>(null);
   const { resolvedTheme } = useTheme();
+
+  // Use controlled selection if provided, otherwise use internal state
+  const currentSelection = selection !== undefined ? selection : internalSelection;
+  const setCurrentSelection = (sel: HeatmapSelection | null) => {
+    if (onSelectionChange) {
+      onSelectionChange(sel);
+    }
+    if (selection === undefined) {
+      setInternalSelection(sel);
+    }
+  };
 
   const margin = { top: 50, right: 80, bottom: 50, left: 50 };
   const plotWidth = width - margin.left - margin.right;
@@ -110,7 +141,7 @@ export function Heatmap({
   }, []);
 
   const drawHeatmap = useCallback(
-    (highlightCell?: { x: number; y: number } | null) => {
+    (highlightCell?: { x: number; y: number } | null, selectionRect?: HeatmapSelection | null) => {
       const canvas = canvasRef.current;
       if (!canvas || numRows === 0 || numCols === 0) return;
 
@@ -152,8 +183,32 @@ export function Heatmap({
         }
       }
 
-      // Draw highlight border on hovered cell
-      if (highlightCell) {
+      if (selectionRect) {
+        const minX = Math.min(selectionRect.startX, selectionRect.endX);
+        const maxX = Math.max(selectionRect.startX, selectionRect.endX);
+        const minY = Math.min(selectionRect.startY, selectionRect.endY);
+        const maxY = Math.max(selectionRect.startY, selectionRect.endY);
+
+        const selX = margin.left + minY * cellWidth;
+        const selY = margin.top + (numRows - 1 - maxX) * cellHeight;
+        const selW = (maxY - minY + 1) * cellWidth;
+        const selH = (maxX - minX + 1) * cellHeight;
+
+        // Draw dark overlay outside the selection
+        ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
+        ctx.fillRect(margin.left, margin.top, plotWidth, selY - margin.top);
+        ctx.fillRect(margin.left, selY + selH, plotWidth, margin.top + plotHeight - (selY + selH));
+        ctx.fillRect(margin.left, selY, selX - margin.left, selH);
+        ctx.fillRect(selX + selW, selY, margin.left + plotWidth - (selX + selW), selH);
+
+        // Draw white border around selection
+        ctx.strokeStyle = "#ffffff";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(selX, selY, selW, selH);
+      }
+
+      // Draw highlight border on hovered cell (only if not selecting)
+      if (highlightCell && !selectionRect) {
         const x = margin.left + highlightCell.y * cellWidth;
         const y = margin.top + (numRows - 1 - highlightCell.x) * cellHeight;
         ctx.strokeStyle = "#ffffff";
@@ -261,19 +316,19 @@ export function Heatmap({
   );
 
   useEffect(() => {
-    drawHeatmap(hoveredCell);
-  }, [drawHeatmap, hoveredCell]);
+    drawHeatmap(hoveredCell, currentSelection);
+  }, [drawHeatmap, hoveredCell, currentSelection]);
 
   useEffect(() => {
     const raf = requestAnimationFrame(() => {
-      drawHeatmap(hoveredCell);
+      drawHeatmap(hoveredCell, currentSelection);
     });
     return () => cancelAnimationFrame(raf);
-  }, [resolvedTheme, drawHeatmap, hoveredCell]);
+  }, [resolvedTheme, drawHeatmap, hoveredCell, currentSelection]);
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+  const getCellFromMouse = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
-    if (!canvas || numRows === 0 || numCols === 0) return;
+    if (!canvas || numRows === 0 || numCols === 0) return null;
 
     const rect = canvas.getBoundingClientRect();
     const mouseX = e.clientX - rect.left;
@@ -291,19 +346,67 @@ export function Heatmap({
       const col = Math.floor((mouseX - margin.left) / cellWidth);
       const row = numRows - 1 - Math.floor((mouseY - margin.top) / cellHeight);
 
-      const clampedCol = Math.max(0, Math.min(numCols - 1, col));
-      const clampedRow = Math.max(0, Math.min(numRows - 1, row));
+      return {
+        x: Math.max(0, Math.min(numRows - 1, row)),
+        y: Math.max(0, Math.min(numCols - 1, col)),
+      };
+    }
+    return null;
+  };
 
-      const cellValue = values[clampedRow]?.[clampedCol] ?? 0;
+  const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    const cell = getCellFromMouse(e);
+
+    if (isSelecting && selectionStart && cell) {
+      setCurrentSelection({
+        startX: selectionStart.x,
+        startY: selectionStart.y,
+        endX: cell.x,
+        endY: cell.y,
+      });
+    }
+
+    if (cell) {
+      const cellValue = values[cell.x]?.[cell.y] ?? 0;
       const normalizedValue = maxVal > 0 ? cellValue / maxVal : 0;
       const cellColor = interpolateViridis(normalizedValue);
 
-      setHoveredCell({ x: clampedRow, y: clampedCol });
-      setHoverInfo({ x: clampedRow, y: clampedCol, value: cellValue, color: cellColor });
+      setHoveredCell(cell);
+      setHoverInfo({ x: cell.x, y: cell.y, value: cellValue, color: cellColor });
     } else {
       setHoverInfo(null);
       setHoveredCell(null);
     }
+  };
+
+  const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (e.button !== 0) return; // Only left click
+
+    const cell = getCellFromMouse(e);
+    if (cell) {
+      setIsSelecting(true);
+      setSelectionStart(cell);
+      setCurrentSelection({
+        startX: cell.x,
+        startY: cell.y,
+        endX: cell.x,
+        endY: cell.y,
+      });
+    }
+  };
+
+  const handleMouseUp = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (e.button === 0) {
+      setIsSelecting(false);
+      setSelectionStart(null);
+    }
+  };
+
+  const handleContextMenu = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    e.preventDefault();
+    setCurrentSelection(null);
+    setIsSelecting(false);
+    setSelectionStart(null);
   };
 
   const getTooltipPosition = () => {
@@ -327,12 +430,20 @@ export function Heatmap({
         width={width}
         height={height}
         onMouseMove={handleMouseMove}
+        onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}
+        onContextMenu={handleContextMenu}
         onMouseLeave={() => {
           setHoverInfo(null);
           setHoveredCell(null);
+          if (isSelecting) {
+            setIsSelecting(false);
+            setSelectionStart(null);
+          }
         }}
+        style={{ cursor: isSelecting ? "crosshair" : "default" }}
       />
-      {hoverInfo && tooltip && (
+      {hoverInfo && tooltip && !isSelecting && (
         <div
           className={
             "absolute bg-card shadow-2xl px-2.5 py-1.5 rounded font-mono text-card-foreground text-xs -translate-x-1/2 -translate-y-full pointer-events-none"

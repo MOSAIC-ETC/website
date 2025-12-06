@@ -26,7 +26,7 @@ function generateSampleCounts(rows: number, cols: number): number[][] {
 }
 
 export default function ETCPage() {
-  const values = useMemo(() => generateSampleCounts(30, 30), []);
+  const values = useMemo(() => generateSampleCounts(50, 50), []);
 
   return (
     <main className="flex justify-center items-center p-8 min-h-screen">
