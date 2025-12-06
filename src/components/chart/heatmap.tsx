@@ -1,5 +1,6 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
 import { useEffect, useRef, useState, useCallback, type ReactNode } from "react";
 
@@ -39,7 +40,7 @@ export interface HeatmapCellData {
   color: string;
 }
 
-interface HeatmapProps {
+type HeatmapProps = {
   /** 2D array of values (rows x cols) */
   values: number[][];
   /** Width of the canvas in pixels */
@@ -58,7 +59,7 @@ interface HeatmapProps {
   tooltip?: boolean;
   /** Custom tooltip renderer function. Receives cell data and returns React node */
   renderTooltip?: (data: HeatmapCellData) => ReactNode;
-}
+} & React.HTMLAttributes<HTMLDivElement>;
 
 export function Heatmap({
   values,
@@ -70,6 +71,8 @@ export function Heatmap({
   showAxes = true,
   tooltip = true,
   renderTooltip,
+  className,
+  ...props
 }: HeatmapProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [hoverInfo, setHoverInfo] = useState<HeatmapCellData | null>(null);
@@ -318,7 +321,7 @@ export function Heatmap({
   const tooltipPos = getTooltipPosition();
 
   return (
-    <div className="inline-block relative">
+    <div className={cn("inline-block relative", className)} {...props}>
       <canvas
         ref={canvasRef}
         width={width}
@@ -331,7 +334,9 @@ export function Heatmap({
       />
       {hoverInfo && tooltip && (
         <div
-          className="absolute bg-card shadow-2xl px-2.5 py-1.5 rounded font-mono text-card-foreground text-xs -translate-x-1/2 -translate-y-full pointer-events-none"
+          className={
+            "absolute bg-card shadow-2xl px-2.5 py-1.5 rounded font-mono text-card-foreground text-xs -translate-x-1/2 -translate-y-full pointer-events-none"
+          }
           style={{ left: tooltipPos.left, top: tooltipPos.top }}
         >
           {renderTooltip ? (
