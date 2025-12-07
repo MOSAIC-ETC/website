@@ -18,11 +18,6 @@ import { getVertexAtPosition } from "./utils";
 import { drawHeatmap } from "./draw";
 import { HeatmapSelectionContext } from "./context";
 
-type HeatmapComponentProps = Omit<
-  HeatmapProps,
-  "selection" | "onSelectionChange" | "polygonSelection" | "onPolygonSelectionChange" | "selectionMode"
->;
-
 export function Heatmap({
   values,
   width = 500,
@@ -34,9 +29,10 @@ export function Heatmap({
   tooltip = true,
   renderTooltip,
   colormap = "viridis",
+  selectable = false,
   className,
   ...props
-}: HeatmapComponentProps) {
+}: HeatmapProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [hoverInfo, setHoverInfo] = useState<HeatmapCellData | null>(null);
   const [hoveredCell, setHoveredCell] = useState<{ x: number; y: number } | null>(null);
@@ -239,7 +235,7 @@ export function Heatmap({
     const cell = getCellFromMouse(e);
     const canvasCoords = getCanvasCoords(e);
 
-    if (selectionMode === "polygon") {
+    if (selectable && selectionMode === "polygon") {
       if (draggingVertexIndex !== null && currentPolygonSelection && cell) {
         const newPoints = [...currentPolygonSelection.points];
         newPoints[draggingVertexIndex] = { x: cell.x, y: cell.y };
@@ -252,7 +248,7 @@ export function Heatmap({
       }
     }
 
-    if (selectionMode === "rectangle" && isSelecting && selectionStart && cell) {
+    if (selectable && selectionMode === "rectangle" && isSelecting && selectionStart && cell) {
       setCurrentSelection({
         startX: selectionStart.x,
         startY: selectionStart.y,
@@ -277,6 +273,7 @@ export function Heatmap({
 
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (e.button !== 0) return;
+    if (!selectable) return;
 
     const cell = getCellFromMouse(e);
     const canvasCoords = getCanvasCoords(e);
@@ -328,6 +325,8 @@ export function Heatmap({
   };
 
   const handleMouseUp = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (!selectable) return;
+
     if (selectionMode === "polygon" && draggingVertexIndex !== null) {
       setDraggingVertexIndex(null);
       return;
@@ -340,6 +339,7 @@ export function Heatmap({
   };
 
   const handleDoubleClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (!selectable) return;
     if (selectionMode !== "polygon") return;
 
     const canvasCoords = getCanvasCoords(e);
@@ -374,6 +374,7 @@ export function Heatmap({
   };
 
   const handleContextMenu = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (!selectable) return;
     e.preventDefault();
     clearSelections();
   };
@@ -383,7 +384,7 @@ export function Heatmap({
     const cell = getCellFromTouch(e);
     const canvasCoords = getCanvasCoords(e);
 
-    if (selectionMode === "polygon") {
+    if (selectable && selectionMode === "polygon") {
       if (currentPolygonSelection && currentPolygonSelection.closed && canvasCoords) {
         const vertexIdx = getVertexAtPosition(
           canvasCoords.x,
@@ -435,7 +436,7 @@ export function Heatmap({
       return;
     }
 
-    if (cell) {
+    if (selectable && cell) {
       e.preventDefault();
       setIsSelecting(true);
       setSelectionStart(cell);
@@ -454,7 +455,7 @@ export function Heatmap({
 
     const cell = getCellFromTouch(e);
 
-    if (selectionMode === "polygon" && draggingVertexIndex !== null && currentPolygonSelection && cell) {
+    if (selectable && selectionMode === "polygon" && draggingVertexIndex !== null && currentPolygonSelection && cell) {
       e.preventDefault();
       const newPoints = [...currentPolygonSelection.points];
       newPoints[draggingVertexIndex] = { x: cell.x, y: cell.y };
@@ -462,7 +463,7 @@ export function Heatmap({
       return;
     }
 
-    if (selectionMode === "rectangle" && isSelecting && selectionStart && cell) {
+    if (selectable && selectionMode === "rectangle" && isSelecting && selectionStart && cell) {
       e.preventDefault();
       setCurrentSelection({
         startX: selectionStart.x,
@@ -543,9 +544,9 @@ export function Heatmap({
         onTouchCancel={handleTouchEnd}
         style={{
           cursor:
-            isSelecting || draggingVertexIndex !== null
+            selectable && (isSelecting || draggingVertexIndex !== null)
               ? "crosshair"
-              : selectionMode === "polygon"
+              : selectable && selectionMode === "polygon"
               ? "crosshair"
               : "default",
           touchAction: "none",

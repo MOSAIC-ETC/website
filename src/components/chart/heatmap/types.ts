@@ -56,6 +56,8 @@ export type HeatmapProps = {
   renderTooltip?: (data: HeatmapCellData) => ReactNode;
   /** Colormap to use for the heatmap */
   colormap?: Colormap | string;
+  /** Whether to enable selection (default: false) */
+  selectable?: boolean;
 } & React.HTMLAttributes<HTMLDivElement>;
 
 export interface HeatmapMargins {

@@ -25,8 +25,7 @@ function generateSampleCounts(rows: number, cols: number): number[][] {
 
 // Separate component that uses the selection hook
 function SelectionControls() {
-  const { selectionMode, setSelectionMode, selection, polygonSelection, clearSelections } =
-    useHeatmapSelectionContext();
+  const { selectionMode, setSelectionMode, clearSelections } = useHeatmapSelectionContext();
 
   return (
     <>
@@ -63,9 +62,9 @@ function SelectionControls() {
 }
 
 function HeatmapDisplay() {
-  const values = useMemo(() => generateSampleCounts(30, 30), []);
+  const values = useMemo(() => generateSampleCounts(50, 50), []);
 
-  return <Heatmap values={values} width={550} height={500} title="Heatmap" xLabel="X" yLabel="Y" />;
+  return <Heatmap values={values} width={550} height={500} title="Heatmap" xLabel="X" yLabel="Y" selectable />;
 }
 
 export default function ETCPage() {
