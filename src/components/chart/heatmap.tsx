@@ -5,30 +5,67 @@ import { useTheme } from "next-themes";
 import { useEffect, useRef, useState, useCallback, type ReactNode } from "react";
 
 // Colormaps
-const viridisColors = [
-  [68, 1, 84],
-  [72, 35, 116],
-  [64, 67, 135],
-  [52, 94, 141],
-  [41, 120, 142],
-  [32, 144, 140],
-  [34, 167, 132],
-  [68, 190, 112],
-  [121, 209, 81],
-  [189, 222, 38],
-  [253, 231, 37],
-];
+type Colormap = [number, number, number][];
 
-function interpolateViridis(t: number): string {
+const colormaps = {
+  viridis: [
+    [68, 1, 84],
+    [72, 35, 116],
+    [64, 67, 135],
+    [52, 94, 141],
+    [41, 120, 142],
+    [32, 144, 140],
+    [34, 167, 132],
+    [68, 190, 112],
+    [121, 209, 81],
+    [189, 222, 38],
+    [253, 231, 37],
+  ],
+  plasma: [
+    [13, 8, 135],
+    [75, 3, 161],
+    [125, 3, 168],
+    [168, 34, 150],
+    [203, 70, 121],
+    [229, 107, 93],
+    [248, 148, 65],
+    [253, 195, 40],
+    [240, 249, 33],
+  ],
+  inferno: [
+    [0, 0, 4],
+    [31, 12, 72],
+    [85, 15, 109],
+    [136, 34, 106],
+    [186, 54, 85],
+    [227, 89, 51],
+    [249, 140, 10],
+    [252, 201, 27],
+    [240, 249, 33],
+  ],
+  magma: [
+    [0, 0, 3],
+    [28, 16, 68],
+    [79, 18, 123],
+    [129, 37, 129],
+    [181, 54, 112],
+    [229, 89, 77],
+    [251, 140, 41],
+    [254, 201, 54],
+    [240, 249, 33],
+  ],
+};
+
+function interpolateColormap(t: number, colormap: Colormap): string {
   const clampedT = Math.max(0, Math.min(1, t));
-  const idx = clampedT * (viridisColors.length - 1);
+  const idx = clampedT * (colormap.length - 1);
   const lower = Math.floor(idx);
   const upper = Math.ceil(idx);
   const frac = idx - lower;
 
-  const r = Math.round(viridisColors[lower][0] * (1 - frac) + viridisColors[upper][0] * frac);
-  const g = Math.round(viridisColors[lower][1] * (1 - frac) + viridisColors[upper][1] * frac);
-  const b = Math.round(viridisColors[lower][2] * (1 - frac) + viridisColors[upper][2] * frac);
+  const r = Math.round(colormap[lower][0] * (1 - frac) + colormap[upper][0] * frac);
+  const g = Math.round(colormap[lower][1] * (1 - frac) + colormap[upper][1] * frac);
+  const b = Math.round(colormap[lower][2] * (1 - frac) + colormap[upper][2] * frac);
 
   return `rgb(${r}, ${g}, ${b})`;
 }
@@ -74,13 +111,15 @@ type HeatmapProps = {
   selection?: HeatmapSelection | null;
   /** Callback when selection changes */
   onSelectionChange?: (selection: HeatmapSelection | null) => void;
+  /** Colormap to use for the heatmap */
+  colormap?: Colormap | keyof typeof colormaps;
 } & React.HTMLAttributes<HTMLDivElement>;
 
 export function Heatmap({
   values,
   width = 500,
   height = 450,
-  title = "",
+  title,
   xLabel = "X",
   yLabel = "Y",
   showAxes = true,
@@ -88,6 +127,7 @@ export function Heatmap({
   renderTooltip,
   selection,
   onSelectionChange,
+  colormap = "viridis",
   className,
   ...props
 }: HeatmapProps) {
@@ -98,6 +138,8 @@ export function Heatmap({
   const [selectionStart, setSelectionStart] = useState<{ x: number; y: number } | null>(null);
   const [internalSelection, setInternalSelection] = useState<HeatmapSelection | null>(null);
   const { resolvedTheme } = useTheme();
+
+  const selectedColormap = (colormap instanceof Array ? colormap : colormaps[colormap]) as Colormap;
 
   // Use controlled selection if provided, otherwise use internal state
   const currentSelection = selection !== undefined ? selection : internalSelection;
@@ -176,7 +218,7 @@ export function Heatmap({
         for (let col = 0; col < numCols; col++) {
           const value = values[row][col];
           const normalizedValue = maxVal > 0 ? value / maxVal : 0;
-          ctx.fillStyle = interpolateViridis(normalizedValue);
+          ctx.fillStyle = interpolateColormap(normalizedValue, selectedColormap);
           const x = margin.left + col * cellWidth;
           const y = margin.top + (numRows - 1 - row) * cellHeight;
           ctx.fillRect(x, y, cellWidth + 0.5, cellHeight + 0.5);
@@ -272,7 +314,7 @@ export function Heatmap({
 
       for (let i = 0; i < colorBarHeight; i++) {
         const t = 1 - i / colorBarHeight;
-        ctx.fillStyle = interpolateViridis(t);
+        ctx.fillStyle = interpolateColormap(t, selectedColormap);
         ctx.fillRect(colorBarX, colorBarY + i, colorBarWidth, 1);
       }
 
@@ -369,7 +411,7 @@ export function Heatmap({
     if (cell) {
       const cellValue = values[cell.x]?.[cell.y] ?? 0;
       const normalizedValue = maxVal > 0 ? cellValue / maxVal : 0;
-      const cellColor = interpolateViridis(normalizedValue);
+      const cellColor = interpolateColormap(normalizedValue, selectedColormap);
 
       setHoveredCell(cell);
       setHoverInfo({ x: cell.x, y: cell.y, value: cellValue, color: cellColor });

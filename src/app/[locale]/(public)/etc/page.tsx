@@ -1,7 +1,7 @@
 "use client";
 
-import { Heatmap } from "@/components/chart/heatmap";
 import { useMemo } from "react";
+import { Heatmap } from "@/components/chart/heatmap";
 
 function generateSampleCounts(rows: number, cols: number): number[][] {
   const counts: number[][] = [];
@@ -30,7 +30,14 @@ export default function ETCPage() {
 
   return (
     <main className="flex justify-center items-center p-8 min-h-screen">
-      <Heatmap values={values} width={550} height={500} title="Heatmap" xLabel="X" yLabel="Y" />
+      <Heatmap
+        values={values}
+        width={550}
+        height={500}
+        xLabel="X"
+        yLabel="Y"
+        colormap="viridis"
+      />
     </main>
   );
 }
