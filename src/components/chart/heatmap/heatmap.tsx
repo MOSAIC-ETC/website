@@ -338,41 +338,6 @@ export function Heatmap({
     }
   };
 
-  const handleDoubleClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!selectable) return;
-    if (selectionMode !== "polygon") return;
-
-    const canvasCoords = getCanvasCoords(e);
-
-    if (currentPolygonSelection && canvasCoords) {
-      const vertexIdx = getVertexAtPosition(
-        canvasCoords.x,
-        canvasCoords.y,
-        currentPolygonSelection.points,
-        plotWidth,
-        plotHeight,
-        numRows,
-        numCols,
-        margin.left,
-        margin.top
-      );
-      if (vertexIdx !== null) {
-        const newPoints = currentPolygonSelection.points.filter((_: any, i: number) => i !== vertexIdx);
-        if (newPoints.length < 3) {
-          setCurrentPolygonSelection(null);
-        } else {
-          setCurrentPolygonSelection({ ...currentPolygonSelection, points: newPoints });
-        }
-        return;
-      }
-    }
-
-    if (currentPolygonSelection && !currentPolygonSelection.closed && currentPolygonSelection.points.length >= 3) {
-      setCurrentPolygonSelection({ ...currentPolygonSelection, closed: true });
-      setPreviewPoint(null);
-    }
-  };
-
   const handleContextMenu = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (!selectable) return;
     e.preventDefault();
@@ -381,63 +346,11 @@ export function Heatmap({
 
   // Touch handlers
   const handleTouchStart = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    if (selectionMode === "polygon") return; // handleMouseDown is enough for polygon mode
+
     const cell = getCellFromTouch(e);
-    const canvasCoords = getCanvasCoords(e);
-
-    if (selectable && selectionMode === "polygon") {
-      if (currentPolygonSelection && currentPolygonSelection.closed && canvasCoords) {
-        const vertexIdx = getVertexAtPosition(
-          canvasCoords.x,
-          canvasCoords.y,
-          currentPolygonSelection.points,
-          plotWidth,
-          plotHeight,
-          numRows,
-          numCols,
-          margin.left,
-          margin.top
-        );
-        if (vertexIdx !== null) {
-          e.preventDefault();
-          setDraggingVertexIndex(vertexIdx);
-
-          const timer = setTimeout(() => {
-            const newPoints = currentPolygonSelection.points.filter((_: any, i: number) => i !== vertexIdx);
-            if (newPoints.length < 3) {
-              setCurrentPolygonSelection(null);
-            } else {
-              setCurrentPolygonSelection({ ...currentPolygonSelection, points: newPoints });
-            }
-            setDraggingVertexIndex(null);
-          }, 500);
-          setLongPressTimer(timer);
-          return;
-        }
-      }
-
-      if (!cell) return;
-      e.preventDefault();
-
-      if (!currentPolygonSelection || currentPolygonSelection.closed) {
-        setCurrentPolygonSelection({ points: [{ x: cell.x, y: cell.y }], closed: false });
-        return;
-      }
-
-      if (isNearFirstPoint(cell)) {
-        setCurrentPolygonSelection({ ...currentPolygonSelection, closed: true });
-        setPreviewPoint(null);
-        return;
-      }
-
-      setCurrentPolygonSelection({
-        ...currentPolygonSelection,
-        points: [...currentPolygonSelection.points, { x: cell.x, y: cell.y }],
-      });
-      return;
-    }
 
     if (selectable && cell) {
-      e.preventDefault();
       setIsSelecting(true);
       setSelectionStart(cell);
       setCurrentSelection({ startX: cell.x, startY: cell.y, endX: cell.x, endY: cell.y });
@@ -456,7 +369,6 @@ export function Heatmap({
     const cell = getCellFromTouch(e);
 
     if (selectable && selectionMode === "polygon" && draggingVertexIndex !== null && currentPolygonSelection && cell) {
-      e.preventDefault();
       const newPoints = [...currentPolygonSelection.points];
       newPoints[draggingVertexIndex] = { x: cell.x, y: cell.y };
       setCurrentPolygonSelection({ ...currentPolygonSelection, points: newPoints });
@@ -464,7 +376,6 @@ export function Heatmap({
     }
 
     if (selectable && selectionMode === "rectangle" && isSelecting && selectionStart && cell) {
-      e.preventDefault();
       setCurrentSelection({
         startX: selectionStart.x,
         startY: selectionStart.y,
@@ -524,7 +435,6 @@ export function Heatmap({
         onMouseMove={handleMouseMove}
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
-        onDoubleClick={handleDoubleClick}
         onContextMenu={handleContextMenu}
         onMouseLeave={() => {
           setHoverInfo(null);
@@ -544,9 +454,10 @@ export function Heatmap({
         onTouchCancel={handleTouchEnd}
         style={{
           cursor:
-            selectable && (isSelecting || draggingVertexIndex !== null)
-              ? "crosshair"
-              : selectable && selectionMode === "polygon"
+            selectable &&
+            (isSelecting ||
+              draggingVertexIndex !== null ||
+              (selectionMode === "polygon" && currentPolygonSelection && !currentPolygonSelection.closed))
               ? "crosshair"
               : "default",
           touchAction: "none",

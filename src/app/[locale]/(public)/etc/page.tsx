@@ -1,7 +1,10 @@
 "use client";
 
 import { useMemo } from "react";
+import { TriangleDashed, SquareDashed, Eraser } from "lucide-react";
+
 import { Heatmap, HeatmapProvider, useHeatmapSelectionContext } from "@/components/chart/heatmap";
+import { Button } from "@/components/ui/button";
 
 function generateSampleCounts(rows: number, cols: number): number[][] {
   const counts: number[][] = [];
@@ -29,33 +32,24 @@ function SelectionControls() {
 
   return (
     <>
-      <div className="flex gap-2 mb-2">
-        <button
+      <div className="flex flex-col gap-2 mt-12">
+        <Button
           onClick={() => setSelectionMode("rectangle")}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-            selectionMode === "rectangle"
-              ? "bg-primary text-primary-foreground"
-              : "bg-muted text-muted-foreground hover:bg-muted/80"
-          }`}
+          variant={selectionMode === "rectangle" ? "default" : "outline"}
+          size="icon-sm"
         >
-          Rectangle
-        </button>
-        <button
+          <SquareDashed />
+        </Button>
+        <Button
           onClick={() => setSelectionMode("polygon")}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-            selectionMode === "polygon"
-              ? "bg-primary text-primary-foreground"
-              : "bg-muted text-muted-foreground hover:bg-muted/80"
-          }`}
+          variant={selectionMode === "polygon" ? "default" : "outline"}
+          size="icon-sm"
         >
-          Polygon
-        </button>
-        <button
-          onClick={clearSelections}
-          className="bg-destructive hover:bg-destructive/90 px-4 py-2 rounded-lg font-medium text-destructive-foreground text-sm transition-colors"
-        >
-          Clear
-        </button>
+          <TriangleDashed />
+        </Button>
+        <Button onClick={clearSelections} variant="destructive" size="icon-sm">
+          <Eraser />
+        </Button>
       </div>
     </>
   );
@@ -70,9 +64,11 @@ function HeatmapDisplay() {
 export default function ETCPage() {
   return (
     <HeatmapProvider defaultSelectionMode="rectangle">
-      <main className="flex flex-col justify-center items-center gap-4 bg-background p-8 min-h-screen">
-        <SelectionControls />
-        <HeatmapDisplay />
+      <main className="flex justify-center items-center gap-4 bg-background p-8 min-h-screen">
+        <div className="flex justify-center">
+          <HeatmapDisplay />
+          <SelectionControls />
+        </div>
       </main>
     </HeatmapProvider>
   );

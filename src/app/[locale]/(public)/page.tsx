@@ -3,15 +3,9 @@ import { useTranslations } from "next-intl";
 import { ExternalLinkIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import {
-  ReactIcon,
-  ShadcnIcon,
-  TailwindIcon,
-  TypescriptIcon,
-  NextJSIcon,
-} from "@/components/icons";
-import { cn } from "@/lib/utils";
+import { ReactIcon, ShadcnIcon, TailwindIcon, TypescriptIcon, NextJSIcon } from "@/components/icons";
 import { Link } from "@/i18n/navigation";
+import { cn } from "@/lib/utils";
 
 export default function Home() {
   const t = useTranslations("home.hero");
@@ -42,8 +36,8 @@ export default function Home() {
             Lorem Ipsum Dolor Sit Amet
           </h1>
           <p className="opacity-0 mx-auto max-w-3xl text-muted-foreground lg:text-xl animate-fade-in-up delay-[90ms]">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Elig doloremque mollitia fugiat
-            omnis! Porro facilis quo animi consequatur. Explicabo.
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Elig doloremque mollitia fugiat omnis! Porro
+            facilis quo animi consequatur. Explicabo.
           </p>
           <div className="flex flex-wrap justify-center gap-4 opacity-0 mt-8 animate-fade-in-up delay-[180ms]">
             <Button asChild>
