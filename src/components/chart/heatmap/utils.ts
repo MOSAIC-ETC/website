@@ -21,11 +21,7 @@ export function isPointInPolygon(x: number, y: number, polygon: HeatmapPolygonPo
 /**
  * Get all cells that are inside a polygon
  */
-export function getCellsInPolygon(
-  polygon: HeatmapPolygonPoint[],
-  numRows: number,
-  numCols: number
-): Set<string> {
+export function getCellsInPolygon(polygon: HeatmapPolygonPoint[], numRows: number, numCols: number): Set<string> {
   const cells = new Set<string>();
   for (let row = 0; row < numRows; row++) {
     for (let col = 0; col < numCols; col++) {
@@ -143,6 +139,7 @@ export function getVertexAtPosition(
       marginLeft,
       marginTop
     );
+
     const dist = Math.sqrt((canvasX - vx) ** 2 + (canvasY - vy) ** 2);
     if (dist <= hitRadius) {
       return i;

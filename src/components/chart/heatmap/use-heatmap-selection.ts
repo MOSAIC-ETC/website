@@ -12,7 +12,6 @@ interface UseHeatmapSelectionProps {
 }
 
 export function useHeatmapSelection({
-  selectionMode,
   selection,
   onSelectionChange,
   polygonSelection,

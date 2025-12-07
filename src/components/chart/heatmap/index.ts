@@ -19,7 +19,7 @@ export type {
 // Colormaps
 export { colormaps, interpolateColormap, getColormap } from "./colormaps";
 
-// Utilities (for advanced usage)
+// Utilities
 export {
   isPointInPolygon,
   getCellsInPolygon,
