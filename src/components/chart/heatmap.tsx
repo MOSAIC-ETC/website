@@ -1,5 +1,7 @@
 "use client";
 
+import type React from "react";
+
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
 import { useEffect, useRef, useState, useCallback, type ReactNode } from "react";
@@ -396,6 +398,37 @@ export function Heatmap({
     return null;
   };
 
+  const getCellFromTouch = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current;
+    if (!canvas || numRows === 0 || numCols === 0) return null;
+
+    const rect = canvas.getBoundingClientRect();
+    const touch = e.touches[0] || e.changedTouches[0];
+    if (!touch) return null;
+
+    const touchX = touch.clientX - rect.left;
+    const touchY = touch.clientY - rect.top;
+
+    if (
+      touchX >= margin.left &&
+      touchX <= margin.left + plotWidth &&
+      touchY >= margin.top &&
+      touchY <= margin.top + plotHeight
+    ) {
+      const cellWidth = plotWidth / numCols;
+      const cellHeight = plotHeight / numRows;
+
+      const col = Math.floor((touchX - margin.left) / cellWidth);
+      const row = numRows - 1 - Math.floor((touchY - margin.top) / cellHeight);
+
+      return {
+        x: Math.max(0, Math.min(numRows - 1, row)),
+        y: Math.max(0, Math.min(numCols - 1, col)),
+      };
+    }
+    return null;
+  };
+
   const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const cell = getCellFromMouse(e);
 
@@ -451,6 +484,56 @@ export function Heatmap({
     setSelectionStart(null);
   };
 
+  const handleTouchStart = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    const cell = getCellFromTouch(e);
+    if (cell) {
+      e.preventDefault(); // Prevent scrolling when starting selection
+      setIsSelecting(true);
+      setSelectionStart(cell);
+      setCurrentSelection({
+        startX: cell.x,
+        startY: cell.y,
+        endX: cell.x,
+        endY: cell.y,
+      });
+
+      const cellValue = values[cell.x]?.[cell.y] ?? 0;
+      const normalizedValue = maxVal > 0 ? cellValue / maxVal : 0;
+      const cellColor = interpolateColormap(normalizedValue, selectedColormap);
+      setHoveredCell(cell);
+      setHoverInfo({ x: cell.x, y: cell.y, value: cellValue, color: cellColor });
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    const cell = getCellFromTouch(e);
+
+    if (isSelecting && selectionStart && cell) {
+      e.preventDefault(); // Prevent scrolling during selection
+      setCurrentSelection({
+        startX: selectionStart.x,
+        startY: selectionStart.y,
+        endX: cell.x,
+        endY: cell.y,
+      });
+    }
+
+    if (cell) {
+      const cellValue = values[cell.x]?.[cell.y] ?? 0;
+      const normalizedValue = maxVal > 0 ? cellValue / maxVal : 0;
+      const cellColor = interpolateColormap(normalizedValue, selectedColormap);
+      setHoveredCell(cell);
+      setHoverInfo({ x: cell.x, y: cell.y, value: cellValue, color: cellColor });
+    }
+  };
+
+  const handleTouchEnd = () => {
+    setIsSelecting(false);
+    setSelectionStart(null);
+    setHoverInfo(null);
+    setHoveredCell(null);
+  };
+
   const getTooltipPosition = () => {
     if (!hoveredCell || !canvasRef.current || numRows === 0 || numCols === 0)
       return { left: 0, top: 0 };
@@ -483,7 +566,11 @@ export function Heatmap({
             setSelectionStart(null);
           }
         }}
-        style={{ cursor: isSelecting ? "crosshair" : "default" }}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onTouchCancel={handleTouchEnd}
+        style={{ cursor: isSelecting ? "crosshair" : "default", touchAction: "none" }}
       />
       {hoverInfo && tooltip && !isSelecting && (
         <div
