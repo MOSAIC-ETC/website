@@ -1,14 +1,14 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import type { HeatmapSelection, HeatmapPolygonSelection, HeatmapPolygonPoint, SelectionMode } from "./types";
+import type { HeatmapRect, HeatmapPolygon, HeatmapPoint, SelectionMode } from "./types";
 
 interface UseHeatmapSelectionProps {
   selectionMode: SelectionMode;
-  selection?: HeatmapSelection | null;
-  onSelectionChange?: (selection: HeatmapSelection | null) => void;
-  polygonSelection?: HeatmapPolygonSelection | null;
-  onPolygonSelectionChange?: (selection: HeatmapPolygonSelection | null) => void;
+  selection?: HeatmapRect | null;
+  onSelectionChange?: (selection: HeatmapRect | null) => void;
+  polygonSelection?: HeatmapPolygon | null;
+  onPolygonSelectionChange?: (selection: HeatmapPolygon | null) => void;
 }
 
 export function useHeatmapSelection({
@@ -19,16 +19,16 @@ export function useHeatmapSelection({
 }: UseHeatmapSelectionProps) {
   const [isSelecting, setIsSelecting] = useState(false);
   const [selectionStart, setSelectionStart] = useState<{ x: number; y: number } | null>(null);
-  const [internalSelection, setInternalSelection] = useState<HeatmapSelection | null>(null);
-  const [internalPolygonSelection, setInternalPolygonSelection] = useState<HeatmapPolygonSelection | null>(null);
-  const [previewPoint, setPreviewPoint] = useState<HeatmapPolygonPoint | null>(null);
+  const [internalSelection, setInternalSelection] = useState<HeatmapRect | null>(null);
+  const [internalPolygonSelection, setInternalPolygonSelection] = useState<HeatmapPolygon | null>(null);
+  const [previewPoint, setPreviewPoint] = useState<HeatmapPoint | null>(null);
   const [draggingVertexIndex, setDraggingVertexIndex] = useState<number | null>(null);
   const [longPressTimer, setLongPressTimer] = useState<NodeJS.Timeout | null>(null);
 
   // Use controlled selection if provided, otherwise use internal state
   const currentSelection = selection !== undefined ? selection : internalSelection;
   const setCurrentSelection = useCallback(
-    (sel: HeatmapSelection | null) => {
+    (sel: HeatmapRect | null) => {
       if (onSelectionChange) {
         onSelectionChange(sel);
       }
@@ -41,7 +41,7 @@ export function useHeatmapSelection({
 
   const currentPolygonSelection = polygonSelection !== undefined ? polygonSelection : internalPolygonSelection;
   const setCurrentPolygonSelection = useCallback(
-    (sel: HeatmapPolygonSelection | null) => {
+    (sel: HeatmapPolygon | null) => {
       if (onPolygonSelectionChange) {
         onPolygonSelectionChange(sel);
       }

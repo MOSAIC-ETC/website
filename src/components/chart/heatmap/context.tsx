@@ -1,50 +1,35 @@
 "use client";
 
 import { createContext, useContext, useState, useCallback, type ReactNode } from "react";
-import type { HeatmapSelection, HeatmapPolygonSelection, SelectionMode } from "./types";
+import type { SelectionMode, HeatmapCell } from "./types";
 
-export interface HeatmapSelectionContextValue {
+export interface HeatmapContextValue {
   /** Current selection mode */
   selectionMode: SelectionMode;
   /** Set selection mode */
   setSelectionMode: (mode: SelectionMode) => void;
-  /** Current rectangle selection */
-  selection: HeatmapSelection | null;
-  /** Set rectangle selection */
-  setSelection: (selection: HeatmapSelection | null) => void;
-  /** Current polygon selection */
-  polygonSelection: HeatmapPolygonSelection | null;
-  /** Set polygon selection */
-  setPolygonSelection: (selection: HeatmapPolygonSelection | null) => void;
+  /** Array of selected cell coordinates */
+  selection: HeatmapCell[];
+  /** Set the selection coordinates */
+  setSelection: (selection: HeatmapCell[]) => void;
   /** Clear all selections */
   clearSelections: () => void;
 }
 
-export const HeatmapSelectionContext = createContext<HeatmapSelectionContextValue | null>(null);
+export const HeatmapSelectionContext = createContext<HeatmapContextValue | null>(null);
 
 interface HeatmapProviderProps {
   children: ReactNode;
   /** Initial selection mode (default: "rectangle") */
   defaultSelectionMode?: SelectionMode;
-  /** Initial rectangle selection */
-  defaultSelection?: HeatmapSelection | null;
-  /** Initial polygon selection */
-  defaultPolygonSelection?: HeatmapPolygonSelection | null;
 }
 
-export function HeatmapProvider({
-  children,
-  defaultSelectionMode = "rectangle",
-  defaultSelection = null,
-  defaultPolygonSelection = null,
-}: HeatmapProviderProps) {
+export function HeatmapProvider({ children, defaultSelectionMode = "rectangle" }: HeatmapProviderProps) {
   const [selectionMode, setSelectionMode] = useState<SelectionMode>(defaultSelectionMode);
-  const [selection, setSelection] = useState<HeatmapSelection | null>(defaultSelection);
-  const [polygonSelection, setPolygonSelection] = useState<HeatmapPolygonSelection | null>(defaultPolygonSelection);
+  const [selection, setSelection] = useState<HeatmapCell[]>([]);
 
   const clearSelections = useCallback(() => {
-    setSelection(null);
-    setPolygonSelection(null);
+    setSelection([]);
   }, []);
 
   return (
@@ -54,8 +39,6 @@ export function HeatmapProvider({
         setSelectionMode,
         selection,
         setSelection,
-        polygonSelection,
-        setPolygonSelection,
         clearSelections,
       }}
     >
@@ -68,7 +51,7 @@ export function HeatmapProvider({
  * Hook to access heatmap selection state from anywhere within HeatmapProvider.
  * Must be used within a HeatmapProvider.
  */
-export function useHeatmapSelectionContext() {
+export function useHeatmapSelectionContext(): HeatmapContextValue {
   const context = useContext(HeatmapSelectionContext);
   if (!context) {
     throw new Error("useHeatmapSelectionContext must be used within a HeatmapProvider");

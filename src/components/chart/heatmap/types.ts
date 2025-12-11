@@ -3,6 +3,13 @@ import type { ReactNode } from "react";
 
 export type Colormap = [number, number, number][];
 
+/** A cell in the heatmap grid */
+export interface HeatmapCell {
+  x: number;
+  y: number;
+}
+
+/** Data for a heatmap cell including its value and color */
 export interface HeatmapCellData {
   x: number;
   y: number;
@@ -10,31 +17,32 @@ export interface HeatmapCellData {
   color: string;
 }
 
-export interface HeatmapSelection {
-  /** Start X coordinate (row) */
-  startX: number;
-  /** Start Y coordinate (column) */
-  startY: number;
-  /** End X coordinate (row) */
-  endX: number;
-  /** End Y coordinate (column) */
-  endY: number;
-}
-
-export interface HeatmapPolygonPoint {
+/** A point in the heatmap coordinate system */
+export interface HeatmapPoint {
   x: number;
   y: number;
 }
 
-export interface HeatmapPolygonSelection {
+/** Rectangle selection with start and end coordinates */
+export interface HeatmapRect {
+  /** Start point (row, column) */
+  start: HeatmapPoint;
+  /** End point (row, column) */
+  end: HeatmapPoint;
+}
+
+/** Polygon selection with vertices */
+export interface HeatmapPolygon {
   /** Array of polygon vertices */
-  points: HeatmapPolygonPoint[];
+  points: HeatmapPoint[];
   /** Whether the polygon is closed/complete */
   closed: boolean;
 }
 
+/** Selection mode: rectangle or polygon */
 export type SelectionMode = "rectangle" | "polygon";
 
+/** Props for the Heatmap component */
 export type HeatmapProps = {
   /** 2D array of values (rows x cols) */
   values: number[][];
@@ -60,6 +68,7 @@ export type HeatmapProps = {
   selectable?: boolean;
 } & React.HTMLAttributes<HTMLDivElement>;
 
+/** Margins around the heatmap for axes and labels */
 export interface HeatmapMargins {
   top: number;
   right: number;
