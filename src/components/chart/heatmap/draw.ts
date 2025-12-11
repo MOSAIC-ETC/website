@@ -1,4 +1,4 @@
-import type { Colormap, HeatmapSelection, HeatmapPolygonSelection, HeatmapPolygonPoint, HeatmapMargins } from "./types";
+import type { Colormap, HeatmapRect, HeatmapPolygon, HeatmapPoint, HeatmapMargins } from "./types";
 import { getCellsInPolygon, getPixelOutlineEdges, generateColorBarTicks, cellToCanvas } from "./utils";
 import { interpolateColormap } from "./colormaps";
 
@@ -19,9 +19,9 @@ interface DrawHeatmapOptions {
   yLabel: string;
   showAxes: boolean;
   highlightCell?: { x: number; y: number } | null;
-  selectionRect?: HeatmapSelection | null;
-  polygonSel?: HeatmapPolygonSelection | null;
-  preview?: HeatmapPolygonPoint | null;
+  selectionRect?: HeatmapRect | null;
+  polygonSel?: HeatmapPolygon | null;
+  preview?: HeatmapPoint | null;
 }
 
 export function drawHeatmap({
@@ -150,8 +150,8 @@ interface DrawPolygonOptions {
 
 function drawPolygonSelection(
   ctx: CanvasRenderingContext2D,
-  polygonSel: HeatmapPolygonSelection,
-  preview: HeatmapPolygonPoint | null | undefined,
+  polygonSel: HeatmapPolygon,
+  preview: HeatmapPoint | null | undefined,
   options: DrawPolygonOptions
 ) {
   const { margin, plotWidth, plotHeight, numRows, numCols, cellWidth, cellHeight } = options;
@@ -249,15 +249,15 @@ interface DrawRectangleOptions {
 
 function drawRectangleSelection(
   ctx: CanvasRenderingContext2D,
-  selectionRect: HeatmapSelection,
+  selectionRect: HeatmapRect,
   options: DrawRectangleOptions
 ) {
   const { margin, plotWidth, plotHeight, numRows, cellWidth, cellHeight } = options;
 
-  const minX = Math.min(selectionRect.startX, selectionRect.endX);
-  const maxX = Math.max(selectionRect.startX, selectionRect.endX);
-  const minY = Math.min(selectionRect.startY, selectionRect.endY);
-  const maxY = Math.max(selectionRect.startY, selectionRect.endY);
+  const minX = Math.min(selectionRect.start.x, selectionRect.end.x);
+  const maxX = Math.max(selectionRect.start.x, selectionRect.end.x);
+  const minY = Math.min(selectionRect.start.y, selectionRect.end.y);
+  const maxY = Math.max(selectionRect.start.y, selectionRect.end.y);
 
   const selX = margin.left + minY * cellWidth;
   const selY = margin.top + (numRows - 1 - maxX) * cellHeight;

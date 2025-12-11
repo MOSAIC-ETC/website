@@ -8,9 +8,10 @@ export { HeatmapProvider, useHeatmapSelectionContext } from "./context";
 export type {
   HeatmapProps,
   HeatmapCellData,
-  HeatmapSelection,
-  HeatmapPolygonPoint,
-  HeatmapPolygonSelection,
+  HeatmapRect,
+  HeatmapPoint,
+  HeatmapPolygon,
+  HeatmapCell,
   SelectionMode,
   Colormap,
   HeatmapMargins,
@@ -23,6 +24,8 @@ export { colormaps, interpolateColormap, getColormap } from "./colormaps";
 export {
   isPointInPolygon,
   getCellsInPolygon,
+  getCellsInRectangle,
+  cellsSetToCoordinates,
   getPixelOutlineEdges,
   generateColorBarTicks,
   cellToCanvas,

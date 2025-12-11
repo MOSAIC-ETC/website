@@ -1,22 +1,14 @@
 "use client";
 
-import type React from "react";
 import { useState, useEffect, useRef, useCallback, useContext } from "react";
-import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
+import { cn } from "@/lib/utils";
 
-import type {
-  HeatmapProps,
-  HeatmapCellData,
-  Colormap,
-  HeatmapSelection,
-  HeatmapPolygonSelection,
-  SelectionMode,
-} from "./types";
+import type { HeatmapProps, HeatmapCellData, Colormap, HeatmapRect, HeatmapPolygon, SelectionMode } from "./types";
+import { getVertexAtPosition, getCellsInRectangle, getCellsInPolygon, cellsSetToCoordinates } from "./utils";
 import { getColormap, interpolateColormap } from "./colormaps";
-import { getVertexAtPosition } from "./utils";
-import { drawHeatmap } from "./draw";
 import { HeatmapSelectionContext } from "./context";
+import { drawHeatmap } from "./draw";
 
 export function Heatmap({
   values,
@@ -38,19 +30,14 @@ export function Heatmap({
   const [hoveredCell, setHoveredCell] = useState<{ x: number; y: number } | null>(null);
   const { resolvedTheme } = useTheme();
 
-  const externalContext = useContext(HeatmapSelectionContext);
+  const heatmapContext = useContext(HeatmapSelectionContext);
 
-  // Internal state for when not using context
   const [internalSelectionMode, setInternalSelectionMode] = useState<SelectionMode>("rectangle");
-  const [internalSelection, setInternalSelection] = useState<HeatmapSelection | null>(null);
-  const [internalPolygonSelection, setInternalPolygonSelection] = useState<HeatmapPolygonSelection | null>(null);
+  const [currentRectSelection, setCurrentRectSelection] = useState<HeatmapRect | null>(null);
+  const [currentPolygonSelection, setCurrentPolygonSelection] = useState<HeatmapPolygon | null>(null);
 
-  // Use context if available, otherwise use internal state
-  const selectionMode = externalContext?.selectionMode ?? internalSelectionMode;
-  const currentSelection = externalContext?.selection ?? internalSelection;
-  const setCurrentSelection = externalContext?.setSelection ?? setInternalSelection;
-  const currentPolygonSelection = externalContext?.polygonSelection ?? internalPolygonSelection;
-  const setCurrentPolygonSelection = externalContext?.setPolygonSelection ?? setInternalPolygonSelection;
+  const selectionMode = heatmapContext?.selectionMode ?? internalSelectionMode;
+  const setContextSelection = heatmapContext?.setSelection;
 
   const selectedColormap = getColormap(colormap) as Colormap;
 
@@ -77,17 +64,16 @@ export function Heatmap({
   );
 
   const clearSelections = useCallback(() => {
-    if (externalContext) {
-      externalContext.clearSelections();
-    } else {
-      setInternalSelection(null);
-      setInternalPolygonSelection(null);
+    setCurrentRectSelection(null);
+    setCurrentPolygonSelection(null);
+    if (heatmapContext) {
+      heatmapContext.clearSelections();
     }
     setIsSelecting(false);
     setSelectionStart(null);
     setPreviewPoint(null);
     setDraggingVertexIndex(null);
-  }, [externalContext]);
+  }, [heatmapContext]);
 
   const margin = { top: 50, right: 80, bottom: 50, left: 50 };
   const plotWidth = width - margin.left - margin.right;
@@ -122,7 +108,7 @@ export function Heatmap({
       yLabel,
       showAxes,
       highlightCell: hoveredCell,
-      selectionRect: selectionMode === "rectangle" ? currentSelection : null,
+      selectionRect: selectionMode === "rectangle" ? currentRectSelection : null,
       polygonSel: selectionMode === "polygon" ? currentPolygonSelection : null,
       preview: previewPoint,
     });
@@ -143,7 +129,7 @@ export function Heatmap({
     showAxes,
     hoveredCell,
     selectionMode,
-    currentSelection,
+    currentRectSelection,
     currentPolygonSelection,
     previewPoint,
   ]);
@@ -156,6 +142,35 @@ export function Heatmap({
     const raf = requestAnimationFrame(draw);
     return () => cancelAnimationFrame(raf);
   }, [resolvedTheme, draw]);
+
+  // Update context selection coordinates when rectangle or polygon selection changes
+  useEffect(() => {
+    if (!setContextSelection) return;
+
+    if (selectionMode === "rectangle" && currentRectSelection) {
+      setContextSelection(getCellsInRectangle(currentRectSelection));
+    } else if (selectionMode === "polygon" && currentPolygonSelection?.closed) {
+      const cellsSet = getCellsInPolygon(currentPolygonSelection.points, numRows, numCols);
+      setContextSelection(cellsSetToCoordinates(cellsSet));
+    } else {
+      setContextSelection([]);
+    }
+  }, [selectionMode, currentRectSelection, currentPolygonSelection, numRows, numCols, setContextSelection]);
+
+  useEffect(() => {
+    if (
+      heatmapContext &&
+      heatmapContext.selection.length === 0 &&
+      (currentRectSelection || currentPolygonSelection?.closed)
+    ) {
+      setCurrentRectSelection(null);
+      setCurrentPolygonSelection(null);
+      setIsSelecting(false);
+      setSelectionStart(null);
+      setPreviewPoint(null);
+      setDraggingVertexIndex(null);
+    }
+  }, [heatmapContext?.selection]);
 
   // Cell coordinate helpers
   const getCellFromMouse = (e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -249,11 +264,9 @@ export function Heatmap({
     }
 
     if (selectable && selectionMode === "rectangle" && isSelecting && selectionStart && cell) {
-      setCurrentSelection({
-        startX: selectionStart.x,
-        startY: selectionStart.y,
-        endX: cell.x,
-        endY: cell.y,
+      setCurrentRectSelection({
+        start: { x: selectionStart.x, y: selectionStart.y },
+        end: { x: cell.x, y: cell.y },
       });
     }
 
@@ -320,7 +333,7 @@ export function Heatmap({
     if (cell) {
       setIsSelecting(true);
       setSelectionStart(cell);
-      setCurrentSelection({ startX: cell.x, startY: cell.y, endX: cell.x, endY: cell.y });
+      setCurrentRectSelection({ start: { x: cell.x, y: cell.y }, end: { x: cell.x, y: cell.y } });
     }
   };
 
@@ -353,7 +366,7 @@ export function Heatmap({
     if (selectable && cell) {
       setIsSelecting(true);
       setSelectionStart(cell);
-      setCurrentSelection({ startX: cell.x, startY: cell.y, endX: cell.x, endY: cell.y });
+      setCurrentRectSelection({ start: { x: cell.x, y: cell.y }, end: { x: cell.x, y: cell.y } });
 
       const cellValue = values[cell.x]?.[cell.y] ?? 0;
       const normalizedValue = maxVal > 0 ? cellValue / maxVal : 0;
@@ -376,11 +389,9 @@ export function Heatmap({
     }
 
     if (selectable && selectionMode === "rectangle" && isSelecting && selectionStart && cell) {
-      setCurrentSelection({
-        startX: selectionStart.x,
-        startY: selectionStart.y,
-        endX: cell.x,
-        endY: cell.y,
+      setCurrentRectSelection({
+        start: { x: selectionStart.x, y: selectionStart.y },
+        end: { x: cell.x, y: cell.y },
       });
     }
 

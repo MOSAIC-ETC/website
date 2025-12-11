@@ -1,9 +1,37 @@
-import type { HeatmapPolygonPoint } from "./types";
+import type { HeatmapPoint, HeatmapRect, HeatmapCell } from "./types";
+
+/**
+ * Get all cells that are inside a rectangle selection
+ */
+export function getCellsInRectangle(selection: HeatmapRect): HeatmapCell[] {
+  const cells: HeatmapCell[] = [];
+  const minX = Math.min(selection.start.x, selection.end.x);
+  const maxX = Math.max(selection.start.x, selection.end.x);
+  const minY = Math.min(selection.start.y, selection.end.y);
+  const maxY = Math.max(selection.start.y, selection.end.y);
+
+  for (let x = minX; x <= maxX; x++) {
+    for (let y = minY; y <= maxY; y++) {
+      cells.push({ x, y });
+    }
+  }
+  return cells;
+}
+
+/**
+ * Convert polygon cells Set to array of coordinates
+ */
+export function cellsSetToCoordinates(cells: Set<string>): HeatmapCell[] {
+  return Array.from(cells).map((cellKey) => {
+    const [x, y] = cellKey.split(",").map(Number);
+    return { x, y };
+  });
+}
 
 /**
  * Check if a point is inside a polygon using ray casting algorithm
  */
-export function isPointInPolygon(x: number, y: number, polygon: HeatmapPolygonPoint[]): boolean {
+export function isPointInPolygon(x: number, y: number, polygon: HeatmapPoint[]): boolean {
   let inside = false;
   for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
     const xi = polygon[i].x;
@@ -21,7 +49,7 @@ export function isPointInPolygon(x: number, y: number, polygon: HeatmapPolygonPo
 /**
  * Get all cells that are inside a polygon
  */
-export function getCellsInPolygon(polygon: HeatmapPolygonPoint[], numRows: number, numCols: number): Set<string> {
+export function getCellsInPolygon(polygon: HeatmapPoint[], numRows: number, numCols: number): Set<string> {
   const cells = new Set<string>();
   for (let row = 0; row < numRows; row++) {
     for (let col = 0; col < numCols; col++) {
@@ -120,7 +148,7 @@ export function cellToCanvas(
 export function getVertexAtPosition(
   canvasX: number,
   canvasY: number,
-  points: HeatmapPolygonPoint[],
+  points: HeatmapPoint[],
   plotWidth: number,
   plotHeight: number,
   numRows: number,
