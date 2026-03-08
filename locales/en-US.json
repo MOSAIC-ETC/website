@@ -125,5 +125,31 @@
       "password-min": "Password must be at least 8 characters",
       "passwords-dont-match": "Passwords don't match"
     }
+  },
+  "etc": {
+    "title": "Exposure Time Calculator",
+    "form": {
+      "parameters": "Parameters",
+      "number-of-exposures": "Number of Exposures",
+      "exposure-time": "Exposure Time (seconds)",
+      "magnitude": "Magnitude",
+      "non-stellar-object": "Non-Stellar Object",
+      "wavelength-range": "Wavelength (nm)",
+      "wavelength-min": "Min",
+      "wavelength-max": "Max",
+      "redshift": "Redshift",
+      "filter": "Filter",
+      "instrument": "Instrument",
+      "sky-condition": "Sky Condition",
+      "select-object": "Select object",
+      "select-filter": "Select filter",
+      "calculate-snr": "Calculate SNR"
+    },
+    "chart": {
+      "title": "SNR vs Wavelength",
+      "empty-state": "Submit the form to generate the chart.",
+      "wavelength-label": "Wavelength (nm)",
+      "snr-label": "SNR"
+    }
   }
 }
