@@ -19,12 +19,17 @@ export function Footer() {
     {
       name: "UESC",
       href: "https://uesc.br",
-      logo: "/assets/images/uesc.png",
+      logo: "/assets/images/institutions/uesc.png",
     },
     {
       name: "FAPESB",
       href: "https://www.fapesb.ba.gov.br/",
-      logo: "/assets/images/fapesb.png",
+      logo: "/assets/images/institutions/fapesb.png",
+    },
+    {
+      name: "CNPq",
+      href: "https://www.cnpq.br/",
+      logo: "/assets/images/institutions/cnpq.png",
     },
   ];
 
@@ -35,9 +40,7 @@ export function Footer() {
       <div className="flex max-lg:flex-col justify-between items-center gap-4 mx-auto px-4 lg:px-6 py-6 lg:py-6 max-w-7xl">
         <div className="flex items-center gap-3">
           <MosaicLogo height={32} className="fill-primary" />
-          <span className="font-semibold text-2xl uppercase tracking-wider select-none">
-            MOSAIC ETC
-          </span>
+          <span className="font-semibold text-2xl uppercase tracking-wider select-none">MOSAIC ETC</span>
         </div>
 
         <div className="flex lg:flex-row flex-col items-center gap-2 lg:gap-4 whitespace-nowrap">
@@ -61,10 +64,9 @@ export function Footer() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <Image
+              <img
                 src={sponsor.logo}
                 alt={sponsor.name}
-                width={64}
                 height={64}
                 className="w-auto h-16"
                 draggable={false}
@@ -79,12 +81,7 @@ export function Footer() {
       <div className="flex justify-center mx-auto px-4 sm:px-6 py-8 max-w-7xl">
         <p className="font-medium text-center text-balance">
           {`©${new Date().getFullYear()}`}{" "}
-          <a
-            href="https://uesc.br"
-            aria-label="UESC Website"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <a href="https://uesc.br" aria-label="UESC Website" target="_blank" rel="noopener noreferrer">
             Universidade Estadual de Santa Cruz
           </a>
           , {t("developed-by")}{" "}

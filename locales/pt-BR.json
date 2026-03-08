@@ -125,5 +125,31 @@
       "password-min": "A senha deve ter pelo menos 8 caracteres",
       "passwords-dont-match": "As senhas não coincidem"
     }
+  },
+  "etc": {
+    "title": "Calculadora de Tempo de Exposição",
+    "form": {
+      "parameters": "Parâmetros",
+      "number-of-exposures": "Número de Exposições",
+      "exposure-time": "Tempo de Exposição (segundos)",
+      "magnitude": "Magnitude",
+      "non-stellar-object": "Objeto Não Estelar",
+      "wavelength-range": "Comprimento de Onda (nm)",
+      "wavelength-min": "Mín",
+      "wavelength-max": "Máx",
+      "redshift": "Desvio para o Vermelho",
+      "filter": "Filtro",
+      "instrument": "Instrumento",
+      "sky-condition": "Condição do Céu",
+      "select-object": "Selecione um objeto",
+      "select-filter": "Selecione um filtro",
+      "calculate-snr": "Calcular SNR"
+    },
+    "chart": {
+      "title": "SNR vs Comprimento de Onda",
+      "empty-state": "Envie o formulário para gerar o gráfico.",
+      "wavelength-label": "Comprimento de Onda (nm)",
+      "snr-label": "SNR"
+    }
   }
 }

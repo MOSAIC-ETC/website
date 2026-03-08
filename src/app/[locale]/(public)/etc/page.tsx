@@ -1,75 +1,41 @@
 "use client";
 
-import { useMemo } from "react";
-import { TriangleDashed, SquareDashed, Eraser } from "lucide-react";
-
-import { Heatmap, HeatmapProvider, useHeatmapSelectionContext } from "@/components/chart/heatmap";
-import { Button } from "@/components/ui/button";
-
-function generateSampleCounts(rows: number, cols: number): number[][] {
-  const counts: number[][] = [];
-  const centerRow = rows / 2;
-  const centerCol = cols / 2;
-
-  for (let r = 0; r < rows; r++) {
-    const row: number[] = [];
-    for (let c = 0; c < cols; c++) {
-      const distRow = (r - centerRow) / (rows / 4);
-      const distCol = (c - centerCol) / (cols / 4);
-      const dist = distRow * distRow + distCol * distCol;
-      const baseValue = Math.exp(-dist) * 15;
-      const value = Math.floor(baseValue + Math.random() * 3);
-      row.push(value);
-    }
-    counts.push(row);
-  }
-  return counts;
-}
-
-// Separate component that uses the selection hook
-function SelectionControls() {
-  const { selectionMode, setSelectionMode, clearSelections } = useHeatmapSelectionContext();
-
-  return (
-    <>
-      <div className="flex flex-col gap-2 mt-12">
-        <Button
-          onClick={() => setSelectionMode("rectangle")}
-          variant={selectionMode === "rectangle" ? "default" : "outline"}
-          size="icon-sm"
-        >
-          <SquareDashed />
-        </Button>
-        <Button
-          onClick={() => setSelectionMode("polygon")}
-          variant={selectionMode === "polygon" ? "default" : "outline"}
-          size="icon-sm"
-        >
-          <TriangleDashed />
-        </Button>
-        <Button onClick={clearSelections} variant="destructive" size="icon-sm">
-          <Eraser />
-        </Button>
-      </div>
-    </>
-  );
-}
-
-function HeatmapDisplay() {
-  const values = useMemo(() => generateSampleCounts(50, 50), []);
-
-  return <Heatmap values={values} width={550} height={500} title="Heatmap" xLabel="X" yLabel="Y" selectable />;
-}
+import { useState } from "react";
+import Image from "next/image";
+import { useTranslations } from "next-intl";
+import { ETCForm } from "./components/etc-form";
+import { SNRChart } from "./components/snr-chart";
+import { calculateSNR } from "./lib/calculate";
+import type { SNRDataPoint } from "./lib/types";
+import type { ETCFormSchema } from "./lib/schema";
 
 export default function ETCPage() {
+  const t = useTranslations("etc");
+  const [chartData, setChartData] = useState<SNRDataPoint[]>([]);
+
+  function handleSubmit(values: ETCFormSchema) {
+    const data = calculateSNR(values);
+    setChartData(data);
+  }
+
   return (
-    <HeatmapProvider defaultSelectionMode="rectangle">
-      <main className="flex justify-center items-center gap-4 bg-background p-8 min-h-screen">
-        <div className="flex justify-center">
-          <HeatmapDisplay />
-          <SelectionControls />
+    <main className="relative min-h-[calc(100vh-4rem)]">
+      <div className="-z-10 absolute inset-0">
+        <Image
+          src="/assets/images/square-alt-grid.svg"
+          alt="background pattern"
+          className="opacity-60 dark:opacity-40 dark:invert object-cover mask-[radial-gradient(75%_75%_at_center,white,transparent)]"
+          priority
+          fill
+        />
+      </div>
+      <div className="space-y-6 mx-auto p-6 max-w-7xl">
+        <h1 className="font-bold text-2xl">{t("title")}</h1>
+        <div className="items-start gap-6 grid grid-cols-1 lg:grid-cols-[2fr_3fr]">
+          <ETCForm onSubmit={handleSubmit} />
+          <SNRChart data={chartData} />
         </div>
-      </main>
-    </HeatmapProvider>
+      </div>
+    </main>
   );
 }

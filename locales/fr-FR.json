@@ -125,5 +125,31 @@
       "password-min": "Le mot de passe doit comporter au moins 8 caractères",
       "passwords-dont-match": "Les mots de passe ne correspondent pas"
     }
+  },
+  "etc": {
+    "title": "Calculateur de Temps d'Exposition",
+    "form": {
+      "parameters": "Paramètres",
+      "number-of-exposures": "Nombre d'Expositions",
+      "exposure-time": "Temps d'Exposition (secondes)",
+      "magnitude": "Magnitude",
+      "non-stellar-object": "Objet Non Stellaire",
+      "wavelength-range": "Longueur d'onde (nm)",
+      "wavelength-min": "Min",
+      "wavelength-max": "Max",
+      "redshift": "Décalage vers le Rouge",
+      "filter": "Filtre",
+      "instrument": "Instrument",
+      "sky-condition": "Condition du Ciel",
+      "select-object": "Sélectionner un objet",
+      "select-filter": "Sélectionner un filtre",
+      "calculate-snr": "Calculer le SNR"
+    },
+    "chart": {
+      "title": "SNR vs Longueur d'Onde",
+      "empty-state": "Soumettez le formulaire pour générer le graphique.",
+      "wavelength-label": "Longueur d'Onde (nm)",
+      "snr-label": "SNR"
+    }
   }
 }
