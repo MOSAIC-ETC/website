@@ -25,6 +25,11 @@ export enum SkyCondition {
   ALL_TH = "Sky ALL+Th",
 }
 
+export enum WavelengthUnit {
+  NM = "nm",
+  UM = "um",
+}
+
 export const NON_STELLAR_OBJECTS = [
   "Elliptical Galaxy",
   "Spiral Galaxy",
@@ -37,7 +42,19 @@ export const NON_STELLAR_OBJECTS = [
   "Supernova Remnant",
 ] as const;
 
-export const FILTERS = ["U", "B", "V", "R", "I", "J", "H", "K", "g", "r", "i", "z"] as const;
+export interface FilterEntry {
+  id: string;
+  name: string;
+  path: string;
+  effWavelength: number;
+  effWavelengthUnit: WavelengthUnit;
+  zeroPoint: number;
+}
+
+export interface FilterTransmissionPoint {
+  wavelength: number;  // in nanometers
+  transmission: number;  // normalized to 0-1
+}
 
 export interface ETCFormValues {
   numberOfExposures: number;
@@ -49,7 +66,7 @@ export interface ETCFormValues {
   wavelengthMax: number;
   redshift: number;
   redshiftUnit: RedshiftUnit;
-  filter: string;
+  filterId: string;
   instrument: Instrument;
   skyCondition: SkyCondition;
 }

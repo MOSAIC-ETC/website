@@ -8,10 +8,18 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MagnitudeUnit, RedshiftUnit, Instrument, SkyCondition, NON_STELLAR_OBJECTS, FILTERS } from "../lib/types";
+import {
+  MagnitudeUnit,
+  RedshiftUnit,
+  Instrument,
+  SkyCondition,
+  NON_STELLAR_OBJECTS,
+  type FilterEntry,
+} from "../lib/types";
 import { etcFormSchema, type ETCFormSchema } from "../lib/schema";
 
 interface ETCFormProps {
+  filters: FilterEntry[];
   onSubmit: (values: ETCFormSchema) => void;
 }
 
@@ -23,7 +31,7 @@ function enumOptions<T extends Record<string, string>>(enumObj: T) {
   ));
 }
 
-export function ETCForm({ onSubmit }: ETCFormProps) {
+export function ETCForm({ filters, onSubmit }: ETCFormProps) {
   const t = useTranslations("etc.form");
   const form = useForm<ETCFormSchema>({
     resolver: zodResolver(etcFormSchema) as Resolver<ETCFormSchema>,
@@ -32,12 +40,12 @@ export function ETCForm({ onSubmit }: ETCFormProps) {
       exposureTime: 3600,
       magnitude: 20,
       magnitudeUnit: MagnitudeUnit.AB,
-      nonStellarObject: "",
+      nonStellarObject: NON_STELLAR_OBJECTS[0],
       wavelengthMin: 400,
       wavelengthMax: 900,
       redshift: 0,
       redshiftUnit: RedshiftUnit.Z,
-      filter: "",
+      filterId: filters[0]?.id || "",
       instrument: Instrument.MOS_VIS,
       skyCondition: SkyCondition.NO_MOON,
     },
@@ -200,7 +208,7 @@ export function ETCForm({ onSubmit }: ETCFormProps) {
 
               <FormField
                 control={form.control}
-                name="filter"
+                name="filterId"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>{t("filter")}</FormLabel>
@@ -211,9 +219,9 @@ export function ETCForm({ onSubmit }: ETCFormProps) {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {FILTERS.map((f) => (
-                          <SelectItem key={f} value={f}>
-                            {f}
+                        {filters.map((filter) => (
+                          <SelectItem key={filter.id} value={filter.id}>
+                            {filter.name}
                           </SelectItem>
                         ))}
                       </SelectContent>
