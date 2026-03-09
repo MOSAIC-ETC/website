@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { ETCForm } from "./components/etc-form";
 import { SNRChart } from "./components/snr-chart";
 import { calculateSNR } from "./lib/calculate";
+import { fetchFilterCurve, FILTERS } from "./lib/filters";
 import type { SNRDataPoint } from "./lib/types";
 import type { ETCFormSchema } from "./lib/schema";
 
@@ -13,8 +14,12 @@ export default function ETCPage() {
   const t = useTranslations("etc");
   const [chartData, setChartData] = useState<SNRDataPoint[]>([]);
 
-  function handleSubmit(values: ETCFormSchema) {
-    const data = calculateSNR(values);
+  async function handleSubmit(values: ETCFormSchema) {
+    const entry = FILTERS.find((f) => f.id === values.filterId);
+    if (!entry) return;
+
+    const curve = await fetchFilterCurve(entry);
+    const data = calculateSNR(values, entry, curve);
     setChartData(data);
   }
 
@@ -32,7 +37,7 @@ export default function ETCPage() {
       <div className="space-y-6 mx-auto p-6 max-w-7xl">
         <h1 className="font-bold text-2xl">{t("title")}</h1>
         <div className="items-start gap-6 grid grid-cols-1 lg:grid-cols-[2fr_3fr]">
-          <ETCForm onSubmit={handleSubmit} />
+          <ETCForm filters={FILTERS} onSubmit={handleSubmit} />
           <SNRChart data={chartData} />
         </div>
       </div>

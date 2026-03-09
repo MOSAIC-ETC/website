@@ -12,7 +12,7 @@ export const etcFormSchema = z
     wavelengthMax: z.coerce.number().positive(),
     redshift: z.coerce.number().min(0),
     redshiftUnit: z.enum(RedshiftUnit),
-    filter: z.string().min(1, "Select a filter"),
+    filterId: z.string().min(1, "Select a filter"),
     instrument: z.enum(Instrument),
     skyCondition: z.enum(SkyCondition),
   })
