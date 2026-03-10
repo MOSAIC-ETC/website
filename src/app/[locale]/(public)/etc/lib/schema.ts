@@ -7,7 +7,6 @@ export const etcFormSchema = z
     exposureTime: z.coerce.number().positive(),
     magnitude: z.coerce.number(),
     magnitudeUnit: z.enum(MagnitudeUnit),
-    nonStellarObject: z.string().min(1, "Select an object"),
     wavelengthMin: z.coerce.number().positive(),
     wavelengthMax: z.coerce.number().positive(),
     redshift: z.coerce.number().min(0),

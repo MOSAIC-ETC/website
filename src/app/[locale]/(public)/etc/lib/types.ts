@@ -30,18 +30,6 @@ export enum WavelengthUnit {
   UM = "um",
 }
 
-export const NON_STELLAR_OBJECTS = [
-  "Elliptical Galaxy",
-  "Spiral Galaxy",
-  "Starburst Galaxy",
-  "Seyfert Galaxy",
-  "Quasar",
-  "Nebula",
-  "HII Region",
-  "Planetary Nebula",
-  "Supernova Remnant",
-] as const;
-
 export interface FilterEntry {
   id: string;
   name: string;
@@ -52,8 +40,15 @@ export interface FilterEntry {
 }
 
 export interface FilterTransmissionPoint {
-  wavelength: number;  // in nanometers
-  transmission: number;  // normalized to 0-1
+  wavelength: number; // in nanometers
+  transmission: number; // normalized to 0-1
+}
+
+export interface ObjectEntry {
+  id: string;
+  name: string;
+  previewPath: string;
+  cubePath: string;
 }
 
 export interface ETCFormValues {
@@ -61,7 +56,6 @@ export interface ETCFormValues {
   exposureTime: number;
   magnitude: number;
   magnitudeUnit: MagnitudeUnit;
-  nonStellarObject: string;
   wavelengthMin: number;
   wavelengthMax: number;
   redshift: number;

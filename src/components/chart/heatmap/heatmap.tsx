@@ -486,7 +486,7 @@ export function Heatmap({
               <p>
                 x: {hoverInfo.x}, y: {hoverInfo.y}
               </p>
-              <div className="flex items-center mt-2 min-w-[100px]">
+              <div className="flex items-center mt-2 min-w-25">
                 <div style={{ backgroundColor: hoverInfo.color }} className="inline-block mr-2 w-3 h-3" />
                 <p className="mr-auto pr-5 text-muted-foreground">Value</p>
                 <span>{hoverInfo.value}</span>
