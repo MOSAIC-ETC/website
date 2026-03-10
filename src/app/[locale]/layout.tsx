@@ -3,9 +3,9 @@ import { notFound } from "next/navigation";
 import { Geist, Geist_Mono } from "next/font/google";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
-import Script from "next/script";
 
 import { normalizeRequestedLocale, routing } from "@/i18n/routing";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -56,23 +56,20 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
     <html lang={locale} suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <PerfMeasureGuard />
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <NextIntlClientProvider>
-            <SidebarProvider>
-              <Sidebar className="lg:hidden" />
-              <main className="w-full min-h-screen">
-                <Navbar />
-                <ScrollArea className="h-[calc(100vh-4rem)]">
-                  <div className="min-h-[calc(100vh-4rem)]">{children}</div>
-                  <Footer />
-                </ScrollArea>
-              </main>
-            </SidebarProvider>
+            <TooltipProvider>
+              <SidebarProvider>
+                <Sidebar className="lg:hidden" />
+                <main className="w-full min-h-screen">
+                  <Navbar />
+                  <ScrollArea className="h-[calc(100vh-4rem)]">
+                    <div className="min-h-[calc(100vh-4rem)]">{children}</div>
+                    <Footer />
+                  </ScrollArea>
+                </main>
+              </SidebarProvider>
+            </TooltipProvider>
           </NextIntlClientProvider>
         </ThemeProvider>
       </body>
