@@ -8,19 +8,13 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  MagnitudeUnit,
-  RedshiftUnit,
-  Instrument,
-  SkyCondition,
-  NON_STELLAR_OBJECTS,
-  type FilterEntry,
-} from "../lib/types";
+import { MagnitudeUnit, RedshiftUnit, Instrument, SkyCondition, type FilterEntry } from "../lib/types";
 import { etcFormSchema, type ETCFormSchema } from "../lib/schema";
 
 interface ETCFormProps {
   filters: FilterEntry[];
   onSubmit: (values: ETCFormSchema) => void;
+  disabled?: boolean;
 }
 
 function enumOptions<T extends Record<string, string>>(enumObj: T) {
@@ -31,8 +25,9 @@ function enumOptions<T extends Record<string, string>>(enumObj: T) {
   ));
 }
 
-export function ETCForm({ filters, onSubmit }: ETCFormProps) {
+export function ETCForm({ filters, onSubmit, disabled }: ETCFormProps) {
   const t = useTranslations("etc.form");
+
   const form = useForm<ETCFormSchema>({
     resolver: zodResolver(etcFormSchema) as Resolver<ETCFormSchema>,
     defaultValues: {
@@ -40,7 +35,6 @@ export function ETCForm({ filters, onSubmit }: ETCFormProps) {
       exposureTime: 3600,
       magnitude: 20,
       magnitudeUnit: MagnitudeUnit.AB,
-      nonStellarObject: NON_STELLAR_OBJECTS[0],
       wavelengthMin: 400,
       wavelengthMax: 900,
       redshift: 0,
@@ -111,31 +105,6 @@ export function ETCForm({ filters, onSubmit }: ETCFormProps) {
                         )}
                       />
                     </div>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="nonStellarObject"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t("non-stellar-object")}</FormLabel>
-                    <Select value={field.value} onValueChange={field.onChange}>
-                      <FormControl>
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder={t("select-object")} />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {NON_STELLAR_OBJECTS.map((obj) => (
-                          <SelectItem key={obj} value={obj}>
-                            {obj}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -270,7 +239,7 @@ export function ETCForm({ filters, onSubmit }: ETCFormProps) {
               />
             </div>
 
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full" disabled={disabled}>
               {t("calculate-snr")}
             </Button>
           </form>

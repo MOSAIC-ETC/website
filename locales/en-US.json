@@ -128,12 +128,17 @@
   },
   "etc": {
     "title": "Exposure Time Calculator",
+    "cube-warning": "Please download the object data cube before calculating.",
+    "object": {
+      "title": "Non-Stellar Object",
+      "select-placeholder": "Select an object",
+      "download": "Download data cube"
+    },
     "form": {
       "parameters": "Parameters",
       "number-of-exposures": "Number of Exposures",
       "exposure-time": "Exposure Time (seconds)",
       "magnitude": "Magnitude",
-      "non-stellar-object": "Non-Stellar Object",
       "wavelength-range": "Wavelength (nm)",
       "wavelength-min": "Min",
       "wavelength-max": "Max",
@@ -141,7 +146,6 @@
       "filter": "Filter",
       "instrument": "Instrument",
       "sky-condition": "Sky Condition",
-      "select-object": "Select object",
       "select-filter": "Select filter",
       "calculate-snr": "Calculate SNR"
     },

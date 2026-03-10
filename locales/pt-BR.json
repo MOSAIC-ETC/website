@@ -128,12 +128,17 @@
   },
   "etc": {
     "title": "Calculadora de Tempo de Exposição",
+    "cube-warning": "Por favor, baixe o cubo de dados do objeto antes de calcular.",
+    "object": {
+      "title": "Objeto Não Estelar",
+      "select-placeholder": "Selecione um objeto",
+      "download": "Baixar cubo de dados"
+    },
     "form": {
       "parameters": "Parâmetros",
       "number-of-exposures": "Número de Exposições",
       "exposure-time": "Tempo de Exposição (segundos)",
       "magnitude": "Magnitude",
-      "non-stellar-object": "Objeto Não Estelar",
       "wavelength-range": "Comprimento de Onda (nm)",
       "wavelength-min": "Mín",
       "wavelength-max": "Máx",
@@ -141,7 +146,6 @@
       "filter": "Filtro",
       "instrument": "Instrumento",
       "sky-condition": "Condição do Céu",
-      "select-object": "Selecione um objeto",
       "select-filter": "Selecione um filtro",
       "calculate-snr": "Calcular SNR"
     },
