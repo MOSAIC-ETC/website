@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback, useContext } from "react";
+import { useState, useEffect, useRef, useCallback, useContext, useMemo } from "react";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 
-import type { HeatmapProps, HeatmapCellData, Colormap, HeatmapRect, HeatmapPolygon, SelectionMode } from "./types";
+import type { HeatmapProps, HeatmapCellData, Colormap, HeatmapRect, HeatmapPolygon } from "./types";
 import { getVertexAtPosition, getCellsInRectangle, getCellsInPolygon, cellsSetToCoordinates } from "./utils";
 import { getColormap, interpolateColormap } from "./colormaps";
 import { HeatmapSelectionContext } from "./context";
@@ -26,68 +26,39 @@ export function Heatmap({
   ...props
 }: HeatmapProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [hoverInfo, setHoverInfo] = useState<HeatmapCellData | null>(null);
-  const [hoveredCell, setHoveredCell] = useState<{ x: number; y: number } | null>(null);
   const { resolvedTheme } = useTheme();
 
   const heatmapContext = useContext(HeatmapSelectionContext);
+  const selectionMode = heatmapContext?.selectionMode ?? "rectangle";
 
-  const [internalSelectionMode, setInternalSelectionMode] = useState<SelectionMode>("rectangle");
-  const [currentRectSelection, setCurrentRectSelection] = useState<HeatmapRect | null>(null);
-  const [currentPolygonSelection, setCurrentPolygonSelection] = useState<HeatmapPolygon | null>(null);
+  // Memoize stable values to prevent unnecessary callback/draw invalidation
+  const margin = useMemo(() => ({ top: 50, right: 80, bottom: 50, left: 50 }), []);
+  const selectedColormap = useMemo(() => getColormap(colormap) as Colormap, [colormap]);
+  const maxVal = useMemo(() => values.reduce((max, row) => Math.max(max, ...row), 0), [values]);
 
-  const selectionMode = heatmapContext?.selectionMode ?? internalSelectionMode;
-  const setContextSelection = heatmapContext?.setSelection;
-
-  const selectedColormap = getColormap(colormap) as Colormap;
-
-  const [isSelecting, setIsSelecting] = useState(false);
-  const [selectionStart, setSelectionStart] = useState<{ x: number; y: number } | null>(null);
-  const [previewPoint, setPreviewPoint] = useState<{ x: number; y: number } | null>(null);
-  const [draggingVertexIndex, setDraggingVertexIndex] = useState<number | null>(null);
-  const [longPressTimer, setLongPressTimer] = useState<NodeJS.Timeout | null>(null);
-
-  const clearLongPressTimer = useCallback(() => {
-    if (longPressTimer) {
-      clearTimeout(longPressTimer);
-      setLongPressTimer(null);
-    }
-  }, [longPressTimer]);
-
-  const isNearFirstPoint = useCallback(
-    (cell: { x: number; y: number }) => {
-      if (!currentPolygonSelection || currentPolygonSelection.points.length < 3) return false;
-      const firstPoint = currentPolygonSelection.points[0];
-      return cell.x === firstPoint.x && cell.y === firstPoint.y;
-    },
-    [currentPolygonSelection]
-  );
-
-  const clearSelections = useCallback(() => {
-    setCurrentRectSelection(null);
-    setCurrentPolygonSelection(null);
-    if (heatmapContext) {
-      heatmapContext.clearSelections();
-    }
-    setIsSelecting(false);
-    setSelectionStart(null);
-    setPreviewPoint(null);
-    setDraggingVertexIndex(null);
-  }, [heatmapContext]);
-
-  const margin = { top: 50, right: 80, bottom: 50, left: 50 };
   const plotWidth = width - margin.left - margin.right;
   const plotHeight = height - margin.top - margin.bottom;
-
   const numRows = values.length;
   const numCols = values[0]?.length ?? 0;
 
-  const maxVal = values.reduce((max, row) => Math.max(max, ...row), 0);
+  // Tooltip state (triggers React re-renders for DOM tooltip updates only)
+  const [hoverInfo, setHoverInfo] = useState<HeatmapCellData | null>(null);
+  const [hoveredCellPos, setHoveredCellPos] = useState<{ x: number; y: number } | null>(null);
 
-  const draw = useCallback(() => {
+  // Refs for rapidly-changing visual state — update canvas directly, no React re-renders
+  const rectSelRef = useRef<HeatmapRect | null>(null);
+  const polySelRef = useRef<HeatmapPolygon | null>(null);
+  const hoveredCellRef = useRef<{ x: number; y: number } | null>(null);
+  const previewRef = useRef<{ x: number; y: number } | null>(null);
+  const isSelectingRef = useRef(false);
+  const selectionStartRef = useRef<{ x: number; y: number } | null>(null);
+  const draggingVertexRef = useRef<number | null>(null);
+  const rafRef = useRef(0);
+
+  // Draw canvas from current ref values
+  const redraw = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas || numRows === 0 || numCols === 0) return;
-
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
@@ -107,10 +78,10 @@ export function Heatmap({
       xLabel,
       yLabel,
       showAxes,
-      highlightCell: hoveredCell,
-      selectionRect: selectionMode === "rectangle" ? currentRectSelection : null,
-      polygonSel: selectionMode === "polygon" ? currentPolygonSelection : null,
-      preview: previewPoint,
+      highlightCell: hoveredCellRef.current,
+      selectionRect: selectionMode === "rectangle" ? rectSelRef.current : null,
+      polygonSel: selectionMode === "polygon" ? polySelRef.current : null,
+      preview: previewRef.current,
     });
   }, [
     values,
@@ -127,315 +98,331 @@ export function Heatmap({
     xLabel,
     yLabel,
     showAxes,
-    hoveredCell,
     selectionMode,
-    currentRectSelection,
-    currentPolygonSelection,
-    previewPoint,
   ]);
 
-  useEffect(() => {
-    draw();
-  }, [draw]);
+  // Coalesce multiple calls per frame into a single redraw
+  const scheduleRedraw = useCallback(() => {
+    cancelAnimationFrame(rafRef.current);
+    rafRef.current = requestAnimationFrame(redraw);
+  }, [redraw]);
 
+  // Redraw on data/prop/theme changes
   useEffect(() => {
-    const raf = requestAnimationFrame(draw);
-    return () => cancelAnimationFrame(raf);
-  }, [resolvedTheme, draw]);
+    scheduleRedraw();
+    return () => cancelAnimationFrame(rafRef.current);
+  }, [scheduleRedraw, resolvedTheme]);
 
-  // Update context selection coordinates when rectangle or polygon selection changes
-  useEffect(() => {
-    if (!setContextSelection) return;
-
-    if (selectionMode === "rectangle" && currentRectSelection) {
-      setContextSelection(getCellsInRectangle(currentRectSelection));
-    } else if (selectionMode === "polygon" && currentPolygonSelection?.closed) {
-      const cellsSet = getCellsInPolygon(currentPolygonSelection.points, numRows, numCols);
-      setContextSelection(cellsSetToCoordinates(cellsSet));
+  // Commit selection to context (only on mouseUp / polygon close — not every mouse move)
+  const commitSelection = useCallback(() => {
+    if (!heatmapContext?.setSelection) return;
+    if (selectionMode === "rectangle" && rectSelRef.current) {
+      heatmapContext.setSelection(getCellsInRectangle(rectSelRef.current));
+    } else if (selectionMode === "polygon" && polySelRef.current?.closed) {
+      const cells = getCellsInPolygon(polySelRef.current.points, numRows, numCols);
+      heatmapContext.setSelection(cellsSetToCoordinates(cells));
     } else {
-      setContextSelection([]);
+      heatmapContext.setSelection([]);
     }
-  }, [selectionMode, currentRectSelection, currentPolygonSelection, numRows, numCols, setContextSelection]);
+  }, [heatmapContext, selectionMode, numRows, numCols]);
 
+  // Handle external clear (e.g., Eraser button resets context selection)
   useEffect(() => {
-    if (
-      heatmapContext &&
-      heatmapContext.selection.length === 0 &&
-      (currentRectSelection || currentPolygonSelection?.closed)
-    ) {
-      setCurrentRectSelection(null);
-      setCurrentPolygonSelection(null);
-      setIsSelecting(false);
-      setSelectionStart(null);
-      setPreviewPoint(null);
-      setDraggingVertexIndex(null);
+    if (heatmapContext && heatmapContext.selection.length === 0 && (rectSelRef.current || polySelRef.current?.closed)) {
+      rectSelRef.current = null;
+      polySelRef.current = null;
+      isSelectingRef.current = false;
+      selectionStartRef.current = null;
+      previewRef.current = null;
+      draggingVertexRef.current = null;
+      scheduleRedraw();
     }
-  }, [heatmapContext?.selection]);
+  }, [heatmapContext?.selection, scheduleRedraw]);
 
-  // Cell coordinate helpers
-  const getCellFromMouse = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    const canvas = canvasRef.current;
-    if (!canvas || numRows === 0 || numCols === 0) return null;
+  // Unified cell-from-coordinates helper
+  const getCellFromCoords = useCallback(
+    (clientX: number, clientY: number) => {
+      const canvas = canvasRef.current;
+      if (!canvas || numRows === 0 || numCols === 0) return null;
+      const rect = canvas.getBoundingClientRect();
+      const mx = clientX - rect.left;
+      const my = clientY - rect.top;
+      if (mx < margin.left || mx > margin.left + plotWidth || my < margin.top || my > margin.top + plotHeight)
+        return null;
+      const col = Math.floor((mx - margin.left) / (plotWidth / numCols));
+      const row = numRows - 1 - Math.floor((my - margin.top) / (plotHeight / numRows));
+      return { x: Math.max(0, Math.min(numRows - 1, row)), y: Math.max(0, Math.min(numCols - 1, col)) };
+    },
+    [numRows, numCols, margin, plotWidth, plotHeight],
+  );
 
-    const rect = canvas.getBoundingClientRect();
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
-
-    if (
-      mouseX >= margin.left &&
-      mouseX <= margin.left + plotWidth &&
-      mouseY >= margin.top &&
-      mouseY <= margin.top + plotHeight
-    ) {
-      const cellWidth = plotWidth / numCols;
-      const cellHeight = plotHeight / numRows;
-
-      const col = Math.floor((mouseX - margin.left) / cellWidth);
-      const row = numRows - 1 - Math.floor((mouseY - margin.top) / cellHeight);
-
-      return {
-        x: Math.max(0, Math.min(numRows - 1, row)),
-        y: Math.max(0, Math.min(numCols - 1, col)),
-      };
-    }
-    return null;
-  };
-
-  const getCanvasCoords = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+  const getCanvasCoords = useCallback((clientX: number, clientY: number) => {
     const canvas = canvasRef.current;
     if (!canvas) return null;
-
     const rect = canvas.getBoundingClientRect();
-    if ("touches" in e) {
-      const touch = e.touches[0] || e.changedTouches[0];
-      if (!touch) return null;
-      return { x: touch.clientX - rect.left, y: touch.clientY - rect.top };
-    }
-    return { x: e.clientX - rect.left, y: e.clientY - rect.top };
-  };
+    return { x: clientX - rect.left, y: clientY - rect.top };
+  }, []);
 
-  const getCellFromTouch = (e: React.TouchEvent<HTMLCanvasElement>) => {
-    const canvas = canvasRef.current;
-    if (!canvas || numRows === 0 || numCols === 0) return null;
+  const clearSelections = useCallback(() => {
+    rectSelRef.current = null;
+    polySelRef.current = null;
+    isSelectingRef.current = false;
+    selectionStartRef.current = null;
+    previewRef.current = null;
+    draggingVertexRef.current = null;
+    heatmapContext?.clearSelections();
+    scheduleRedraw();
+  }, [heatmapContext, scheduleRedraw]);
 
-    const rect = canvas.getBoundingClientRect();
-    const touch = e.touches[0] || e.changedTouches[0];
-    if (!touch) return null;
+  // Event handlers — update refs and schedule redraw (no React state during drag)
+  const handleMouseMove = useCallback(
+    (e: React.MouseEvent<HTMLCanvasElement>) => {
+      const cell = getCellFromCoords(e.clientX, e.clientY);
 
-    const touchX = touch.clientX - rect.left;
-    const touchY = touch.clientY - rect.top;
-
-    if (
-      touchX >= margin.left &&
-      touchX <= margin.left + plotWidth &&
-      touchY >= margin.top &&
-      touchY <= margin.top + plotHeight
-    ) {
-      const cellWidth = plotWidth / numCols;
-      const cellHeight = plotHeight / numRows;
-
-      const col = Math.floor((touchX - margin.left) / cellWidth);
-      const row = numRows - 1 - Math.floor((touchY - margin.top) / cellHeight);
-
-      return {
-        x: Math.max(0, Math.min(numRows - 1, row)),
-        y: Math.max(0, Math.min(numCols - 1, col)),
-      };
-    }
-    return null;
-  };
-
-  // Event handlers
-  const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    const cell = getCellFromMouse(e);
-    const canvasCoords = getCanvasCoords(e);
-
-    if (selectable && selectionMode === "polygon") {
-      if (draggingVertexIndex !== null && currentPolygonSelection && cell) {
-        const newPoints = [...currentPolygonSelection.points];
-        newPoints[draggingVertexIndex] = { x: cell.x, y: cell.y };
-        setCurrentPolygonSelection({ ...currentPolygonSelection, points: newPoints });
-        return;
-      }
-
-      if (currentPolygonSelection && !currentPolygonSelection.closed && cell) {
-        setPreviewPoint(cell);
-      }
-    }
-
-    if (selectable && selectionMode === "rectangle" && isSelecting && selectionStart && cell) {
-      setCurrentRectSelection({
-        start: { x: selectionStart.x, y: selectionStart.y },
-        end: { x: cell.x, y: cell.y },
-      });
-    }
-
-    if (cell) {
-      const cellValue = values[cell.x]?.[cell.y] ?? 0;
-      const normalizedValue = maxVal > 0 ? cellValue / maxVal : 0;
-      const cellColor = interpolateColormap(normalizedValue, selectedColormap);
-
-      setHoveredCell(cell);
-      setHoverInfo({ x: cell.x, y: cell.y, value: cellValue, color: cellColor });
-    } else {
-      setHoverInfo(null);
-      setHoveredCell(null);
-      setPreviewPoint(null);
-    }
-  };
-
-  const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (e.button !== 0) return;
-    if (!selectable) return;
-
-    const cell = getCellFromMouse(e);
-    const canvasCoords = getCanvasCoords(e);
-
-    if (selectionMode === "polygon") {
-      if (currentPolygonSelection && currentPolygonSelection.closed && canvasCoords) {
-        const vertexIdx = getVertexAtPosition(
-          canvasCoords.x,
-          canvasCoords.y,
-          currentPolygonSelection.points,
-          plotWidth,
-          plotHeight,
-          numRows,
-          numCols,
-          margin.left,
-          margin.top
-        );
-        if (vertexIdx !== null) {
-          setDraggingVertexIndex(vertexIdx);
+      if (selectable && selectionMode === "polygon") {
+        if (draggingVertexRef.current !== null && polySelRef.current && cell) {
+          const newPoints = [...polySelRef.current.points];
+          newPoints[draggingVertexRef.current] = { x: cell.x, y: cell.y };
+          polySelRef.current = { ...polySelRef.current, points: newPoints };
+          scheduleRedraw();
           return;
+        }
+        if (polySelRef.current && !polySelRef.current.closed && cell) {
+          previewRef.current = cell;
+          scheduleRedraw();
         }
       }
 
-      if (!cell) return;
+      if (selectable && selectionMode === "rectangle" && isSelectingRef.current && selectionStartRef.current && cell) {
+        rectSelRef.current = {
+          start: { x: selectionStartRef.current.x, y: selectionStartRef.current.y },
+          end: { x: cell.x, y: cell.y },
+        };
+        scheduleRedraw();
+      }
 
-      if (!currentPolygonSelection || currentPolygonSelection.closed) {
-        setCurrentPolygonSelection({ points: [{ x: cell.x, y: cell.y }], closed: false });
+      if (cell) {
+        hoveredCellRef.current = cell;
+        // Only update tooltip state when not actively selecting (avoids unnecessary React re-renders)
+        if (!isSelectingRef.current && draggingVertexRef.current === null) {
+          const cellValue = values[cell.x]?.[cell.y] ?? 0;
+          const normalizedValue = maxVal > 0 ? cellValue / maxVal : 0;
+          const cellColor = interpolateColormap(normalizedValue, selectedColormap);
+          setHoverInfo({ x: cell.x, y: cell.y, value: cellValue, color: cellColor });
+          setHoveredCellPos(cell);
+          scheduleRedraw();
+        }
+      } else {
+        hoveredCellRef.current = null;
+        previewRef.current = null;
+        setHoverInfo(null);
+        setHoveredCellPos(null);
+        scheduleRedraw();
+      }
+    },
+    [selectable, selectionMode, values, maxVal, selectedColormap, getCellFromCoords, scheduleRedraw],
+  );
+
+  const handleMouseDown = useCallback(
+    (e: React.MouseEvent<HTMLCanvasElement>) => {
+      if (e.button !== 0 || !selectable) return;
+      const cell = getCellFromCoords(e.clientX, e.clientY);
+
+      if (selectionMode === "polygon") {
+        const coords = getCanvasCoords(e.clientX, e.clientY);
+        if (polySelRef.current?.closed && coords) {
+          const vertexIdx = getVertexAtPosition(
+            coords.x,
+            coords.y,
+            polySelRef.current.points,
+            plotWidth,
+            plotHeight,
+            numRows,
+            numCols,
+            margin.left,
+            margin.top,
+          );
+          if (vertexIdx !== null) {
+            draggingVertexRef.current = vertexIdx;
+            return;
+          }
+        }
+        if (!cell) return;
+        if (!polySelRef.current || polySelRef.current.closed) {
+          polySelRef.current = { points: [{ x: cell.x, y: cell.y }], closed: false };
+          scheduleRedraw();
+          return;
+        }
+        // Close polygon if clicking near first point
+        const pts = polySelRef.current.points;
+        if (pts.length >= 3 && cell.x === pts[0].x && cell.y === pts[0].y) {
+          polySelRef.current = { ...polySelRef.current, closed: true };
+          previewRef.current = null;
+          scheduleRedraw();
+          commitSelection();
+          return;
+        }
+        polySelRef.current = { ...polySelRef.current, points: [...pts, { x: cell.x, y: cell.y }] };
+        scheduleRedraw();
         return;
       }
 
-      if (isNearFirstPoint(cell)) {
-        setCurrentPolygonSelection({ ...currentPolygonSelection, closed: true });
-        setPreviewPoint(null);
+      // Rectangle mode
+      if (cell) {
+        isSelectingRef.current = true;
+        selectionStartRef.current = cell;
+        rectSelRef.current = { start: { x: cell.x, y: cell.y }, end: { x: cell.x, y: cell.y } };
+        setHoverInfo(null);
+        setHoveredCellPos(null);
+        scheduleRedraw();
+      }
+    },
+    [
+      selectable,
+      selectionMode,
+      getCellFromCoords,
+      getCanvasCoords,
+      plotWidth,
+      plotHeight,
+      numRows,
+      numCols,
+      margin,
+      scheduleRedraw,
+      commitSelection,
+    ],
+  );
+
+  const handleMouseUp = useCallback(
+    (e: React.MouseEvent<HTMLCanvasElement>) => {
+      if (!selectable) return;
+      if (selectionMode === "polygon" && draggingVertexRef.current !== null) {
+        draggingVertexRef.current = null;
+        commitSelection();
         return;
       }
+      if (e.button === 0 && isSelectingRef.current) {
+        isSelectingRef.current = false;
+        selectionStartRef.current = null;
+        commitSelection();
+      }
+    },
+    [selectable, selectionMode, commitSelection],
+  );
 
-      setCurrentPolygonSelection({
-        ...currentPolygonSelection,
-        points: [...currentPolygonSelection.points, { x: cell.x, y: cell.y }],
-      });
-      return;
-    }
-
-    if (cell) {
-      setIsSelecting(true);
-      setSelectionStart(cell);
-      setCurrentRectSelection({ start: { x: cell.x, y: cell.y }, end: { x: cell.x, y: cell.y } });
-    }
-  };
-
-  const handleMouseUp = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!selectable) return;
-
-    if (selectionMode === "polygon" && draggingVertexIndex !== null) {
-      setDraggingVertexIndex(null);
-      return;
-    }
-
-    if (e.button === 0) {
-      setIsSelecting(false);
-      setSelectionStart(null);
-    }
-  };
-
-  const handleContextMenu = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!selectable) return;
-    e.preventDefault();
-    clearSelections();
-  };
+  const handleContextMenu = useCallback(
+    (e: React.MouseEvent<HTMLCanvasElement>) => {
+      if (!selectable) return;
+      e.preventDefault();
+      clearSelections();
+    },
+    [selectable, clearSelections],
+  );
 
   // Touch handlers
-  const handleTouchStart = (e: React.TouchEvent<HTMLCanvasElement>) => {
-    if (selectionMode === "polygon") return; // handleMouseDown is enough for polygon mode
+  const handleTouchStart = useCallback(
+    (e: React.TouchEvent<HTMLCanvasElement>) => {
+      if (selectionMode === "polygon") return;
+      const touch = e.touches[0];
+      if (!touch) return;
+      const cell = getCellFromCoords(touch.clientX, touch.clientY);
+      if (selectable && cell) {
+        isSelectingRef.current = true;
+        selectionStartRef.current = cell;
+        rectSelRef.current = { start: { x: cell.x, y: cell.y }, end: { x: cell.x, y: cell.y } };
+        hoveredCellRef.current = cell;
+        const cellValue = values[cell.x]?.[cell.y] ?? 0;
+        const normalizedValue = maxVal > 0 ? cellValue / maxVal : 0;
+        const cellColor = interpolateColormap(normalizedValue, selectedColormap);
+        setHoveredCellPos(cell);
+        setHoverInfo({ x: cell.x, y: cell.y, value: cellValue, color: cellColor });
+        scheduleRedraw();
+      }
+    },
+    [selectable, selectionMode, values, maxVal, selectedColormap, getCellFromCoords, scheduleRedraw],
+  );
 
-    const cell = getCellFromTouch(e);
+  const handleTouchMove = useCallback(
+    (e: React.TouchEvent<HTMLCanvasElement>) => {
+      const touch = e.touches[0] || e.changedTouches[0];
+      if (!touch) return;
+      const cell = getCellFromCoords(touch.clientX, touch.clientY);
 
-    if (selectable && cell) {
-      setIsSelecting(true);
-      setSelectionStart(cell);
-      setCurrentRectSelection({ start: { x: cell.x, y: cell.y }, end: { x: cell.x, y: cell.y } });
+      if (
+        selectable &&
+        selectionMode === "polygon" &&
+        draggingVertexRef.current !== null &&
+        polySelRef.current &&
+        cell
+      ) {
+        const newPoints = [...polySelRef.current.points];
+        newPoints[draggingVertexRef.current] = { x: cell.x, y: cell.y };
+        polySelRef.current = { ...polySelRef.current, points: newPoints };
+        scheduleRedraw();
+        return;
+      }
 
-      const cellValue = values[cell.x]?.[cell.y] ?? 0;
-      const normalizedValue = maxVal > 0 ? cellValue / maxVal : 0;
-      const cellColor = interpolateColormap(normalizedValue, selectedColormap);
-      setHoveredCell(cell);
-      setHoverInfo({ x: cell.x, y: cell.y, value: cellValue, color: cellColor });
-    }
-  };
+      if (selectable && selectionMode === "rectangle" && isSelectingRef.current && selectionStartRef.current && cell) {
+        rectSelRef.current = {
+          start: { x: selectionStartRef.current.x, y: selectionStartRef.current.y },
+          end: { x: cell.x, y: cell.y },
+        };
+        scheduleRedraw();
+      }
 
-  const handleTouchMove = (e: React.TouchEvent<HTMLCanvasElement>) => {
-    clearLongPressTimer();
+      if (cell) {
+        hoveredCellRef.current = cell;
+        const cellValue = values[cell.x]?.[cell.y] ?? 0;
+        const normalizedValue = maxVal > 0 ? cellValue / maxVal : 0;
+        const cellColor = interpolateColormap(normalizedValue, selectedColormap);
+        setHoveredCellPos(cell);
+        setHoverInfo({ x: cell.x, y: cell.y, value: cellValue, color: cellColor });
+      }
+    },
+    [selectable, selectionMode, values, maxVal, selectedColormap, getCellFromCoords, scheduleRedraw],
+  );
 
-    const cell = getCellFromTouch(e);
-
-    if (selectable && selectionMode === "polygon" && draggingVertexIndex !== null && currentPolygonSelection && cell) {
-      const newPoints = [...currentPolygonSelection.points];
-      newPoints[draggingVertexIndex] = { x: cell.x, y: cell.y };
-      setCurrentPolygonSelection({ ...currentPolygonSelection, points: newPoints });
-      return;
-    }
-
-    if (selectable && selectionMode === "rectangle" && isSelecting && selectionStart && cell) {
-      setCurrentRectSelection({
-        start: { x: selectionStart.x, y: selectionStart.y },
-        end: { x: cell.x, y: cell.y },
-      });
-    }
-
-    if (cell) {
-      const cellValue = values[cell.x]?.[cell.y] ?? 0;
-      const normalizedValue = maxVal > 0 ? cellValue / maxVal : 0;
-      const cellColor = interpolateColormap(normalizedValue, selectedColormap);
-      setHoveredCell(cell);
-      setHoverInfo({ x: cell.x, y: cell.y, value: cellValue, color: cellColor });
-    }
-  };
-
-  const handleTouchEnd = () => {
-    clearLongPressTimer();
-
+  const handleTouchEnd = useCallback(() => {
     if (selectionMode === "polygon") {
-      setDraggingVertexIndex(null);
+      if (draggingVertexRef.current !== null) {
+        draggingVertexRef.current = null;
+        commitSelection();
+      }
+    } else if (isSelectingRef.current) {
+      isSelectingRef.current = false;
+      selectionStartRef.current = null;
+      commitSelection();
     }
-
-    setIsSelecting(false);
-    setSelectionStart(null);
     setHoverInfo(null);
-    setHoveredCell(null);
-  };
+    setHoveredCellPos(null);
+    hoveredCellRef.current = null;
+  }, [selectionMode, commitSelection]);
+
+  const handleMouseLeave = useCallback(() => {
+    setHoverInfo(null);
+    setHoveredCellPos(null);
+    hoveredCellRef.current = null;
+    previewRef.current = null;
+    if (isSelectingRef.current) {
+      isSelectingRef.current = false;
+      selectionStartRef.current = null;
+    }
+    if (draggingVertexRef.current !== null) {
+      draggingVertexRef.current = null;
+    }
+    scheduleRedraw();
+  }, [scheduleRedraw]);
 
   const getTooltipPosition = () => {
-    if (!hoveredCell || !canvasRef.current || numRows === 0 || numCols === 0) return { left: 0, top: 0 };
-
+    if (!hoveredCellPos || !canvasRef.current || numRows === 0 || numCols === 0) return { left: 0, top: 0 };
     const cellWidth = plotWidth / numCols;
     const cellHeight = plotHeight / numRows;
-    const x = margin.left + hoveredCell.y * cellWidth + cellWidth / 2;
-    const y = margin.top + (numRows - 1 - hoveredCell.x) * cellHeight;
-
+    const x = margin.left + hoveredCellPos.y * cellWidth + cellWidth / 2;
+    const y = margin.top + (numRows - 1 - hoveredCellPos.x) * cellHeight;
     return { left: x, top: y - 10 };
   };
 
   const tooltipPos = getTooltipPosition();
-
-  const showTooltip =
-    hoverInfo &&
-    tooltip &&
-    !isSelecting &&
-    !(selectionMode === "polygon" && currentPolygonSelection && !currentPolygonSelection.closed) &&
-    draggingVertexIndex === null;
+  const showTooltip = hoverInfo && tooltip;
 
   return (
     <div className={cn("inline-block relative", className)} {...props}>
@@ -447,30 +434,13 @@ export function Heatmap({
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
         onContextMenu={handleContextMenu}
-        onMouseLeave={() => {
-          setHoverInfo(null);
-          setHoveredCell(null);
-          setPreviewPoint(null);
-          if (isSelecting) {
-            setIsSelecting(false);
-            setSelectionStart(null);
-          }
-          if (draggingVertexIndex !== null) {
-            setDraggingVertexIndex(null);
-          }
-        }}
+        onMouseLeave={handleMouseLeave}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
         onTouchCancel={handleTouchEnd}
         style={{
-          cursor:
-            selectable &&
-            (isSelecting ||
-              draggingVertexIndex !== null ||
-              (selectionMode === "polygon" && currentPolygonSelection && !currentPolygonSelection.closed))
-              ? "crosshair"
-              : "default",
+          cursor: selectable ? "crosshair" : "default",
           touchAction: "none",
         }}
       />
