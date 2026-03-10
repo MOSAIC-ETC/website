@@ -3,6 +3,7 @@ import { MagnitudeUnit, RedshiftUnit, Instrument, SkyCondition } from "./types";
 
 export const etcFormSchema = z
   .object({
+    objectId: z.string().min(1, "Select an object"),
     numberOfExposures: z.coerce.number().int().positive(),
     exposureTime: z.coerce.number().positive(),
     magnitude: z.coerce.number(),

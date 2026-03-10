@@ -132,7 +132,8 @@
     "object": {
       "title": "Objeto Não Estelar",
       "select-placeholder": "Selecione um objeto",
-      "download": "Baixar cubo de dados"
+      "download": "Baixar cubo de dados",
+      "selection-required": "Por favor, selecione uma área do mapa"
     },
     "form": {
       "parameters": "Parâmetros",

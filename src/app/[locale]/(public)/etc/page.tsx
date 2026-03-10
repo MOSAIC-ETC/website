@@ -5,12 +5,12 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { ETCForm } from "./components/etc-form";
 import { SNRChart } from "./components/snr-chart";
-import { ObjectSelector } from "./components/object-selector";
 import { calculateSNR } from "./lib/calculate";
 import { fetchFilterCurve, FILTERS } from "./lib/filters";
 import { OBJECTS } from "./lib/objects";
 import { useObjectStore } from "./hooks/use-object-store";
 import type { ObjectEntry, SNRDataPoint } from "./lib/types";
+import type { HeatmapCell } from "@/components/chart/heatmap";
 import type { ETCFormSchema } from "./lib/schema";
 
 export default function ETCPage() {
@@ -20,7 +20,7 @@ export default function ETCPage() {
   const [selectedObject, setSelectedObject] = useState<ObjectEntry | null>(OBJECTS[0] ?? null);
   const store = useObjectStore(selectedObject);
 
-  async function handleSubmit(values: ETCFormSchema) {
+  async function handleSubmit(values: ETCFormSchema, heatmapSelection: HeatmapCell[]) {
     if (!store.cubeReady) {
       // TODO: use toast to display warning
       return;
@@ -30,6 +30,7 @@ export default function ETCPage() {
     if (!entry) return;
 
     const curve = await fetchFilterCurve(entry);
+    console.log("Selected heatmap cells:", heatmapSelection);
     const data = calculateSNR(values, entry, curve);
     setChartData(data);
   }
@@ -47,17 +48,14 @@ export default function ETCPage() {
       </div>
       <div className="space-y-6 mx-auto p-6 max-w-7xl">
         <h1 className="font-bold text-2xl">{t("title")}</h1>
-        <div className="items-start gap-6 grid grid-cols-1 lg:grid-cols-[2fr_3fr]">
-          <div className="space-y-6">
-            <ETCForm filters={FILTERS} onSubmit={handleSubmit} />
-          </div>
-          <ObjectSelector
-            objects={OBJECTS}
-            selectedObject={selectedObject}
-            onSelect={setSelectedObject}
-            store={store}
-          />
-        </div>
+        <ETCForm
+          filters={FILTERS}
+          objects={OBJECTS}
+          selectedObject={selectedObject}
+          onSelectObject={setSelectedObject}
+          store={store}
+          onSubmit={handleSubmit}
+        />
         <SNRChart data={chartData} />
       </div>
     </main>

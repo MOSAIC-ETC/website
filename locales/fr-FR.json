@@ -132,7 +132,8 @@
     "object": {
       "title": "Objet Non Stellaire",
       "select-placeholder": "Sélectionner un objet",
-      "download": "Télécharger le cube de données"
+      "download": "Télécharger le cube de données",
+      "selection-required": "Veuillez sélectionner une zone de la carte"
     },
     "form": {
       "parameters": "Paramètres",

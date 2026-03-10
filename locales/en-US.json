@@ -132,7 +132,8 @@
     "object": {
       "title": "Non-Stellar Object",
       "select-placeholder": "Select an object",
-      "download": "Download data cube"
+      "download": "Download data cube",
+      "selection-required": "Please select an area of the map"
     },
     "form": {
       "parameters": "Parameters",
