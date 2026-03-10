@@ -1,12 +1,16 @@
+"use client";
+
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 
 import { MosaicLogo } from "@/components/icons";
 import { Separator } from "@/components/ui/separator";
 import { Link } from "@/i18n/navigation";
+import { useTheme } from "next-themes";
 
 export function Footer() {
   const t = useTranslations("footer");
+  const { theme } = useTheme();
 
   const items = [
     { href: "/about", text: t("about") },
@@ -24,7 +28,7 @@ export function Footer() {
     {
       name: "FAPESB",
       href: "https://www.fapesb.ba.gov.br/",
-      logo: "/assets/images/institutions/fapesb.png",
+      logo: `/assets/images/institutions/fapesb.png`,
     },
     {
       name: "CNPq",
@@ -63,11 +67,13 @@ export function Footer() {
               aria-label={`${sponsor.name} Website`}
               target="_blank"
               rel="noopener noreferrer"
+              title={sponsor.name}
             >
-              <img
+              <Image
                 src={sponsor.logo}
                 alt={sponsor.name}
                 height={64}
+                width={1024}
                 className="w-auto h-16"
                 draggable={false}
               />
@@ -81,7 +87,14 @@ export function Footer() {
       <div className="flex justify-center mx-auto px-4 sm:px-6 py-8 max-w-7xl">
         <p className="font-medium text-center text-balance">
           {`©${new Date().getFullYear()}`}{" "}
-          <a href="https://uesc.br" aria-label="UESC Website" target="_blank" rel="noopener noreferrer">
+          <a
+            href="https://uesc.br"
+            aria-label="UESC Website"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline"
+            title="Universidade Estadual de Santa Cruz - UESC"
+          >
             Universidade Estadual de Santa Cruz
           </a>
           , {t("developed-by")}{" "}
@@ -90,6 +103,8 @@ export function Footer() {
             aria-label="Ítalo Seara GitHub"
             target="_blank"
             rel="noopener noreferrer"
+            className="underline"
+            title="Ítalo Seara GitHub"
           >
             Ítalo Seara
           </a>

@@ -129,13 +129,6 @@
   "etc": {
     "title": "Exposure Time Calculator",
     "cube-warning": "Please download the object data cube before calculating.",
-    "object": {
-      "title": "Non-Stellar Object",
-      "select-placeholder": "Select an object",
-      "download": "Download data cube",
-      "selection-required": "Please select an area of the map",
-      "tooltip": "Select a non-stellar object from the list. It will show you the object's integrated spectrum as a 2D map. You can click on the map to select a specific area and use it for the exposure time calculation."
-    },
     "form": {
       "parameters": "Parameters",
       "number-of-exposures": "Number of Exposures",
@@ -149,7 +142,19 @@
       "instrument": "Instrument",
       "sky-condition": "Sky Condition",
       "select-filter": "Select filter",
-      "calculate-snr": "Calculate SNR"
+      "calculate-snr": "Calculate SNR",
+      "object": {
+        "title": "Non-Stellar Object",
+        "select-placeholder": "Select an object",
+        "download": "Download data cube",
+        "selection-required": "Please select an area of the map",
+        "tooltip": "Select a non-stellar object from the list. It will show you the object's integrated spectrum as a 2D map. You can click on the map to select a specific area and use it for the exposure time calculation."
+      },
+      "selection-controls": {
+        "polygon-selection": "Polygon selection",
+        "square-selection": "Square selection",
+        "erase-selection": "Erase selection"
+      }
     },
     "chart": {
       "title": "SNR vs Wavelength",
