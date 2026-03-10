@@ -3,15 +3,9 @@ export function MosaicLogo(props: React.SVGProps<SVGSVGElement>) {
     <svg viewBox="0 0 271 180" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
       <path d="M89.3013 0L132.603 25V75L89.3013 100L46 75V25L89.3013 0Z" fill="currentColor" />
       <path d="M181.301 0L224.603 25V75L181.301 100L138 75V25L181.301 0Z" fill="currentColor" />
-      <path
-        d="M227.301 80L270.603 105V155L227.301 180L184 155V105L227.301 80Z"
-        fill="currentColor"
-      />
+      <path d="M227.301 80L270.603 105V155L227.301 180L184 155V105L227.301 80Z" fill="currentColor" />
       <path d="M43.3013 80L86.6025 105V155L43.3013 180L0 155V105L43.3013 80Z" fill="currentColor" />
-      <path
-        d="M135.301 80L178.603 105V155L135.301 180L92 155V105L135.301 80Z"
-        fill="currentColor"
-      />
+      <path d="M135.301 80L178.603 105V155L135.301 180L92 155V105L135.301 80Z" fill="currentColor" />
     </svg>
   );
 }
@@ -56,14 +50,7 @@ export function ReactIcon(props: React.SVGProps<SVGSVGElement>) {
 
 export function TypescriptIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      height="512"
-      width="512"
-      viewBox="0 0 512 512"
-      {...props}
-    >
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" height="512" width="512" viewBox="0 0 512 512" {...props}>
       <rect fill="#3178c6" height="512" rx="50" width="512" />
       <rect fill="#3178c6" height="512" rx="50" width="512" />
       <path
@@ -130,11 +117,7 @@ export function NextJSIcon(props: React.SVGProps<SVGSVGElement>) {
 
 export function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg
-      viewBox="-3 0 262 262"
-      xmlns="http://www.w3.org/2000/svg"
-      preserveAspectRatio="xMidYMid"
-    >
+    <svg viewBox="-3 0 262 262" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid">
       <path
         d="M255.878 133.451c0-10.734-.871-18.567-2.756-26.69H130.55v48.448h71.947c-1.45 12.04-9.283 30.172-26.69 42.356l-.244 1.622 38.755 30.023 2.685.268c24.659-22.774 38.875-56.282 38.875-96.027"
         fill="#4285F4"
@@ -151,6 +134,196 @@ export function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
         d="M130.55 50.479c24.514 0 41.05 10.589 50.479 19.438l36.844-35.974C195.245 12.91 165.798 0 130.55 0 79.49 0 35.393 29.301 13.925 71.947l42.211 32.783c10.59-31.477 39.891-54.251 74.414-54.251"
         fill="#EB4335"
       />
+    </svg>
+  );
+}
+
+export function PolygonDashedMousePointer(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      id="Camada_2"
+      data-name="Camada 2"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 20.96 21.52"
+      fill="currentColor"
+      {...props}
+    >
+      <path
+        d="M10,11.2c-.1-.26.02-.55.28-.65.12-.05.25-.05.37,0l9,3.5c.26.1.38.39.28.65-.06.14-.17.25-.32.3l-3.44,1.07c-.32.1-.56.34-.66.66l-1.07,3.44c-.08.26-.36.41-.63.33-.14-.05-.26-.15-.32-.3l-3.5-9Z"
+        fill="none"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+      />
+      <g>
+        <line
+          x1="19.11"
+          y1="1"
+          x2="18.25"
+          y2="1.51"
+          fill="none"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+        />
+        <line
+          x1="15.04"
+          y1="3.43"
+          x2="11.82"
+          y2="5.35"
+          fill="none"
+          stroke="currentColor"
+          strokeDasharray="1.87 3.75"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+        />
+        <line
+          x1="10.21"
+          y1="6.31"
+          x2="9.35"
+          y2="6.82"
+          fill="none"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+        />
+      </g>
+      <g>
+        <line
+          x1="1"
+          y1="2.56"
+          x2="1.89"
+          y2="3.02"
+          fill="none"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+        />
+        <line
+          x1="4.48"
+          y1="4.36"
+          x2="7.07"
+          y2="5.71"
+          fill="none"
+          stroke="currentColor"
+          strokeDasharray="1.46 2.92"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+        />
+        <line
+          x1="8.36"
+          y1="6.38"
+          x2="9.25"
+          y2="6.85"
+          fill="none"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+        />
+      </g>
+      <g>
+        <line
+          x1="3.4"
+          y1="17.11"
+          x2="3.24"
+          y2="16.12"
+          fill="none"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+        />
+        <line
+          x1="2.72"
+          y1="12.98"
+          x2="1.42"
+          y2="5.12"
+          fill="none"
+          stroke="currentColor"
+          strokeDasharray="1.59 3.19"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+        />
+        <line
+          x1="1.16"
+          y1="3.54"
+          x2="1"
+          y2="2.56"
+          fill="none"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+        />
+      </g>
+      <g>
+        <line
+          x1="19.11"
+          y1="1"
+          x2="18.84"
+          y2="1.96"
+          fill="none"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+        />
+        <line
+          x1="18.07"
+          y1="4.73"
+          x2="17.3"
+          y2="7.49"
+          fill="none"
+          stroke="currentColor"
+          strokeDasharray="1.43 2.87"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+        />
+        <line
+          x1="16.91"
+          y1="8.87"
+          x2="16.64"
+          y2="9.83"
+          fill="none"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+        />
+      </g>
+      <g>
+        <line
+          x1="3.4"
+          y1="17.11"
+          x2="4.4"
+          y2="17.11"
+          fill="none"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+        />
+        <line
+          x1="8.25"
+          y1="17.11"
+          x2="9.25"
+          y2="17.11"
+          fill="none"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+        />
+      </g>
     </svg>
   );
 }

@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
-import { Download, Check, SquareDashed, TriangleDashed, Eraser, Info } from "lucide-react";
+import { Download, Check, SquareDashedMousePointer, Eraser, Info } from "lucide-react";
+import { PolygonDashedMousePointer } from "@/components/icons";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -50,8 +51,6 @@ function enumOptions<T extends Record<string, string>>(enumObj: T) {
 }
 
 export function ETCForm({ filters, objects, selectedObject, onSelectObject, store, onSubmit, disabled }: ETCFormProps) {
-  const tObject = useTranslations("etc.object");
-
   return (
     <HeatmapProvider>
       <ETCFormInner
@@ -62,56 +61,64 @@ export function ETCForm({ filters, objects, selectedObject, onSelectObject, stor
         selectedObject={selectedObject}
         onSelectObject={onSelectObject}
         store={store}
-        tObject={tObject}
       />
     </HeatmapProvider>
   );
 }
 
 function SelectionControls() {
+  const t = useTranslations("etc.form.selection-controls");
   const { selectionMode, setSelectionMode, clearSelections } = useHeatmapSelectionContext();
 
   return (
     <div className="flex lg:flex-col gap-2 lg:mt-10">
-      <Button
-        type="button"
-        onClick={() => setSelectionMode("rectangle")}
-        variant={selectionMode === "rectangle" ? "default" : "outline"}
-        size="icon-sm"
-        title="Rectangle selection"
-      >
-        <SquareDashed />
-      </Button>
-      <Button
-        type="button"
-        onClick={() => setSelectionMode("polygon")}
-        variant={selectionMode === "polygon" ? "default" : "outline"}
-        size="icon-sm"
-        title="Polygon selection"
-      >
-        <TriangleDashed />
-      </Button>
-      <Button type="button" onClick={clearSelections} variant="destructive" size="icon-sm" title="Clear selection">
-        <Eraser />
-      </Button>
+      <Tooltip delayDuration={1000}>
+        <TooltipTrigger asChild>
+          <Button
+            type="button"
+            onClick={() => setSelectionMode("rectangle")}
+            variant={selectionMode === "rectangle" ? "default" : "outline"}
+            size="icon-sm"
+          >
+            <SquareDashedMousePointer />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent side="right">
+          <p className="max-w-xs text-wrap">{t("square-selection")}</p>
+        </TooltipContent>
+      </Tooltip>
+
+      <Tooltip delayDuration={1000}>
+        <TooltipTrigger asChild>
+          <Button
+            type="button"
+            onClick={() => setSelectionMode("polygon")}
+            variant={selectionMode === "polygon" ? "default" : "outline"}
+            size="icon-sm"
+          >
+            <PolygonDashedMousePointer />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent side="right">
+          <p className="max-w-xs text-wrap">{t("polygon-selection")}</p>
+        </TooltipContent>
+      </Tooltip>
+
+      <Tooltip delayDuration={1000}>
+        <TooltipTrigger asChild>
+          <Button type="button" onClick={clearSelections} variant="destructive" size="icon-sm">
+            <Eraser />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent side="right">
+          <p className="max-w-xs text-wrap">{t("erase-selection")}</p>
+        </TooltipContent>
+      </Tooltip>
     </div>
   );
 }
 
-interface ETCFormInnerProps extends ETCFormProps {
-  tObject: ReturnType<typeof useTranslations>;
-}
-
-function ETCFormInner({
-  filters,
-  objects,
-  selectedObject,
-  onSelectObject,
-  store,
-  onSubmit,
-  disabled,
-  tObject,
-}: ETCFormInnerProps) {
+function ETCFormInner({ filters, objects, selectedObject, onSelectObject, store, onSubmit, disabled }: ETCFormProps) {
   const t = useTranslations("etc.form");
   const isMobile = useIsMobile();
   const { selection } = useHeatmapSelectionContext();
@@ -358,13 +365,13 @@ function ETCFormInner({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="flex items-center gap-0.5">
-                        {tObject("title")}
+                        {t("object.title")}
                         <Tooltip>
                           <TooltipTrigger>
                             <Info className="ml-1 size-4 text-muted-foreground" />
                           </TooltipTrigger>
                           <TooltipContent>
-                            <p className="max-w-xs text-wrap">{tObject("tooltip")}</p>
+                            <p className="max-w-xs text-wrap">{t("object.tooltip")}</p>
                           </TooltipContent>
                         </Tooltip>
                       </FormLabel>
@@ -372,7 +379,7 @@ function ETCFormInner({
                         <Select value={field.value} onValueChange={field.onChange}>
                           <FormControl>
                             <SelectTrigger className="flex-1">
-                              <SelectValue placeholder={tObject("select-placeholder")} />
+                              <SelectValue placeholder={t("object.select-placeholder")} />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -390,7 +397,7 @@ function ETCFormInner({
                             variant="outline"
                             size="icon"
                             onClick={store.downloadCube}
-                            title={tObject("download")}
+                            title={t("object.download")}
                           >
                             <Download className="size-4" />
                           </Button>
@@ -440,7 +447,7 @@ function ETCFormInner({
                   </div>
                 )}
 
-                {selectionError && <p className="text-destructive text-sm">{tObject("selection-required")}</p>}
+                {selectionError && <p className="text-destructive text-sm">{t("object.selection-required")}</p>}
                 {store.error && <p className="text-destructive text-sm">{store.error}</p>}
               </div>
             </div>

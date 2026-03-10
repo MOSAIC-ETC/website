@@ -129,13 +129,6 @@
   "etc": {
     "title": "Calculadora de Tempo de Exposição",
     "cube-warning": "Por favor, baixe o cubo de dados do objeto antes de calcular.",
-    "object": {
-      "title": "Objeto Não Estelar",
-      "select-placeholder": "Selecione um objeto",
-      "download": "Baixar cubo de dados",
-      "selection-required": "Por favor, selecione uma área do mapa",
-      "tooltip": "Selecione um objeto não estelar da lista. Ele mostrará o espectro integrado do objeto como um mapa 2D. Você pode clicar no mapa para selecionar uma área específica e usá-la para o cálculo do tempo de exposição."
-    },
     "form": {
       "parameters": "Parâmetros",
       "number-of-exposures": "Número de Exposições",
@@ -149,7 +142,19 @@
       "instrument": "Instrumento",
       "sky-condition": "Condição do Céu",
       "select-filter": "Selecione um filtro",
-      "calculate-snr": "Calcular SNR"
+      "calculate-snr": "Calcular SNR",
+      "object": {
+        "title": "Objeto Não Estelar",
+        "select-placeholder": "Selecione um objeto",
+        "download": "Baixar cubo de dados",
+        "selection-required": "Por favor, selecione uma área do mapa",
+        "tooltip": "Selecione um objeto não estelar da lista. Ele mostrará o espectro integrado do objeto como um mapa 2D. Você pode clicar no mapa para selecionar uma área específica e usá-la para o cálculo do tempo de exposição."
+      },
+      "selection-controls": {
+        "polygon-selection": "Seleção poligonal",
+        "square-selection": "Seleção quadrada",
+        "erase-selection": "Apagar seleção"
+      }
     },
     "chart": {
       "title": "SNR vs Comprimento de Onda",

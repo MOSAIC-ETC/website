@@ -129,13 +129,6 @@
   "etc": {
     "title": "Calculateur de Temps d'Exposition",
     "cube-warning": "Veuillez télécharger le cube de données de l'objet avant de calculer.",
-    "object": {
-      "title": "Objet Non Stellaire",
-      "select-placeholder": "Sélectionner un objet",
-      "download": "Télécharger le cube de données",
-      "selection-required": "Veuillez sélectionner une zone de la carte",
-      "tooltip": "Sélectionnez un objet non stellaire dans la liste. Cela vous montrera le spectre intégré de l'objet sous forme de carte 2D. Vous pouvez cliquer sur la carte pour sélectionner une zone spécifique et l'utiliser pour le calcul du temps d'exposition."
-    },
     "form": {
       "parameters": "Paramètres",
       "number-of-exposures": "Nombre d'Expositions",
@@ -149,7 +142,19 @@
       "instrument": "Instrument",
       "sky-condition": "Condition du Ciel",
       "select-filter": "Sélectionner un filtre",
-      "calculate-snr": "Calculer le SNR"
+      "calculate-snr": "Calculer le SNR",
+      "object": {
+        "title": "Objet Non Stellaire",
+        "select-placeholder": "Sélectionner un objet",
+        "download": "Télécharger le cube de données",
+        "selection-required": "Veuillez sélectionner une zone de la carte",
+        "tooltip": "Sélectionnez un objet non stellaire dans la liste. Cela vous montrera le spectre intégré de l'objet sous forme de carte 2D. Vous pouvez cliquer sur la carte pour sélectionner une zone spécifique et l'utiliser pour le calcul du temps d'exposition."
+      },
+      "selection-controls": {
+        "polygon-selection": "Sélection polygonale",
+        "square-selection": "Sélection carrée",
+        "erase-selection": "Effacer la sélection"
+      }
     },
     "chart": {
       "title": "SNR vs Longueur d'Onde",
