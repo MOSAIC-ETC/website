@@ -10,7 +10,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
 import { CircularProgress } from "@/components/circular-progress";
 import {
   Heatmap,
@@ -402,8 +401,6 @@ function ETCFormInner({
                     </FormItem>
                   )}
                 />
-
-                {store.previewLoading && <Skeleton className="rounded-md w-full aspect-square" />}
 
                 {store.preview && (
                   <div className="flex lg:flex-row flex-col justify-center items-center lg:items-start gap-3">
