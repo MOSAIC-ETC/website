@@ -9,6 +9,31 @@ interface SNRChartProps {
   data: SNRDataPoint[];
 }
 
+function CustomTooltip({
+  active,
+  payload,
+  label,
+  snrLabel,
+}: {
+  active?: boolean;
+  payload?: { value: number }[];
+  label?: string | number;
+  snrLabel: string;
+}) {
+  if (!active || !payload?.length) return null;
+
+  return (
+    <div className="bg-card shadow-2xl px-2.5 py-1.5 rounded font-mono text-card-foreground text-xs pointer-events-none">
+      <p>{label} nm</p>
+      <div className="flex items-center mt-2 min-w-25">
+        <div className="inline-block bg-chart-1 mr-2 rounded-full w-3 h-3" />
+        <p className="mr-auto pr-5 text-muted-foreground">{snrLabel}</p>
+        <span>{Number(payload[0].value).toFixed(2)}</span>
+      </div>
+    </div>
+  );
+}
+
 export function SNRChart({ data }: SNRChartProps) {
   const t = useTranslations("etc.chart");
 
@@ -43,16 +68,7 @@ export function SNRChart({ data }: SNRChartProps) {
               label={{ value: t("snr-label"), angle: -90, position: "insideLeft", offset: 0 }}
               className="fill-muted-foreground text-xs"
             />
-            <Tooltip
-              contentStyle={{
-                backgroundColor: "hsl(var(--popover))",
-                border: "1px solid hsl(var(--border))",
-                borderRadius: "var(--radius)",
-                color: "hsl(var(--popover-foreground))",
-              }}
-              formatter={(value) => [Number(value).toFixed(2), t("snr-label")]}
-              labelFormatter={(label) => `${label} nm`}
-            />
+            <Tooltip content={<CustomTooltip snrLabel={t("snr-label")} />} animationDuration={0} />
             <Line
               type="monotone"
               dataKey="snr"
@@ -61,6 +77,7 @@ export function SNRChart({ data }: SNRChartProps) {
               strokeWidth={2}
               dot={false}
               activeDot={{ r: 4 }}
+              animationDuration={0}
             />
           </LineChart>
         </ResponsiveContainer>
