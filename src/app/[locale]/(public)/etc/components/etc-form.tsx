@@ -412,7 +412,6 @@ function ETCFormInner({
                       width={isMobile ? 280 : 520}
                       height={isMobile ? 260 : 500}
                       colormap="inferno"
-                      showAxes={false}
                       tooltip
                       selectable
                       renderTooltip={(cell: HeatmapCellData) => (
