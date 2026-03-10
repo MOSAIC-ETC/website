@@ -133,12 +133,13 @@
       "title": "Objeto Não Estelar",
       "select-placeholder": "Selecione um objeto",
       "download": "Baixar cubo de dados",
-      "selection-required": "Por favor, selecione uma área do mapa"
+      "selection-required": "Por favor, selecione uma área do mapa",
+      "tooltip": "Selecione um objeto não estelar da lista. Ele mostrará o espectro integrado do objeto como um mapa 2D. Você pode clicar no mapa para selecionar uma área específica e usá-la para o cálculo do tempo de exposição."
     },
     "form": {
       "parameters": "Parâmetros",
       "number-of-exposures": "Número de Exposições",
-      "exposure-time": "Tempo de Exposição (segundos)",
+      "exposure-time": "Tempo de Exposição (s)",
       "magnitude": "Magnitude",
       "wavelength-range": "Comprimento de Onda (nm)",
       "wavelength-min": "Mín",

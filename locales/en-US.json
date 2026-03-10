@@ -133,12 +133,13 @@
       "title": "Non-Stellar Object",
       "select-placeholder": "Select an object",
       "download": "Download data cube",
-      "selection-required": "Please select an area of the map"
+      "selection-required": "Please select an area of the map",
+      "tooltip": "Select a non-stellar object from the list. It will show you the object's integrated spectrum as a 2D map. You can click on the map to select a specific area and use it for the exposure time calculation."
     },
     "form": {
       "parameters": "Parameters",
       "number-of-exposures": "Number of Exposures",
-      "exposure-time": "Exposure Time (seconds)",
+      "exposure-time": "Exposure Time (s)",
       "magnitude": "Magnitude",
       "wavelength-range": "Wavelength (nm)",
       "wavelength-min": "Min",

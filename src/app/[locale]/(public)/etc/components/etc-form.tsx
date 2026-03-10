@@ -4,13 +4,14 @@ import { useState, useEffect } from "react";
 import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
-import { Download, Check, SquareDashed, TriangleDashed, Eraser } from "lucide-react";
+import { Download, Check, SquareDashed, TriangleDashed, Eraser, Info } from "lucide-react";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CircularProgress } from "@/components/circular-progress";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import {
   Heatmap,
   HeatmapProvider,
@@ -356,7 +357,17 @@ function ETCFormInner({
                   name="objectId"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{tObject("title")}</FormLabel>
+                      <FormLabel className="flex items-center gap-0.5">
+                        {tObject("title")}
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <Info className="ml-1 size-4 text-muted-foreground" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="max-w-xs text-wrap">{tObject("tooltip")}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </FormLabel>
                       <div className="flex gap-2">
                         <Select value={field.value} onValueChange={field.onChange}>
                           <FormControl>

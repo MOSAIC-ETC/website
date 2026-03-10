@@ -133,12 +133,13 @@
       "title": "Objet Non Stellaire",
       "select-placeholder": "Sélectionner un objet",
       "download": "Télécharger le cube de données",
-      "selection-required": "Veuillez sélectionner une zone de la carte"
+      "selection-required": "Veuillez sélectionner une zone de la carte",
+      "tooltip": "Sélectionnez un objet non stellaire dans la liste. Cela vous montrera le spectre intégré de l'objet sous forme de carte 2D. Vous pouvez cliquer sur la carte pour sélectionner une zone spécifique et l'utiliser pour le calcul du temps d'exposition."
     },
     "form": {
       "parameters": "Paramètres",
       "number-of-exposures": "Nombre d'Expositions",
-      "exposure-time": "Temps d'Exposition (secondes)",
+      "exposure-time": "Temps d'Exposition (s)",
       "magnitude": "Magnitude",
       "wavelength-range": "Longueur d'onde (nm)",
       "wavelength-min": "Min",
