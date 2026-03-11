@@ -1,4 +1,6 @@
-import type { ETCFormValues, SNRDataPoint, FilterEntry, FilterTransmissionPoint } from "./types";
+import type { ETCFormValues, SNRDataPoint, FilterEntry, NMFile } from "./types";
+import { HeatmapCell } from "@/components/chart/heatmap";
+import { FITSFile, FITSHDU } from "@/lib/parser";
 
 /**
  * TODO: Replace this mock implementation with the actual ETC calculation.
@@ -8,11 +10,17 @@ import type { ETCFormValues, SNRDataPoint, FilterEntry, FilterTransmissionPoint 
 export function calculateSNR(
   values: ETCFormValues,
   filter: FilterEntry,
-  filterCurve: FilterTransmissionPoint[],
+  filterCurve: NMFile[],
+  objectSelection: HeatmapCell[],
+  object: FITSFile,
 ): SNRDataPoint[] {
   console.log("Calculating SNR with values:", values);
   console.log("Using filter:", filter);
   console.log("Filter curve points:", filterCurve);
+  console.log("Selected object region:", objectSelection);
+
+  const fluxHDU = object["FLUX"] as FITSHDU;
+  console.log("Object:", fluxHDU.data);
 
   const { wavelengthMin, wavelengthMax, numberOfExposures, exposureTime } = values;
   const points = 200;

@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect, useRef } from "react";
 import type { ObjectEntry } from "../lib/types";
-import { extractFlux2D } from "../../../../../lib/fits";
+import { FITSParser, type FITSFile } from "@/lib/parser";
 
 const DB_NAME = "etc-object-store";
 const DB_VERSION = 1;
@@ -50,6 +50,8 @@ export interface UseObjectStoreReturn {
   preview: number[][] | null;
   /** Whether the preview is loading */
   previewLoading: boolean;
+  /** Parsed FITS file for the full data cube (null until downloaded/loaded) */
+  cube: FITSFile | null;
   /** Whether the full data cube is stored and ready */
   cubeReady: boolean;
   /** Download progress 0-100 (null when not downloading) */
@@ -63,7 +65,7 @@ export interface UseObjectStoreReturn {
 export function useObjectStore(object: ObjectEntry | null): UseObjectStoreReturn {
   const [preview, setPreview] = useState<number[][] | null>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
-  const [cubeReady, setCubeReady] = useState(false);
+  const [cube, setCube] = useState<FITSFile | null>(null);
   const [downloadProgress, setDownloadProgress] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
@@ -76,7 +78,7 @@ export function useObjectStore(object: ObjectEntry | null): UseObjectStoreReturn
 
     setPreview(null);
     setPreviewLoading(false);
-    setCubeReady(false);
+    setCube(null);
     setDownloadProgress(null);
     setError(null);
 
@@ -89,11 +91,17 @@ export function useObjectStore(object: ObjectEntry | null): UseObjectStoreReturn
     fetch(object.previewPath)
       .then((res) => {
         if (!res.ok) throw new Error(`Failed to load preview: ${res.status}`);
+
         return res.arrayBuffer();
       })
       .then((buf) => {
         if (cancelled) return;
-        const flux = extractFlux2D(buf);
+
+        const file = new FITSParser(buf).parse();
+        const hdu = file["FLUX"];
+        if (!hdu || Array.isArray(hdu)) throw new Error("FLUX extension not found");
+
+        const flux = hdu.data as number[][];
         setPreview(flux);
       })
       .catch((err) => {
@@ -104,13 +112,15 @@ export function useObjectStore(object: ObjectEntry | null): UseObjectStoreReturn
         if (!cancelled) setPreviewLoading(false);
       });
 
-    // Check if cube is already in IndexedDB
+    // Check if cube is already in IndexedDB and parse it
     getCubeFromDB(object.id)
       .then((stored) => {
-        if (!cancelled && stored) setCubeReady(true);
+        if (!cancelled && stored) {
+          setCube(new FITSParser(stored).parse());
+        }
       })
       .catch(() => {
-        // Ignore — just means cube isn't stored yet
+        // Ignore - just means cube isn't stored yet
       });
 
     return () => {
@@ -160,8 +170,8 @@ export function useObjectStore(object: ObjectEntry | null): UseObjectStoreReturn
         return pump();
       })
       .then((buf) => saveCubeToDB(object.id, buf).then(() => buf))
-      .then(() => {
-        setCubeReady(true);
+      .then((buf) => {
+        setCube(new FITSParser(buf).parse());
         setDownloadProgress(null);
       })
       .catch((err) => {
@@ -171,5 +181,7 @@ export function useObjectStore(object: ObjectEntry | null): UseObjectStoreReturn
       });
   }, [object, downloadProgress]);
 
-  return { preview, previewLoading, cubeReady, downloadProgress, downloadCube, error };
+  const cubeReady = cube !== null;
+
+  return { preview, previewLoading, cube, cubeReady, downloadProgress, downloadCube, error };
 }
