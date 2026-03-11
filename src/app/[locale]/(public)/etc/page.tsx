@@ -20,18 +20,17 @@ export default function ETCPage() {
   const [selectedObject, setSelectedObject] = useState<ObjectEntry | null>(OBJECTS[0] ?? null);
   const store = useObjectStore(selectedObject);
 
-  async function handleSubmit(values: ETCFormSchema, heatmapSelection: HeatmapCell[]) {
-    if (!store.cubeReady) {
+  async function handleSubmit(values: ETCFormSchema, selection: HeatmapCell[]) {
+    if (!store.cube) {
       // TODO: use toast to display warning
       return;
     }
 
-    const entry = FILTERS.find((f) => f.id === values.filterId);
-    if (!entry) return;
+    const filter = FILTERS.find((f) => f.id === values.filterId);
+    if (!filter) return;
 
-    const curve = await fetchFilterCurve(entry);
-    console.log("Selected heatmap cells:", heatmapSelection);
-    const data = calculateSNR(values, entry, curve);
+    const filterCurve = await fetchFilterCurve(filter);
+    const data = calculateSNR(values, filter, filterCurve, selection, store.cube);
     setChartData(data);
   }
 

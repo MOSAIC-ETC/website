@@ -1,3 +1,6 @@
+export { WavelengthUnit, type NMFile } from "@/lib/parser";
+import type { WavelengthUnit } from "@/lib/parser";
+
 export enum MagnitudeUnit {
   APPARENT = "mag",
   AB = "AB mag",
@@ -25,11 +28,6 @@ export enum SkyCondition {
   ALL_TH = "Sky ALL+Th",
 }
 
-export enum WavelengthUnit {
-  NM = "nm",
-  UM = "um",
-}
-
 export interface FilterEntry {
   id: string;
   name: string;
@@ -37,11 +35,6 @@ export interface FilterEntry {
   effWavelength: number;
   effWavelengthUnit: WavelengthUnit;
   zeroPoint: number;
-}
-
-export interface FilterTransmissionPoint {
-  wavelength: number; // in nanometers
-  transmission: number; // normalized to 0-1
 }
 
 export interface ObjectEntry {

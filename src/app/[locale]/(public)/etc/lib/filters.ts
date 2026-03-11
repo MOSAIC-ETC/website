@@ -1,5 +1,5 @@
-import { WavelengthUnit, type FilterTransmissionPoint } from "./types";
-import type { FilterEntry } from "./types";
+import { WavelengthUnit, NMParser } from "@/lib/parser";
+import type { FilterEntry, NMFile } from "./types";
 
 export const FILTERS: FilterEntry[] = [
   {
@@ -133,69 +133,19 @@ export const FILTERS: FilterEntry[] = [
 ].sort((a, b) => a.effWavelength - b.effWavelength);
 
 /**
- * Converts a wavelength value to nanometers based on the specified unit.
- *
- * @param value The wavelength value to convert.
- * @param unit  The unit of the wavelength value (nm or um).
- * @returns The wavelength value in nanometers.
- */
-export function toNanometers(value: number, unit: WavelengthUnit): number {
-  return unit === WavelengthUnit.UM ? value * 1000 : value;
-}
-
-/**
- * Parses the content of a filter curve file and returns an array of transmission points.
- * The file is expected to have two columns: wavelength and transmission, with optional comments starting with '#'.
- * Wavelengths are converted to nanometers based on the specified unit.
- * Transmission values are normalized to the range 0-1 if they are given as percentages (0-100).
- *
- * @param text           The raw text content of the filter curve file.
- * @param wavelengthUnit The unit of the wavelength values in the file (nm or um).
- * @returns An array of filter transmission points, each containing a wavelength in nanometers and a normalized transmission value.
- */
-function parseFilterFile(text: string, wavelengthUnit: WavelengthUnit): FilterTransmissionPoint[] {
-  const points: FilterTransmissionPoint[] = [];
-
-  for (const line of text.split("\n")) {
-    const trimmed = line.trim();
-    if (trimmed === "" || trimmed.startsWith("#")) continue;
-
-    const [rawWavelength, rawTransmission] = trimmed.split(/\s+/);
-    const wavelength = parseFloat(rawWavelength);
-    const transmission = parseFloat(rawTransmission);
-
-    if (Number.isNaN(wavelength) || Number.isNaN(transmission)) continue;
-
-    points.push({
-      wavelength: toNanometers(wavelength, wavelengthUnit),
-      transmission,
-    });
-  }
-
-  // Normalize percentage (0-100) to fraction (0-1)
-  const maxTransmission = Math.max(...points.map((p) => p.transmission));
-  if (maxTransmission > 1) {
-    for (const point of points) {
-      point.transmission /= 100;
-    }
-  }
-
-  return points;
-}
-
-/**
  * Fetches the filter curve data for a given filter entry and returns it as an array of transmission points.
  *
  * @param entry The filter entry containing the path to the filter curve file and the wavelength unit.
  * @returns A promise that resolves to an array of filter transmission points.
  * @throws An error if the filter curve file cannot be loaded or parsed.
  */
-export async function fetchFilterCurve(entry: FilterEntry): Promise<FilterTransmissionPoint[]> {
+export async function fetchFilterCurve(entry: FilterEntry): Promise<NMFile[]> {
   const response = await fetch(entry.path);
   if (!response.ok) {
     throw new Error(`Failed to load filter curve: ${entry.path}`);
   }
 
   const text = await response.text();
-  return parseFilterFile(text, entry.effWavelengthUnit);
+  const parser = new NMParser(text, entry.effWavelengthUnit);
+  return parser.parse();
 }
