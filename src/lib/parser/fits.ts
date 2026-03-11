@@ -131,23 +131,39 @@ export class FITSHDU {
 }
 
 /**
- * Parsed FITS file providing indexed access to HDUs by extension name.
+ * Parsed FITS file with named access to HDUs by extension name.
  *
- * Supports bracket notation for extension lookup:
  * ```ts
- * const flux = file["FLUX"].data;           // auto-shaped NdArray
- * const author = file["FLUX"].header["AUTHOR"];
+ * const flux  = file.get("FLUX")?.data;
+ * const author = file.get("FLUX")?.header["AUTHOR"];
  * ```
  */
-export interface FITSFile {
+export class FITSFile {
   /** All HDUs in file order. */
   readonly hdus: FITSHDU[];
 
   /** The primary (first) HDU. */
   readonly primary: FITSHDU;
 
-  /** Access an HDU by its EXTNAME. */
-  [extname: string]: FITSHDU | FITSHDU[] | undefined;
+  /** Map of EXTNAME → HDU for quick access to named extensions. */
+  private readonly extMap: Map<string, FITSHDU>;
+
+  /** @internal */
+  constructor(hdus: FITSHDU[], extMap: Map<string, FITSHDU>) {
+    this.hdus = hdus;
+    this.primary = hdus[0];
+    this.extMap = extMap;
+  }
+
+  /**
+   * Returns the HDU with the given extension name.
+   *
+   * @param extname - The EXTNAME keyword value to look up.
+   * @returns The matching {@link FITSHDU}, or `undefined` if not found.
+   */
+  get(extname: string): FITSHDU | undefined {
+    return this.extMap.get(extname);
+  }
 }
 
 /**
@@ -164,9 +180,7 @@ export class FITSParser {
   }
 
   /**
-   * Parses the FITS buffer into a structured {@link FITSFile}.
-   *
-   * @returns A proxy object supporting bracket-access by extension name.
+   * Parses the FITS buffer into a {@link FITSFile}.
    */
   parse(): FITSFile {
     const hdus = this.parseHDUs();
@@ -177,31 +191,19 @@ export class FITSParser {
       if (name) extMap.set(name, hdu);
     }
 
-    return new Proxy({ hdus, primary: hdus[0] } as FITSFile, {
-      get(target, prop) {
-        if (prop === "hdus") return target.hdus;
-        if (prop === "primary") return target.primary;
-        if (typeof prop === "string") return extMap.get(prop);
-        return undefined;
-      },
-    });
+    return new FITSFile(hdus, extMap);
   }
 
   /**
    * Convenience method that parses and extracts data from a named extension.
    *
-   * @param extname - The extension name (defaults to "FLUX").
+   * @param extname - The extension name to extract.
    * @returns The auto-shaped data array.
    * @throws If the extension is not found.
    */
   extract(extname: string): NdArray {
-    const file = this.parse();
-    const hdu = file[extname] as FITSHDU | undefined;
-
-    if (!hdu) {
-      throw new Error(`Extension "${extname}" not found in FITS file`);
-    }
-
+    const hdu = this.parse().get(extname);
+    if (!hdu) throw new Error(`Extension "${extname}" not found in FITS file`);
     return hdu.data;
   }
 

@@ -19,8 +19,13 @@ export function calculateSNR(
   console.log("Filter curve points:", filterCurve);
   console.log("Selected object region:", objectSelection);
 
-  const fluxHDU = object["FLUX"] as FITSHDU;
-  console.log("Object:", fluxHDU.data);
+  const flux = object.get("FLUX")?.data;
+  const wavelengths = object.get("WAVE")?.data;
+
+  if (!flux || !wavelengths) {
+    console.warn("FLUX or WAVE data not found in FITS file");
+    return [];
+  }
 
   const { wavelengthMin, wavelengthMax, numberOfExposures, exposureTime } = values;
   const points = 200;

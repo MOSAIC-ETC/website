@@ -98,8 +98,8 @@ export function useObjectStore(object: ObjectEntry | null): UseObjectStoreReturn
         if (cancelled) return;
 
         const file = new FITSParser(buf).parse();
-        const hdu = file["FLUX"];
-        if (!hdu || Array.isArray(hdu)) throw new Error("FLUX extension not found");
+        const hdu = file.get("FLUX");
+        if (!hdu) throw new Error("FLUX extension not found");
 
         const flux = hdu.data as number[][];
         setPreview(flux);
