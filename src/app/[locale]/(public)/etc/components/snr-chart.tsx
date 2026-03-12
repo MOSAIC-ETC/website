@@ -63,6 +63,7 @@ export function SNRChart({ data }: SNRChartProps) {
               dataKey="wavelength"
               label={{ value: t("wavelength-label"), position: "insideBottom", offset: -10 }}
               className="fill-muted-foreground text-xs"
+              tickFormatter={(value) => Number(value).toFixed(1)}
             />
             <YAxis
               label={{ value: t("snr-label"), angle: -90, position: "insideLeft", offset: 0 }}
