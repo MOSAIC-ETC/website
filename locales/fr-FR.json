@@ -161,6 +161,8 @@
       "empty-state": "Soumettez le formulaire pour générer le graphique.",
       "wavelength-label": "Longueur d'Onde (nm)",
       "snr-label": "SNR"
-    }
+    },
+    "object-not-loaded": "Objet non chargé. Veuillez télécharger le cube de données de l'objet avant de calculer.",
+    "tables-not-loaded": "Tables de données non chargées. Veuillez patienter."
   }
 }

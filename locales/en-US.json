@@ -161,6 +161,8 @@
       "empty-state": "Submit the form to generate the chart.",
       "wavelength-label": "Wavelength (nm)",
       "snr-label": "SNR"
-    }
+    },
+    "object-not-loaded": "Object not loaded. Please download the object data cube before calculating.",
+    "tables-not-loaded": "Data tables not loaded. Please wait."
   }
 }

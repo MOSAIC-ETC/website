@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { ETCForm } from "./components/etc-form";
@@ -25,12 +26,12 @@ export default function ETCPage() {
 
   async function handleSubmit(values: ETCFormSchema, selection: HeatmapCell[]) {
     if (!object.cube) {
-      // TODO: use toast to display warning
+      toast.error(t("object-not-loaded"));
       return;
     }
 
     if (!tables.tables) {
-      // TODO: use toast to display warning
+      toast.error(t("tables-not-loaded"));
       return;
     }
 
