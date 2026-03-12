@@ -3,51 +3,12 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import type { ObjectEntry } from "../lib/types";
 import { FITSParser, type FITSFile } from "@/lib/parser";
+import { useIndexedDB } from "@/hooks/use-indexed-db";
+import { DB_NAME, DB_STORES } from "../lib/db";
 
-const DB_NAME = "etc-object-store";
-const DB_VERSION = 1;
-const STORE_NAME = "cubes";
-
-function openDB(): Promise<IDBDatabase> {
-  return new Promise((resolve, reject) => {
-    const request = indexedDB.open(DB_NAME, DB_VERSION);
-    request.onupgradeneeded = () => {
-      const db = request.result;
-      if (!db.objectStoreNames.contains(STORE_NAME)) {
-        db.createObjectStore(STORE_NAME);
-      }
-    };
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-  });
-}
-
-async function getCubeFromDB(objectId: string): Promise<ArrayBuffer | null> {
-  const db = await openDB();
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(STORE_NAME, "readonly");
-    const store = tx.objectStore(STORE_NAME);
-    const req = store.get(objectId);
-    req.onsuccess = () => resolve(req.result ?? null);
-    req.onerror = () => reject(req.error);
-  });
-}
-
-async function saveCubeToDB(objectId: string, data: ArrayBuffer): Promise<void> {
-  const db = await openDB();
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(STORE_NAME, "readwrite");
-    const store = tx.objectStore(STORE_NAME);
-    const req = store.put(data, objectId);
-
-    req.onsuccess = () => resolve();
-    req.onerror = () => reject(req.error);
-  });
-}
-
-export interface UseObjectStoreReturn {
+export interface UseFITSCubeReturn {
   /** 2D flux array for heatmap preview (null until loaded) */
-  preview: number[][] | null;
+  preview: FITSFile | null;
   /** Whether the preview is loading */
   previewLoading: boolean;
   /** Parsed FITS file for the full data cube (null until downloaded/loaded) */
@@ -62,13 +23,16 @@ export interface UseObjectStoreReturn {
   error: string | null;
 }
 
-export function useObjectStore(object: ObjectEntry | null): UseObjectStoreReturn {
-  const [preview, setPreview] = useState<number[][] | null>(null);
+export function useFITSCube(object: ObjectEntry | null): UseFITSCubeReturn {
+  const [preview, setPreview] = useState<FITSFile | null>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
   const [cube, setCube] = useState<FITSFile | null>(null);
   const [downloadProgress, setDownloadProgress] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
+
   const abortRef = useRef<AbortController | null>(null);
+
+  const store = useIndexedDB<ArrayBuffer>(DB_NAME, DB_STORES, "cubes");
 
   // Reset state when object changes
   useEffect(() => {
@@ -98,11 +62,7 @@ export function useObjectStore(object: ObjectEntry | null): UseObjectStoreReturn
         if (cancelled) return;
 
         const file = new FITSParser(buf).parse();
-        const hdu = file.get("FLUX");
-        if (!hdu) throw new Error("FLUX extension not found");
-
-        const flux = hdu.data as number[][];
-        setPreview(flux);
+        setPreview(file);
       })
       .catch((err) => {
         if (cancelled) return;
@@ -113,7 +73,8 @@ export function useObjectStore(object: ObjectEntry | null): UseObjectStoreReturn
       });
 
     // Check if cube is already in IndexedDB and parse it
-    getCubeFromDB(object.id)
+    store
+      .get(object.id)
       .then((stored) => {
         if (!cancelled && stored) {
           setCube(new FITSParser(stored).parse());
@@ -129,6 +90,8 @@ export function useObjectStore(object: ObjectEntry | null): UseObjectStoreReturn
   }, [object]);
 
   const downloadCube = useCallback(() => {
+    console.log("Download cube called");
+
     if (!object || downloadProgress !== null) return;
 
     const controller = new AbortController();
@@ -169,7 +132,7 @@ export function useObjectStore(object: ObjectEntry | null): UseObjectStoreReturn
 
         return pump();
       })
-      .then((buf) => saveCubeToDB(object.id, buf).then(() => buf))
+      .then((buf) => store.put(object.id, buf).then(() => buf))
       .then((buf) => {
         setCube(new FITSParser(buf).parse());
         setDownloadProgress(null);

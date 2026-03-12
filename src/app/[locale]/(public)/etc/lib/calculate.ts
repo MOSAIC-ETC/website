@@ -1,6 +1,7 @@
 import type { ETCFormValues, SNRDataPoint, FilterEntry, NMFile } from "./types";
 import { HeatmapCell } from "@/components/chart/heatmap";
-import { FITSFile, FITSHDU } from "@/lib/parser";
+import { FITSFile } from "@/lib/parser";
+import { CSVTables } from "../hooks/use-csv-tables";
 
 /**
  * TODO: Replace this mock implementation with the actual ETC calculation.
@@ -13,12 +14,8 @@ export function calculateSNR(
   filterCurve: NMFile[],
   objectSelection: HeatmapCell[],
   object: FITSFile,
+  tables: CSVTables,
 ): SNRDataPoint[] {
-  console.log("Calculating SNR with values:", values);
-  console.log("Using filter:", filter);
-  console.log("Filter curve points:", filterCurve);
-  console.log("Selected object region:", objectSelection);
-
   const flux = object.get("FLUX")?.data;
   const wavelengths = object.get("WAVE")?.data;
 
@@ -27,18 +24,20 @@ export function calculateSNR(
     return [];
   }
 
-  const { wavelengthMin, wavelengthMax, numberOfExposures, exposureTime } = values;
-  const points = 200;
-  const step = (wavelengthMax - wavelengthMin) / (points - 1);
+  const {
+    numberOfExposures,
+    exposureTime,
+    magnitude,
+    magnitudeUnit,
+    wavelengthMin,
+    wavelengthMax,
+    redshift,
+    redshiftUnit,
+    instrument,
+    skyCondition,
+  } = values;
 
-  return Array.from({ length: points }, (_, i) => {
-    const wavelength = wavelengthMin + i * step;
-    const center = (wavelengthMin + wavelengthMax) / 2;
-    const sigma = (wavelengthMax - wavelengthMin) / 4;
-    const gaussian = Math.exp(-((wavelength - center) ** 2) / (2 * sigma ** 2));
-    const scaleFactor = Math.sqrt(numberOfExposures * exposureTime) / 10;
-    const snr = Math.max(0, gaussian * 50 * scaleFactor + (Math.random() - 0.5) * 3);
+  const { background, enclosedEnergy, hrThroughput, lrThroughput } = tables;
 
-    return { wavelength: Math.round(wavelength), snr: Math.round(snr * 100) / 100 };
-  });
+  return [];
 }

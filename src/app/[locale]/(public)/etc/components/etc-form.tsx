@@ -30,14 +30,14 @@ import {
   type ObjectEntry,
 } from "../lib/types";
 import { etcFormSchema, type ETCFormSchema } from "../lib/schema";
-import type { UseObjectStoreReturn } from "../hooks/use-object-store";
+import type { UseFITSCubeReturn } from "../hooks/use-fits-cube";
 
 interface ETCFormProps {
   filters: FilterEntry[];
   objects: ObjectEntry[];
   selectedObject: ObjectEntry | null;
   onSelectObject: (obj: ObjectEntry | null) => void;
-  store: UseObjectStoreReturn;
+  object: UseFITSCubeReturn;
   onSubmit: (values: ETCFormSchema, heatmapSelection: HeatmapCell[]) => void;
   disabled?: boolean;
 }
@@ -50,7 +50,15 @@ function enumOptions<T extends Record<string, string>>(enumObj: T) {
   ));
 }
 
-export function ETCForm({ filters, objects, selectedObject, onSelectObject, store, onSubmit, disabled }: ETCFormProps) {
+export function ETCForm({
+  filters,
+  objects,
+  selectedObject,
+  onSelectObject,
+  object,
+  onSubmit,
+  disabled,
+}: ETCFormProps) {
   return (
     <HeatmapProvider>
       <ETCFormInner
@@ -60,7 +68,7 @@ export function ETCForm({ filters, objects, selectedObject, onSelectObject, stor
         objects={objects}
         selectedObject={selectedObject}
         onSelectObject={onSelectObject}
-        store={store}
+        object={object}
       />
     </HeatmapProvider>
   );
@@ -118,11 +126,20 @@ function SelectionControls() {
   );
 }
 
-function ETCFormInner({ filters, objects, selectedObject, onSelectObject, store, onSubmit, disabled }: ETCFormProps) {
+function ETCFormInner({
+  filters,
+  objects,
+  selectedObject,
+  onSelectObject,
+  object,
+  onSubmit,
+  disabled,
+}: ETCFormProps) {
   const t = useTranslations("etc.form");
   const isMobile = useIsMobile();
   const { selection } = useHeatmapSelectionContext();
 
+  const [preview, setPreview] = useState<number[][] | null>(null);
   const [selectionError, setSelectionError] = useState(false);
 
   const form = useForm<ETCFormSchema>({
@@ -153,6 +170,22 @@ function ETCFormInner({ filters, objects, selectedObject, onSelectObject, store,
   useEffect(() => {
     if (selection.length > 0) setSelectionError(false);
   }, [selection]);
+
+  useEffect(() => {
+    if (object.preview) {
+      const fluxHdu = object.preview.get("FLUX");
+      if (!fluxHdu) {
+        console.warn("FLUX extension not found in FITS file");
+        setPreview(null);
+        return;
+      }
+
+      const flux = fluxHdu.data as number[][] | undefined;
+      setPreview(flux ?? null);
+    } else {
+      setPreview(null);
+    }
+  }, [object.preview]);
 
   function handleFormSubmit(values: ETCFormSchema) {
     if (selection.length === 0) {
@@ -391,25 +424,25 @@ function ETCFormInner({ filters, objects, selectedObject, onSelectObject, store,
                           </SelectContent>
                         </Select>
 
-                        {selectedObject && !store.cubeReady && store.downloadProgress === null && (
+                        {selectedObject && !object.cubeReady && object.downloadProgress === null && (
                           <Button
                             type="button"
                             variant="outline"
                             size="icon"
-                            onClick={store.downloadCube}
+                            onClick={object.downloadCube}
                             title={t("object.download")}
                           >
                             <Download className="size-4" />
                           </Button>
                         )}
 
-                        {store.downloadProgress !== null && (
+                        {object.downloadProgress !== null && (
                           <Button type="button" variant="outline" size="icon" disabled className="pointer-events-none">
-                            <CircularProgress value={store.downloadProgress} />
+                            <CircularProgress value={object.downloadProgress} />
                           </Button>
                         )}
 
-                        {store.cubeReady && (
+                        {object.cubeReady && (
                           <Button type="button" variant="outline" size="icon" disabled className="pointer-events-none">
                             <Check className="size-4" />
                           </Button>
@@ -420,10 +453,10 @@ function ETCFormInner({ filters, objects, selectedObject, onSelectObject, store,
                   )}
                 />
 
-                {store.preview && (
+                {preview && (
                   <div className="flex lg:flex-row flex-col justify-center items-center lg:items-start gap-3">
                     <Heatmap
-                      values={store.preview}
+                      values={preview}
                       width={isMobile ? 280 : 520}
                       height={isMobile ? 260 : 500}
                       colormap="inferno"
@@ -448,7 +481,7 @@ function ETCFormInner({ filters, objects, selectedObject, onSelectObject, store,
                 )}
 
                 {selectionError && <p className="text-destructive text-sm">{t("object.selection-required")}</p>}
-                {store.error && <p className="text-destructive text-sm">{store.error}</p>}
+                {object.error && <p className="text-destructive text-sm">{object.error}</p>}
               </div>
             </div>
 

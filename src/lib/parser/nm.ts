@@ -7,8 +7,8 @@
  */
 
 export enum WavelengthUnit {
-  NM,
-  UM,
+  NM = "Nanometers (nm)",
+  UM = "Micrometers (um)",
 }
 
 export interface NMFile {

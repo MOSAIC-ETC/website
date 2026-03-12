@@ -12,6 +12,9 @@ export interface CSVParserOptions {
   hasHeader?: boolean;
 }
 
+export type CSVRow = Record<string, string | number>;
+export type CSVFile = CSVRow[];
+
 /**
  * Parses CSV text into structured row objects or raw string arrays.
  *
@@ -96,7 +99,7 @@ export class CSVParser {
    * @returns An array of row objects with header names as keys.
    * @throws If the CSV was configured without headers.
    */
-  parseAsObjects(): Record<string, string | number>[] {
+  parse(): CSVFile {
     if (!this.hasHeader) {
       throw new Error("Cannot parse as objects without a header row");
     }
@@ -107,25 +110,12 @@ export class CSVParser {
     const headers = this.parseLine(lines[0]);
     return lines.slice(1).map((line) => {
       const fields = this.parseLine(line);
-      const row: Record<string, string | number> = {};
+      const row: CSVRow = {};
       for (let i = 0; i < headers.length; i++) {
         row[headers[i]] = this.coerce(fields[i] ?? "");
       }
       return row;
     });
-  }
-
-  /**
-   * Parses the CSV into a raw 2D array of strings.
-   *
-   * Skips the header row if configured. No type coercion is applied.
-   *
-   * @returns A 2D array where each inner array represents a row of fields.
-   */
-  parseAsArrays(): string[][] {
-    const lines = this.getLines();
-    const startIndex = this.hasHeader ? 1 : 0;
-    return lines.slice(startIndex).map((line) => this.parseLine(line));
   }
 
   /**

@@ -8,7 +8,8 @@ import { SNRChart } from "./components/snr-chart";
 import { calculateSNR } from "./lib/calculate";
 import { fetchFilterCurve, FILTERS } from "./lib/filters";
 import { OBJECTS } from "./lib/objects";
-import { useObjectStore } from "./hooks/use-object-store";
+import { useFITSCube } from "./hooks/use-fits-cube";
+import { useCSVTables } from "./hooks/use-csv-tables";
 import type { ObjectEntry, SNRDataPoint } from "./lib/types";
 import type { HeatmapCell } from "@/components/chart/heatmap";
 import type { ETCFormSchema } from "./lib/schema";
@@ -18,10 +19,17 @@ export default function ETCPage() {
 
   const [chartData, setChartData] = useState<SNRDataPoint[]>([]);
   const [selectedObject, setSelectedObject] = useState<ObjectEntry | null>(OBJECTS[0] ?? null);
-  const store = useObjectStore(selectedObject);
+
+  const object = useFITSCube(selectedObject);
+  const tables = useCSVTables();
 
   async function handleSubmit(values: ETCFormSchema, selection: HeatmapCell[]) {
-    if (!store.cube) {
+    if (!object.cube) {
+      // TODO: use toast to display warning
+      return;
+    }
+
+    if (!tables.tables) {
       // TODO: use toast to display warning
       return;
     }
@@ -29,8 +37,9 @@ export default function ETCPage() {
     const filter = FILTERS.find((f) => f.id === values.filterId);
     if (!filter) return;
 
+
     const filterCurve = await fetchFilterCurve(filter);
-    const data = calculateSNR(values, filter, filterCurve, selection, store.cube);
+    const data = calculateSNR(values, filter, filterCurve, selection, object.cube, tables.tables);
     setChartData(data);
   }
 
@@ -52,7 +61,7 @@ export default function ETCPage() {
           objects={OBJECTS}
           selectedObject={selectedObject}
           onSelectObject={setSelectedObject}
-          store={store}
+          object={object}
           onSubmit={handleSubmit}
         />
         <SNRChart data={chartData} />
