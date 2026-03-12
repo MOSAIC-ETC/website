@@ -12,8 +12,9 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sidebar } from "@/components/sidebar";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
-import "../globals.css";
 import { PerfMeasureGuard } from "@/components/perf-measure-guard";
+import { Toaster } from "@/components/ui/sonner";
+import "../globals.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -66,6 +67,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
                   <ScrollArea className="h-[calc(100vh-4rem)]">
                     <div className="min-h-[calc(100vh-4rem)]">{children}</div>
                     <Footer />
+                    <Toaster position="bottom-right" />
                   </ScrollArea>
                 </main>
               </SidebarProvider>
