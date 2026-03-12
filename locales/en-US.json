@@ -154,6 +154,13 @@
         "polygon-selection": "Polygon selection",
         "square-selection": "Square selection",
         "erase-selection": "Erase selection"
+      },
+      "errors": {
+        "select-object": "Select an object",
+        "select-filter": "Select a filter",
+        "wavelength-max-greater": "Max wavelength must be greater than min wavelength",
+        "wavelength-min-gte": "Min wavelength must be ≥ {wmin}",
+        "wavelength-max-lte": "Max wavelength must be ≤ {wmax}"
       }
     },
     "chart": {

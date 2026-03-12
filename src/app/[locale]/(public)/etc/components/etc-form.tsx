@@ -29,7 +29,7 @@ import {
   type FilterEntry,
   type ObjectEntry,
 } from "../lib/types";
-import { etcFormSchema, createEtcFormSchema, type ETCFormSchema } from "../lib/schema";
+import { createEtcFormSchema, type ETCFormSchema } from "../lib/schema";
 import type { UseFITSCubeReturn } from "../hooks/use-fits-cube";
 
 interface ETCFormProps {
@@ -134,7 +134,7 @@ function ETCFormInner({ filters, objects, selectedObject, onSelectObject, object
   const [preview, setPreview] = useState<number[][] | null>(null);
   const [selectionError, setSelectionError] = useState(false);
 
-  const schemaRef = useRef(createEtcFormSchema());
+  const schemaRef = useRef(createEtcFormSchema(t));
 
   const form = useForm<ETCFormSchema>({
     resolver: ((values, context, options) =>
@@ -172,7 +172,7 @@ function ETCFormInner({ filters, objects, selectedObject, onSelectObject, object
       if (!fluxHdu) {
         console.warn("FLUX extension not found in FITS file");
         setPreview(null);
-        schemaRef.current = createEtcFormSchema();
+        schemaRef.current = createEtcFormSchema(t);
         return;
       }
 
@@ -180,11 +180,12 @@ function ETCFormInner({ filters, objects, selectedObject, onSelectObject, object
       const wmax = parseFloat(fluxHdu.header["WMAX"]);
       if (isNaN(wmin) || isNaN(wmax)) {
         console.warn("WMIN or WMAX header not found or invalid in FITS file");
-        schemaRef.current = createEtcFormSchema();
+        schemaRef.current = createEtcFormSchema(t);
         return;
       }
 
       schemaRef.current = createEtcFormSchema(
+        t,
         Math.round(wmin * 100) / 100,
         Math.round(wmax * 100) / 100,
       );
@@ -194,9 +195,9 @@ function ETCFormInner({ filters, objects, selectedObject, onSelectObject, object
       setPreview(flux ?? null);
     } else {
       setPreview(null);
-      schemaRef.current = createEtcFormSchema();
+      schemaRef.current = createEtcFormSchema(t);
     }
-  }, [object.preview]);
+  }, [object.preview, t]);
 
   function handleFormSubmit(values: ETCFormSchema) {
     if (selection.length === 0) {
