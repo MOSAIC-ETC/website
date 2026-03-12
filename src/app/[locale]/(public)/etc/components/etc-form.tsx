@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
@@ -29,7 +29,7 @@ import {
   type FilterEntry,
   type ObjectEntry,
 } from "../lib/types";
-import { etcFormSchema, type ETCFormSchema } from "../lib/schema";
+import { etcFormSchema, createEtcFormSchema, type ETCFormSchema } from "../lib/schema";
 import type { UseFITSCubeReturn } from "../hooks/use-fits-cube";
 
 interface ETCFormProps {
@@ -126,15 +126,7 @@ function SelectionControls() {
   );
 }
 
-function ETCFormInner({
-  filters,
-  objects,
-  selectedObject,
-  onSelectObject,
-  object,
-  onSubmit,
-  disabled,
-}: ETCFormProps) {
+function ETCFormInner({ filters, objects, selectedObject, onSelectObject, object, onSubmit, disabled }: ETCFormProps) {
   const t = useTranslations("etc.form");
   const isMobile = useIsMobile();
   const { selection } = useHeatmapSelectionContext();
@@ -142,8 +134,12 @@ function ETCFormInner({
   const [preview, setPreview] = useState<number[][] | null>(null);
   const [selectionError, setSelectionError] = useState(false);
 
+  const schemaRef = useRef(etcFormSchema);
+
   const form = useForm<ETCFormSchema>({
-    resolver: zodResolver(etcFormSchema) as Resolver<ETCFormSchema>,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: ((values, context, options) =>
+      (zodResolver(schemaRef.current) as any)(values, context, options)) as Resolver<ETCFormSchema>,
     defaultValues: {
       objectId: selectedObject?.id ?? "",
       numberOfExposures: 1,
@@ -177,13 +173,29 @@ function ETCFormInner({
       if (!fluxHdu) {
         console.warn("FLUX extension not found in FITS file");
         setPreview(null);
+        schemaRef.current = createEtcFormSchema();
         return;
       }
+
+      const wmin = parseFloat(fluxHdu.header["WMIN"]);
+      const wmax = parseFloat(fluxHdu.header["WMAX"]);
+      if (isNaN(wmin) || isNaN(wmax)) {
+        console.warn("WMIN or WMAX header not found or invalid in FITS file");
+        schemaRef.current = createEtcFormSchema();
+        return;
+      }
+
+      schemaRef.current = createEtcFormSchema(
+        Math.round(wmin * 100) / 100,
+        Math.round(wmax * 100) / 100,
+      );
+      form.trigger(["wavelengthMin", "wavelengthMax"]);
 
       const flux = fluxHdu.data as number[][] | undefined;
       setPreview(flux ?? null);
     } else {
       setPreview(null);
+      schemaRef.current = createEtcFormSchema();
     }
   }, [object.preview]);
 
@@ -273,7 +285,6 @@ function ETCFormInner({
                           <FormControl>
                             <Input type="number" min={0} step="any" placeholder={t("wavelength-min")} {...field} />
                           </FormControl>
-                          <FormMessage />
                         </FormItem>
                       )}
                     />
@@ -286,11 +297,14 @@ function ETCFormInner({
                           <FormControl>
                             <Input type="number" min={0} step="any" placeholder={t("wavelength-max")} {...field} />
                           </FormControl>
-                          <FormMessage />
                         </FormItem>
                       )}
                     />
                   </div>
+
+                  <FormMessage>
+                    {form.formState.errors.wavelengthMin?.message || form.formState.errors.wavelengthMax?.message}
+                  </FormMessage>
                 </div>
 
                 <FormField
