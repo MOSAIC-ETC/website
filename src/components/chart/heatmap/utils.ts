@@ -56,12 +56,12 @@ export function getCellsInPolygon(polygon: HeatmapPoint[], numRows: number, numC
       // Check center of cell
       if (
         isPointInPolygon(
-          row + 0.5,
           col + 0.5,
-          polygon.map((p) => ({ x: p.x + 0.5, y: p.y + 0.5 }))
+          row + 0.5,
+          polygon.map((p) => ({ x: p.x + 0.5, y: p.y + 0.5 })),
         )
       ) {
-        cells.add(`${row},${col}`);
+        cells.add(`${col},${row}`);
       }
     }
   }
@@ -74,28 +74,28 @@ export function getCellsInPolygon(polygon: HeatmapPoint[], numRows: number, numC
 export function getPixelOutlineEdges(
   selectedCells: Set<string>,
   numRows: number,
-  numCols: number
+  numCols: number,
 ): { x1: number; y1: number; x2: number; y2: number }[] {
   const edges: { x1: number; y1: number; x2: number; y2: number }[] = [];
 
   selectedCells.forEach((cellKey) => {
-    const [row, col] = cellKey.split(",").map(Number);
+    const [x, y] = cellKey.split(",").map(Number);
 
     // Top edge (if cell above is not selected)
-    if (!selectedCells.has(`${row + 1},${col}`)) {
-      edges.push({ x1: col, y1: row + 1, x2: col + 1, y2: row + 1 });
+    if (!selectedCells.has(`${x},${y + 1}`)) {
+      edges.push({ x1: x, y1: y + 1, x2: x + 1, y2: y + 1 });
     }
     // Bottom edge (if cell below is not selected)
-    if (!selectedCells.has(`${row - 1},${col}`)) {
-      edges.push({ x1: col, y1: row, x2: col + 1, y2: row });
+    if (!selectedCells.has(`${x},${y - 1}`)) {
+      edges.push({ x1: x, y1: y, x2: x + 1, y2: y });
     }
     // Left edge (if cell to the left is not selected)
-    if (!selectedCells.has(`${row},${col - 1}`)) {
-      edges.push({ x1: col, y1: row, x2: col, y2: row + 1 });
+    if (!selectedCells.has(`${x - 1},${y}`)) {
+      edges.push({ x1: x, y1: y, x2: x, y2: y + 1 });
     }
     // Right edge (if cell to the right is not selected)
-    if (!selectedCells.has(`${row},${col + 1}`)) {
-      edges.push({ x1: col + 1, y1: row, x2: col + 1, y2: row + 1 });
+    if (!selectedCells.has(`${x + 1},${y}`)) {
+      edges.push({ x1: x + 1, y1: y, x2: x + 1, y2: y + 1 });
     }
   });
 
@@ -132,13 +132,13 @@ export function cellToCanvas(
   numRows: number,
   numCols: number,
   marginLeft: number,
-  marginTop: number
+  marginTop: number,
 ): { canvasX: number; canvasY: number } {
   const cellWidth = plotWidth / numCols;
   const cellHeight = plotHeight / numRows;
   return {
-    canvasX: marginLeft + cell.y * cellWidth + cellWidth / 2,
-    canvasY: marginTop + (numRows - 1 - cell.x) * cellHeight + cellHeight / 2,
+    canvasX: marginLeft + cell.x * cellWidth + cellWidth / 2,
+    canvasY: marginTop + (numRows - 1 - cell.y) * cellHeight + cellHeight / 2,
   };
 }
 
@@ -155,7 +155,7 @@ export function getVertexAtPosition(
   numCols: number,
   marginLeft: number,
   marginTop: number,
-  hitRadius = 10
+  hitRadius = 10,
 ): number | null {
   for (let i = 0; i < points.length; i++) {
     const { canvasX: vx, canvasY: vy } = cellToCanvas(
@@ -165,7 +165,7 @@ export function getVertexAtPosition(
       numRows,
       numCols,
       marginLeft,
-      marginTop
+      marginTop,
     );
 
     const dist = Math.sqrt((canvasX - vx) ** 2 + (canvasY - vy) ** 2);

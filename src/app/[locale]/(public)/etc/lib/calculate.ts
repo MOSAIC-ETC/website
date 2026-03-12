@@ -3,11 +3,6 @@ import { HeatmapCell } from "@/components/chart/heatmap";
 import { FITSFile } from "@/lib/parser";
 import { CSVTables } from "../hooks/use-csv-tables";
 
-/**
- * TODO: Replace this mock implementation with the actual ETC calculation.
- * The function should take the form values and return an array of
- * { wavelength, snr } data points for the specified wavelength range.
- */
 export function calculateSNR(
   values: ETCFormValues,
   filter: FilterEntry,
@@ -16,14 +11,6 @@ export function calculateSNR(
   object: FITSFile,
   tables: CSVTables,
 ): SNRDataPoint[] {
-  const flux = object.get("FLUX")?.data;
-  const wavelengths = object.get("WAVE")?.data;
-
-  if (!flux || !wavelengths) {
-    console.warn("FLUX or WAVE data not found in FITS file");
-    return [];
-  }
-
   const {
     numberOfExposures,
     exposureTime,
@@ -39,5 +26,34 @@ export function calculateSNR(
 
   const { background, enclosedEnergy, hrThroughput, lrThroughput } = tables;
 
+  const flux = object.get("FLUX")?.data as number[][][] | undefined; // shape (n_wave, ny, nx) = (4563, 54, 54)
+  const wavelengths = object.get("WAVE")?.data as number[] | undefined; // shape (4563,)
+
+  if (!flux || !wavelengths) {
+    console.warn("FLUX or WAVE data not found in FITS file");
+    return [];
+  }
+
+  const selectedFluxes: number[][] = getSelected(flux, objectSelection);
+  const totalFlux: number[] = sumAll(selectedFluxes);
+
   return [];
+}
+
+function getSelected(flux: number[][][], selection: HeatmapCell[]): number[][] {
+  const selected: number[][] = [];
+  for (const cell of selection) {
+    const { x, y: flippedY } = cell;
+    const y = flux[0].length - 1 - flippedY; // flip Y coordinate
+
+    const cellFlux = flux.map((waveSlice) => waveSlice[y][x]);
+    selected.push(cellFlux);
+  }
+  return selected;
+}
+
+function sumAll(fluxes: number[][]): number[] {
+  return fluxes.reduce((sum, cellFlux) => {
+    return sum.map((val, i) => val + cellFlux[i]);
+  }, new Array(fluxes[0].length).fill(0));
 }

@@ -151,7 +151,7 @@ export function Heatmap({
         return null;
       const col = Math.floor((mx - margin.left) / (plotWidth / numCols));
       const row = numRows - 1 - Math.floor((my - margin.top) / (plotHeight / numRows));
-      return { x: Math.max(0, Math.min(numRows - 1, row)), y: Math.max(0, Math.min(numCols - 1, col)) };
+      return { x: Math.max(0, Math.min(numCols - 1, col)), y: Math.max(0, Math.min(numRows - 1, row)) };
     },
     [numRows, numCols, margin, plotWidth, plotHeight],
   );
@@ -205,7 +205,7 @@ export function Heatmap({
         hoveredCellRef.current = cell;
         // Only update tooltip state when not actively selecting (avoids unnecessary React re-renders)
         if (!isSelectingRef.current && draggingVertexRef.current === null) {
-          const cellValue = values[cell.x]?.[cell.y] ?? 0;
+          const cellValue = values[cell.y]?.[cell.x] ?? 0;
           const normalizedValue = maxVal > 0 ? cellValue / maxVal : 0;
           const cellColor = interpolateColormap(normalizedValue, selectedColormap);
           setHoverInfo({ x: cell.x, y: cell.y, value: cellValue, color: cellColor });
@@ -330,7 +330,7 @@ export function Heatmap({
         selectionStartRef.current = cell;
         rectSelRef.current = { start: { x: cell.x, y: cell.y }, end: { x: cell.x, y: cell.y } };
         hoveredCellRef.current = cell;
-        const cellValue = values[cell.x]?.[cell.y] ?? 0;
+        const cellValue = values[cell.y]?.[cell.x] ?? 0;
         const normalizedValue = maxVal > 0 ? cellValue / maxVal : 0;
         const cellColor = interpolateColormap(normalizedValue, selectedColormap);
         setHoveredCellPos(cell);
@@ -371,7 +371,7 @@ export function Heatmap({
 
       if (cell) {
         hoveredCellRef.current = cell;
-        const cellValue = values[cell.x]?.[cell.y] ?? 0;
+        const cellValue = values[cell.y]?.[cell.x] ?? 0;
         const normalizedValue = maxVal > 0 ? cellValue / maxVal : 0;
         const cellColor = interpolateColormap(normalizedValue, selectedColormap);
         setHoveredCellPos(cell);
@@ -416,8 +416,8 @@ export function Heatmap({
     if (!hoveredCellPos || !canvasRef.current || numRows === 0 || numCols === 0) return { left: 0, top: 0 };
     const cellWidth = plotWidth / numCols;
     const cellHeight = plotHeight / numRows;
-    const x = margin.left + hoveredCellPos.y * cellWidth + cellWidth / 2;
-    const y = margin.top + (numRows - 1 - hoveredCellPos.x) * cellHeight;
+    const x = margin.left + hoveredCellPos.x * cellWidth + cellWidth / 2;
+    const y = margin.top + (numRows - 1 - hoveredCellPos.y) * cellHeight;
     return { left: x, top: y - 10 };
   };
 

@@ -103,8 +103,8 @@ export function drawHeatmap({
 
   // Draw highlight border on hovered cell (only if not selecting)
   if (highlightCell && !selectionRect && !(polygonSel && !polygonSel.closed)) {
-    const x = margin.left + highlightCell.y * cellWidth;
-    const y = margin.top + (numRows - 1 - highlightCell.x) * cellHeight;
+    const x = margin.left + highlightCell.x * cellWidth;
+    const y = margin.top + (numRows - 1 - highlightCell.y) * cellHeight;
     ctx.strokeStyle = "#ffffff";
     ctx.lineWidth = 2;
     ctx.strokeRect(x + 1, y + 1, cellWidth - 2, cellHeight - 2);
@@ -152,7 +152,7 @@ function drawPolygonSelection(
   ctx: CanvasRenderingContext2D,
   polygonSel: HeatmapPolygon,
   preview: HeatmapPoint | null | undefined,
-  options: DrawPolygonOptions
+  options: DrawPolygonOptions,
 ) {
   const { margin, plotWidth, plotHeight, numRows, numCols, cellWidth, cellHeight } = options;
   const points = polygonSel.points;
@@ -167,7 +167,7 @@ function drawPolygonSelection(
     ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
     for (let row = 0; row < numRows; row++) {
       for (let col = 0; col < numCols; col++) {
-        if (!selectedCells.has(`${row},${col}`)) {
+        if (!selectedCells.has(`${col},${row}`)) {
           const x = margin.left + col * cellWidth;
           const y = margin.top + (numRows - 1 - row) * cellHeight;
           ctx.fillRect(x, y, cellWidth + 0.5, cellHeight + 0.5);
@@ -250,7 +250,7 @@ interface DrawRectangleOptions {
 function drawRectangleSelection(
   ctx: CanvasRenderingContext2D,
   selectionRect: HeatmapRect,
-  options: DrawRectangleOptions
+  options: DrawRectangleOptions,
 ) {
   const { margin, plotWidth, plotHeight, numRows, cellWidth, cellHeight } = options;
 
@@ -259,10 +259,10 @@ function drawRectangleSelection(
   const minY = Math.min(selectionRect.start.y, selectionRect.end.y);
   const maxY = Math.max(selectionRect.start.y, selectionRect.end.y);
 
-  const selX = margin.left + minY * cellWidth;
-  const selY = margin.top + (numRows - 1 - maxX) * cellHeight;
-  const selW = (maxY - minY + 1) * cellWidth;
-  const selH = (maxX - minX + 1) * cellHeight;
+  const selX = margin.left + minX * cellWidth;
+  const selY = margin.top + (numRows - 1 - maxY) * cellHeight;
+  const selW = (maxX - minX + 1) * cellWidth;
+  const selH = (maxY - minY + 1) * cellHeight;
 
   // Draw dark overlay outside the selection
   ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
