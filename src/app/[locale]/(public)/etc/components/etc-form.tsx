@@ -134,20 +134,19 @@ function ETCFormInner({ filters, objects, selectedObject, onSelectObject, object
   const [preview, setPreview] = useState<number[][] | null>(null);
   const [selectionError, setSelectionError] = useState(false);
 
-  const schemaRef = useRef(etcFormSchema);
 
   const form = useForm<ETCFormSchema>({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    resolver: ((values, context, options) =>
-      (zodResolver(schemaRef.current) as any)(values, context, options)) as Resolver<ETCFormSchema>,
+    resolver: zodResolver(etcFormSchema) as Resolver<ETCFormSchema>,
+    // resolver: ((values, context, options) =>
+    //   (zodResolver(schemaRef.current) as any)(values, context, options)) as Resolver<ETCFormSchema>,
     defaultValues: {
       objectId: selectedObject?.id ?? "",
       numberOfExposures: 1,
       exposureTime: 3600,
       magnitude: 20,
       magnitudeUnit: MagnitudeUnit.AB,
-      wavelengthMin: 400,
-      wavelengthMax: 900,
+      // wavelengthMin: 400,
+      // wavelengthMax: 900,
       redshift: 0,
       redshiftUnit: RedshiftUnit.Z,
       filterId: filters[0]?.id || "",
@@ -173,29 +172,29 @@ function ETCFormInner({ filters, objects, selectedObject, onSelectObject, object
       if (!fluxHdu) {
         console.warn("FLUX extension not found in FITS file");
         setPreview(null);
-        schemaRef.current = createEtcFormSchema();
+        // schemaRef.current = createEtcFormSchema();
         return;
       }
 
-      const wmin = parseFloat(fluxHdu.header["WMIN"]);
-      const wmax = parseFloat(fluxHdu.header["WMAX"]);
-      if (isNaN(wmin) || isNaN(wmax)) {
-        console.warn("WMIN or WMAX header not found or invalid in FITS file");
-        schemaRef.current = createEtcFormSchema();
-        return;
-      }
+      // const wmin = parseFloat(fluxHdu.header["WMIN"]);
+      // const wmax = parseFloat(fluxHdu.header["WMAX"]);
+      // if (isNaN(wmin) || isNaN(wmax)) {
+      //   console.warn("WMIN or WMAX header not found or invalid in FITS file");
+      //   schemaRef.current = createEtcFormSchema();
+      //   return;
+      // }
 
-      schemaRef.current = createEtcFormSchema(
-        Math.round(wmin * 100) / 100,
-        Math.round(wmax * 100) / 100,
-      );
-      form.trigger(["wavelengthMin", "wavelengthMax"]);
+      // schemaRef.current = createEtcFormSchema(
+      //   Math.round(wmin * 100) / 100,
+      //   Math.round(wmax * 100) / 100,
+      // );
+      // form.trigger(["wavelengthMin", "wavelengthMax"]);
 
       const flux = fluxHdu.data as number[][] | undefined;
       setPreview(flux ?? null);
     } else {
       setPreview(null);
-      schemaRef.current = createEtcFormSchema();
+      // schemaRef.current = createEtcFormSchema();
     }
   }, [object.preview]);
 
@@ -274,7 +273,7 @@ function ETCFormInner({ filters, objects, selectedObject, onSelectObject, object
                   )}
                 />
 
-                <div>
+                {/* <div>
                   <FormLabel>{t("wavelength-range")}</FormLabel>
                   <div className="flex items-center gap-2 mt-2">
                     <FormField
@@ -305,7 +304,7 @@ function ETCFormInner({ filters, objects, selectedObject, onSelectObject, object
                   <FormMessage>
                     {form.formState.errors.wavelengthMin?.message || form.formState.errors.wavelengthMax?.message}
                   </FormMessage>
-                </div>
+                </div> */}
 
                 <FormField
                   control={form.control}
@@ -471,8 +470,8 @@ function ETCFormInner({ filters, objects, selectedObject, onSelectObject, object
                   <div className="flex lg:flex-row flex-col justify-center items-center lg:items-start gap-3">
                     <Heatmap
                       values={preview}
-                      width={isMobile ? 280 : 520}
-                      height={isMobile ? 260 : 500}
+                      width={isMobile ? 280 : 470}
+                      height={isMobile ? 260 : 450}
                       colormap="inferno"
                       tooltip
                       selectable
