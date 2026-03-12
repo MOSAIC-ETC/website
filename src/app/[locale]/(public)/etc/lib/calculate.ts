@@ -60,6 +60,14 @@ export function calculateSNR(
     flux: totalFlux[i],
   }));
 
+  // NOTE: The reason why we normalize at 550 nm and then scale it back, is because in the previous iteration
+  // of this problem, we were using a synthetic spectrum that was already normalized at 550 nm, so the value at 550 nm was 1.
+  // For that reason, so we can reuse the same implementation and same mathematical equations to compute the SNR,
+  // we need to normalize the observed spectrum at 550 nm as well, and then apply the scaling factor derived from the
+  //  magnitude and filter-averaged flux.
+  //
+  // TODO: In the future, we might want to refactor the code to avoid this double normalization, but for now this is the simplest
+  // way to adapt the existing implementation to work with observed spectra.
   const valueAt550nm = getNearestFlux(rawSpectrum, 550);
   const normalizedSpectrum = rawSpectrum.map((point) => ({
     wavelength: point.wavelength,
