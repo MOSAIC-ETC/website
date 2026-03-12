@@ -28,11 +28,11 @@ export function createEtcFormSchema(t: TranslationFn, wmin?: number, wmax?: numb
       path: ["wavelengthMax"],
     })
     .refine((data) => wmin === undefined || data.wavelengthMin >= wmin, {
-      message: t("errors.wavelength-min-gte", { wmin: wmin ?? 0 }),
+      message: t("errors.wavelength-min-gte", { wmin: wmin! }),
       path: ["wavelengthMin"],
     })
     .refine((data) => wmax === undefined || data.wavelengthMax <= wmax, {
-      message: t("errors.wavelength-max-lte", { wmax: wmax ?? 0 }),
+      message: t("errors.wavelength-max-lte", { wmax: wmax! }),
       path: ["wavelengthMax"],
     });
 }
