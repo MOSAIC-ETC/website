@@ -24,7 +24,7 @@ function CustomTooltip({
 
   return (
     <div className="bg-card shadow-2xl px-2.5 py-1.5 rounded font-mono text-card-foreground text-xs pointer-events-none">
-      <p>{label} nm</p>
+      <p>{Number(label).toFixed(2)} nm</p>
       <div className="flex items-center mt-2 min-w-25">
         <div className="inline-block bg-chart-1 mr-2 rounded-full w-3 h-3" />
         <p className="mr-auto pr-5 text-muted-foreground">{snrLabel}</p>
