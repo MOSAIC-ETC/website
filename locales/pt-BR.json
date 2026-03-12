@@ -154,6 +154,13 @@
         "polygon-selection": "Seleção poligonal",
         "square-selection": "Seleção quadrada",
         "erase-selection": "Apagar seleção"
+      },
+      "errors": {
+        "select-object": "Selecione um objeto",
+        "select-filter": "Selecione um filtro",
+        "wavelength-max-greater": "O comprimento de onda máximo deve ser maior que o mínimo",
+        "wavelength-min-gte": "O comprimento de onda mínimo deve ser ≥ {wmin}",
+        "wavelength-max-lte": "O comprimento de onda máximo deve ser ≤ {wmax}"
       }
     },
     "chart": {
