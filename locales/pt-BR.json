@@ -148,7 +148,7 @@
         "select-placeholder": "Selecione um objeto",
         "download": "Baixar cubo de dados",
         "selection-required": "Por favor, selecione uma área do mapa",
-        "tooltip": "Selecione um objeto não estelar da lista. Ele mostrará o espectro integrado do objeto como um mapa 2D. Você pode clicar no mapa para selecionar uma área específica e usá-la para o cálculo do tempo de exposição."
+        "tooltip": "Selecione um objeto não estelar da lista. Será exibido o espectro comprimido do objeto como um mapa 2D. Você pode clicar no mapa para selecionar uma área específica e usá-la para o cálculo do tempo de exposição."
       },
       "selection-controls": {
         "polygon-selection": "Seleção poligonal",

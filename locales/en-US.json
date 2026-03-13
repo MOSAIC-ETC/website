@@ -148,7 +148,7 @@
         "select-placeholder": "Select an object",
         "download": "Download data cube",
         "selection-required": "Please select an area of the map",
-        "tooltip": "Select a non-stellar object from the list. It will show you the object's integrated spectrum as a 2D map. You can click on the map to select a specific area and use it for the exposure time calculation."
+        "tooltip": "Select a non-stellar object from the list. It will show you the object's compressed spectrum as a 2D map. You can click on the map to select a specific area and use it for the exposure time calculation."
       },
       "selection-controls": {
         "polygon-selection": "Polygon selection",
