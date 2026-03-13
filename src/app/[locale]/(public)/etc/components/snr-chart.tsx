@@ -1,35 +1,51 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { InteractiveChart } from "@/components/interactive-chart";
+import type { ChartConfig } from "@/components/ui/chart";
 import type { SNRDataPoint } from "../lib/types";
+import { RotateCw } from "lucide-react";
 
 interface SNRChartProps {
   data: SNRDataPoint[];
 }
 
-function CustomTooltip({
+const chartConfig: ChartConfig = {
+  snr: {
+    label: "SNR",
+    color: "var(--chart-1)",
+  },
+};
+
+const lines = [{ dataKey: "snr" as const }];
+
+function SNRTooltipContent({
   active,
   payload,
   label,
-  snrLabel,
 }: {
   active?: boolean;
-  payload?: { value: number }[];
+  payload?: { value: number; dataKey: string }[];
   label?: string | number;
-  snrLabel: string;
 }) {
   if (!active || !payload?.length) return null;
 
   return (
-    <div className="bg-card shadow-2xl px-2.5 py-1.5 rounded font-mono text-card-foreground text-xs pointer-events-none">
-      <p>{Number(label).toFixed(2)} nm</p>
-      <div className="flex items-center mt-2 min-w-25">
-        <div className="inline-block bg-chart-1 mr-2 rounded-full w-3 h-3" />
-        <p className="mr-auto pr-5 text-muted-foreground">{snrLabel}</p>
-        <span>{Number(payload[0].value).toFixed(2)}</span>
-      </div>
+    <div className="bg-background shadow-xl px-2.5 py-1.5 border border-border/50 rounded-lg min-w-32 text-xs">
+      <p className="mb-1.5 font-medium">{Number(label).toFixed(2)} nm</p>
+      {payload.map((entry) => (
+        <div key={entry.dataKey} className="flex justify-between items-center gap-4">
+          <div className="flex items-center gap-1.5">
+            <div
+              className="rounded-[2px] w-2.5 h-2.5 shrink-0"
+              style={{ backgroundColor: `var(--color-${entry.dataKey})` }}
+            />
+            <span className="text-muted-foreground">{chartConfig[entry.dataKey]?.label ?? entry.dataKey}</span>
+          </div>
+          <span className="font-mono font-medium tabular-nums">{Number(entry.value).toFixed(2)}</span>
+        </div>
+      ))}
     </div>
   );
 }
@@ -55,33 +71,21 @@ export function SNRChart({ data }: SNRChartProps) {
       <CardHeader>
         <CardTitle>{t("title")}</CardTitle>
       </CardHeader>
-      <CardContent className="outline-none focus:outline-none **:focus:outline-none **:outline-none">
-        <ResponsiveContainer width="100%" height={320}>
-          <LineChart data={data} margin={{ top: 5, right: 20, bottom: 20, left: 10 }}>
-            <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-            <XAxis
-              dataKey="wavelength"
-              label={{ value: t("wavelength-label"), position: "insideBottom", offset: -10 }}
-              className="fill-muted-foreground text-xs"
-              tickFormatter={(value) => Number(value).toFixed(1)}
-            />
-            <YAxis
-              label={{ value: t("snr-label"), angle: -90, position: "insideLeft", offset: 0 }}
-              className="fill-muted-foreground text-xs"
-            />
-            <Tooltip content={<CustomTooltip snrLabel={t("snr-label")} />} animationDuration={0} />
-            <Line
-              type="monotone"
-              dataKey="snr"
-              className="stroke-chart-1"
-              stroke="currentColor"
-              strokeWidth={2}
-              dot={false}
-              activeDot={{ r: 4 }}
-              animationDuration={0}
-            />
-          </LineChart>
-        </ResponsiveContainer>
+      <CardContent>
+        <InteractiveChart
+          data={data}
+          chartConfig={chartConfig}
+          lines={lines}
+          xAxisKey="wavelength"
+          xAxisLabel={t("wavelength-label")}
+          yAxisLabel={t("snr-label")}
+          xAxisTickFormatter={(value) => Number(value).toFixed(1)}
+          tooltipContent={<SNRTooltipContent />}
+          brushTickFormatter={(value) => Number(value).toFixed(0)}
+          height={320}
+          showLegend={false}
+          resetLabel={<RotateCw />}
+        />
       </CardContent>
     </Card>
   );
