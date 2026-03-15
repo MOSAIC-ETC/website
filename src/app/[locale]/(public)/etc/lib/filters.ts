@@ -1,4 +1,5 @@
-import { WavelengthUnit, NMParser } from "@/lib/parser";
+import { NMParser, WavelengthUnit } from "@/lib/parser";
+
 import type { FilterEntry, NMFile } from "./types";
 
 export const FILTERS: FilterEntry[] = [

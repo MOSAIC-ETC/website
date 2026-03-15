@@ -1,7 +1,8 @@
 "use client";
 
-import { createContext, useContext, useState, useCallback, type ReactNode } from "react";
-import type { SelectionMode, HeatmapCell } from "./types";
+import { type ReactNode, createContext, useCallback, useContext, useState } from "react";
+
+import type { HeatmapCell, SelectionMode } from "./types";
 
 export interface HeatmapContextValue {
   /** Current selection mode */

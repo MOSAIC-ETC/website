@@ -1,18 +1,19 @@
-import Image from "next/image";
-import { useTranslations } from "next-intl";
 import { ChevronRightIcon, EllipsisVerticalIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
+import Image from "next/image";
 
-import { cn } from "@/lib/utils";
-import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuTrigger,
+  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuItem,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Link } from "@/i18n/navigation";
+import { cn } from "@/lib/utils";
+
 import { Separator } from "./ui/separator";
 
 type UserProps = React.ComponentProps<"button"> & {
@@ -37,10 +38,7 @@ export function User({ variant = "icon", className, ...props }: UserProps) {
 
         <div className="w-full">
           <p className="font-medium">{t("anonymous")}</p>
-          <Link
-            href="/login"
-            className="flex items-center gap-1 text-primary text-sm hover:underline"
-          >
+          <Link href="/login" className="flex items-center gap-1 text-primary text-sm hover:underline">
             {t("sign-in")}
             <ChevronRightIcon size={12} />
           </Link>
@@ -56,12 +54,7 @@ export function User({ variant = "icon", className, ...props }: UserProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant="outline"
-          size="icon-lg"
-          className={cn("hidden lg:flex rounded-full", className)}
-          {...props}
-        >
+        <Button variant="outline" size="icon-lg" className={cn("hidden lg:flex rounded-full", className)} {...props}>
           <Image
             src="/assets/images/default-avatar.png"
             alt="User Avatar"

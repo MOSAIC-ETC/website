@@ -12,10 +12,13 @@ export const routing = defineRouting({
   defaultLocale: "pt-BR",
   localePrefix: {
     mode: "as-needed",
-    prefixes: Object.entries(locales).reduce((acc, [locale, meta]) => {
-      acc[locale] = meta.pathPrefix;
-      return acc;
-    }, {} as Record<string, string>),
+    prefixes: Object.entries(locales).reduce(
+      (acc, [locale, meta]) => {
+        acc[locale] = meta.pathPrefix;
+        return acc;
+      },
+      {} as Record<string, string>,
+    ),
   },
   localeCookie: {
     name: "USER_LOCALE",

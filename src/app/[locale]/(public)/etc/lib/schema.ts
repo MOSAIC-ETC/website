@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { MagnitudeUnit, RedshiftUnit, Instrument, SkyCondition } from "./types";
+
+import { Instrument, MagnitudeUnit, RedshiftUnit, SkyCondition } from "./types";
 
 type TranslationFn = (key: string, values?: Record<string, string | number | Date>) => string;
 

@@ -1,19 +1,20 @@
-import { RedshiftUnit } from "./types";
-import type { ETCFormValues, SNRDataPoint, FilterEntry, NMFile } from "./types";
 import type { HeatmapCell } from "@/components/chart/heatmap";
 import type { FITSFile } from "@/lib/parser";
 import type { CSVRow } from "@/lib/parser";
+
 import type { CSVTables } from "../hooks/use-csv-tables";
-import { convertToFluxLambda } from "./conversions";
 import {
-  VELOCITY_OF_LIGHT,
-  PLANCK_CONSTANT,
+  BACKGROUND_COLUMNS,
   ELT_DIAMETER,
   ENCLOSED_ENERGY_COLUMNS,
-  BACKGROUND_COLUMNS,
+  PLANCK_CONSTANT,
   THROUGHPUT_COLUMNS,
+  VELOCITY_OF_LIGHT,
   getInstrumentSettings,
 } from "./constants";
+import { convertToFluxLambda } from "./conversions";
+import { RedshiftUnit } from "./types";
+import type { ETCFormValues, FilterEntry, NMFile, SNRDataPoint } from "./types";
 
 type Spectrum = {
   wavelength: number;

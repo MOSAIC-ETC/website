@@ -1,5 +1,6 @@
-export { WavelengthUnit, type NMFile } from "@/lib/parser";
 import type { WavelengthUnit } from "@/lib/parser";
+
+export { WavelengthUnit, type NMFile } from "@/lib/parser";
 
 export enum MagnitudeUnit {
   APPARENT = "mag",

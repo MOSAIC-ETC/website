@@ -1,19 +1,22 @@
 "use client";
 
 import { useState } from "react";
-import { toast } from "sonner";
-import Image from "next/image";
+
 import { useTranslations } from "next-intl";
+import Image from "next/image";
+import { toast } from "sonner";
+
+import type { HeatmapCell } from "@/components/chart/heatmap";
+
 import { ETCForm } from "./components/etc-form";
 import { SNRChart } from "./components/snr-chart";
-import { calculateSNR } from "./lib/calculate";
-import { fetchFilterCurve, FILTERS } from "./lib/filters";
-import { OBJECTS } from "./lib/objects";
-import { useFITSCube } from "./hooks/use-fits-cube";
 import { useCSVTables } from "./hooks/use-csv-tables";
-import type { ObjectEntry, SNRDataPoint } from "./lib/types";
-import type { HeatmapCell } from "@/components/chart/heatmap";
+import { useFITSCube } from "./hooks/use-fits-cube";
+import { calculateSNR } from "./lib/calculate";
+import { FILTERS, fetchFilterCurve } from "./lib/filters";
+import { OBJECTS } from "./lib/objects";
 import type { ETCFormSchema } from "./lib/schema";
+import type { ObjectEntry, SNRDataPoint } from "./lib/types";
 
 export default function ETCPage() {
   const t = useTranslations("etc");
@@ -37,7 +40,6 @@ export default function ETCPage() {
 
     const filter = FILTERS.find((f) => f.id === values.filterId);
     if (!filter) return;
-
 
     const filterCurve = await fetchFilterCurve(filter);
     const data = calculateSNR(values, filter, filterCurve, selection, object.cube, tables.tables);

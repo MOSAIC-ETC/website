@@ -1,12 +1,12 @@
 "use client";
 
-import Image from "next/image";
 import { useTranslations } from "next-intl";
+import { useTheme } from "next-themes";
+import Image from "next/image";
 
 import { MosaicLogo } from "@/components/icons";
 import { Separator } from "@/components/ui/separator";
 import { Link } from "@/i18n/navigation";
-import { useTheme } from "next-themes";
 
 export function Footer() {
   const t = useTranslations("footer");

@@ -1,41 +1,44 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
-import { useForm, type Resolver } from "react-hook-form";
+import { useEffect, useRef, useState } from "react";
+
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ChartLine, Check, Download, Eraser, Info, SquareDashedMousePointer } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Download, Check, SquareDashedMousePointer, Eraser, Info, ChartLine } from "lucide-react";
-import { PolygonDashedMousePointer } from "@/components/icons";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CircularProgress } from "@/components/circular-progress";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { type Resolver, useForm } from "react-hook-form";
+import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
+
 import {
   Heatmap,
-  HeatmapProvider,
-  useHeatmapSelectionContext,
   type HeatmapCell,
   type HeatmapCellData,
+  HeatmapProvider,
+  useHeatmapSelectionContext,
 } from "@/components/chart/heatmap";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { CircularProgress } from "@/components/circular-progress";
+import { PolygonDashedMousePointer } from "@/components/icons";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { useIsMobile } from "@/hooks/use-mobile";
+
+import type { UseFITSCubeReturn } from "../hooks/use-fits-cube";
+import { fetchFilterCurve } from "../lib/filters";
+import { type ETCFormSchema, createEtcFormSchema } from "../lib/schema";
 import {
-  MagnitudeUnit,
-  RedshiftUnit,
-  Instrument,
-  SkyCondition,
   type FilterEntry,
+  Instrument,
+  MagnitudeUnit,
   type NMFile,
   type ObjectEntry,
+  RedshiftUnit,
+  SkyCondition,
 } from "../lib/types";
-import { fetchFilterCurve } from "../lib/filters";
-import { createEtcFormSchema, type ETCFormSchema } from "../lib/schema";
-import type { UseFITSCubeReturn } from "../hooks/use-fits-cube";
 
 interface ETCFormProps {
   filters: FilterEntry[];

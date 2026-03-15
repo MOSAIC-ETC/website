@@ -1,11 +1,13 @@
 "use client";
 
-import { useTranslations } from "next-intl";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { InteractiveChart } from "@/components/interactive-chart";
-import type { ChartConfig } from "@/components/ui/chart";
-import type { SNRDataPoint } from "../lib/types";
 import { RotateCw } from "lucide-react";
+import { useTranslations } from "next-intl";
+
+import { InteractiveChart } from "@/components/interactive-chart";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import type { ChartConfig } from "@/components/ui/chart";
+
+import type { SNRDataPoint } from "../lib/types";
 
 interface SNRChartProps {
   data: SNRDataPoint[];

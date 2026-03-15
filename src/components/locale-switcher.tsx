@@ -1,14 +1,17 @@
 "use client";
 
-import Image from "next/image";
-import { useLocale, useTranslations } from "next-intl";
 import { ChevronRightIcon, LanguagesIcon } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
+import Image from "next/image";
 
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { locales, routing } from "@/i18n/routing";
-import { useRouter, usePathname } from "@/i18n/navigation";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   SidebarMenuButton,
   SidebarMenuItem,
@@ -16,12 +19,9 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-  DropdownMenuItem,
-} from "@/components/ui/dropdown-menu";
+import { usePathname, useRouter } from "@/i18n/navigation";
+import { locales, routing } from "@/i18n/routing";
+import { cn } from "@/lib/utils";
 
 type LocaleSwitcherProps = React.ComponentProps<"button"> & {
   variant?: "icon" | "sidebar";
@@ -44,12 +44,7 @@ export function LocaleSwitcher({ variant = "icon", ...props }: LocaleSwitcherPro
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            className={cn("rounded-full select-none", props.className)}
-            {...props}
-          >
+          <Button variant="ghost" size="icon" className={cn("rounded-full select-none", props.className)} {...props}>
             {current && <Image src={current.flag} alt={current.name} width={24} height={24} />}
           </Button>
         </DropdownMenuTrigger>
