@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { useTheme } from "next-themes";
 import Image from "next/image";
 
 import { MosaicLogo } from "@/components/icons";
@@ -9,6 +10,7 @@ import { Link } from "@/i18n/navigation";
 
 export function Footer() {
   const t = useTranslations("footer");
+  const { theme } = useTheme();
 
   const items = [
     { href: "/about", text: t("about") },
