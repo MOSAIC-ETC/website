@@ -89,7 +89,7 @@ export function useFITSCube(object: ObjectEntry | null): UseFITSCubeReturn {
     return () => {
       cancelled = true;
     };
-  }, [object]);
+  }, [store, object]);
 
   const downloadCube = useCallback(() => {
     console.log("Download cube called");
@@ -144,7 +144,7 @@ export function useFITSCube(object: ObjectEntry | null): UseFITSCubeReturn {
         setError(err instanceof Error ? err.message : "Download failed");
         setDownloadProgress(null);
       });
-  }, [object, downloadProgress]);
+  }, [store, object, downloadProgress]);
 
   const cubeReady = cube !== null;
 
