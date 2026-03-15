@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
 import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
-import { Download, Check, SquareDashedMousePointer, Eraser, Info } from "lucide-react";
+import { Download, Check, SquareDashedMousePointer, Eraser, Info, ChartLine } from "lucide-react";
 import { PolygonDashedMousePointer } from "@/components/icons";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -21,17 +22,20 @@ import {
   type HeatmapCellData,
 } from "@/components/chart/heatmap";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import {
   MagnitudeUnit,
   RedshiftUnit,
   Instrument,
   SkyCondition,
   type FilterEntry,
+  type NMFile,
   type ObjectEntry,
 } from "../lib/types";
+import { fetchFilterCurve } from "../lib/filters";
 import { createEtcFormSchema, type ETCFormSchema } from "../lib/schema";
 import type { UseFITSCubeReturn } from "../hooks/use-fits-cube";
-
 interface ETCFormProps {
   filters: FilterEntry[];
   objects: ObjectEntry[];
@@ -48,6 +52,37 @@ function enumOptions<T extends Record<string, string>>(enumObj: T) {
       {label}
     </SelectItem>
   ));
+}
+
+function FilterTooltipContent({
+  active,
+  payload,
+  label,
+  formatWavelength,
+  transmissionText,
+}: {
+  active?: boolean;
+  payload?: { value: number; dataKey: string }[];
+  label?: string | number;
+  formatWavelength: (label: string | number | undefined) => string;
+  transmissionText: string;
+}) {
+  if (!active || !payload?.length) return null;
+
+  return (
+    <div className="bg-background shadow-xl px-2.5 py-1.5 border border-border/50 rounded-lg min-w-32 text-xs">
+      <p className="mb-1.5 font-medium">{formatWavelength(label)}</p>
+      {payload.map((entry) => (
+        <div key={entry.dataKey} className="flex justify-between items-center gap-4">
+          <div className="flex items-center gap-1.5">
+            <div className="rounded-[2px] w-2.5 h-2.5 shrink-0" style={{ backgroundColor: `var(--color-chart-1)` }} />
+            <span className="text-muted-foreground">{transmissionText}</span>
+          </div>
+          <span className="font-mono font-medium tabular-nums">{Number(entry.value).toFixed(2)}</span>
+        </div>
+      ))}
+    </div>
+  );
 }
 
 export function ETCForm({
@@ -156,6 +191,43 @@ function ETCFormInner({ filters, objects, selectedObject, onSelectObject, object
   });
 
   const watchedObjectId = form.watch("objectId");
+  const watchedFilterId = form.watch("filterId");
+  const selectedFilterName = filters.find((filter) => filter.id === watchedFilterId)?.name;
+  const [filterCurveData, setFilterCurveData] = useState<NMFile[]>([]);
+  const [isFilterCurveLoading, setIsFilterCurveLoading] = useState(false);
+
+  useEffect(() => {
+    const selectedFilter = filters.find((filter) => filter.id === watchedFilterId);
+    if (!selectedFilter) {
+      setFilterCurveData([]);
+      return;
+    }
+
+    let isCancelled = false;
+    setIsFilterCurveLoading(true);
+
+    fetchFilterCurve(selectedFilter)
+      .then((curve) => {
+        if (!isCancelled) {
+          setFilterCurveData(curve);
+        }
+      })
+      .catch((error) => {
+        console.warn(`Failed to load filter curve for ${selectedFilter.id}:`, error);
+        if (!isCancelled) {
+          setFilterCurveData([]);
+        }
+      })
+      .finally(() => {
+        if (!isCancelled) {
+          setIsFilterCurveLoading(false);
+        }
+      });
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [filters, watchedFilterId]);
 
   useEffect(() => {
     const obj = objects.find((o) => o.id === watchedObjectId) ?? null;
@@ -184,11 +256,7 @@ function ETCFormInner({ filters, objects, selectedObject, onSelectObject, object
         return;
       }
 
-      schemaRef.current = createEtcFormSchema(
-        t,
-        Math.round(wmin * 100) / 100,
-        Math.round(wmax * 100) / 100,
-      );
+      schemaRef.current = createEtcFormSchema(t, Math.round(wmin * 100) / 100, Math.round(wmax * 100) / 100);
       form.trigger(["wavelengthMin", "wavelengthMax"]);
 
       const flux = fluxHdu.data as number[][] | undefined;
@@ -346,21 +414,100 @@ function ETCFormInner({ filters, objects, selectedObject, onSelectObject, object
                   name="filterId"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t("filter")}</FormLabel>
-                      <Select value={field.value} onValueChange={field.onChange}>
-                        <FormControl>
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder={t("select-filter")} />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {filters.map((filter) => (
-                            <SelectItem key={filter.id} value={filter.id}>
-                              {filter.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <FormLabel>{t("filter.label")}</FormLabel>
+                      <div className="flex gap-2">
+                        <Select value={field.value} onValueChange={field.onChange}>
+                          <FormControl>
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder={t("filter.placeholder")} />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {filters.map((filter) => (
+                              <SelectItem key={filter.id} value={filter.id}>
+                                {filter.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+
+                        <HoverCard openDelay={100} closeDelay={200}>
+                          <HoverCardTrigger asChild>
+                            <Button type="button" variant="outline" size="icon" disabled={!field.value}>
+                              <ChartLine className="size-4" />
+                            </Button>
+                          </HoverCardTrigger>
+                          <HoverCardContent side="top" className="p-4 w-auto">
+                            <p className="mb-2 font-medium text-sm">
+                              {selectedFilterName
+                                ? t("filter-chart.title", { name: selectedFilterName })
+                                : t("filter-chart.title-fallback")}
+                            </p>
+                            {isFilterCurveLoading ? (
+                              <div className="flex justify-center items-center w-80 h-60 text-muted-foreground text-sm">
+                                Loading...
+                              </div>
+                            ) : filterCurveData.length > 0 ? (
+                              <ChartContainer config={{}} className="w-80 h-60">
+                                <LineChart
+                                  accessibilityLayer
+                                  data={filterCurveData}
+                                  margin={{ top: 12, bottom: 12, right: 8 }}
+                                >
+                                  <CartesianGrid vertical={false} />
+                                  <XAxis
+                                    dataKey="wavelength"
+                                    type="number"
+                                    domain={["dataMin", "dataMax"]}
+                                    unit=" nm"
+                                    label={{
+                                      value: t("filter-chart.x-axis-label"),
+                                      position: "insideBottom",
+                                      offset: -5,
+                                    }}
+                                  />
+                                  <YAxis
+                                    dataKey="transmission"
+                                    type="number"
+                                    domain={[0, 1]}
+                                    label={{
+                                      value: t("filter-chart.y-axis-label"),
+                                      angle: -90,
+                                      position: "insideLeft",
+                                    }}
+                                  />
+                                  <Line
+                                    type="monotone"
+                                    dataKey="transmission"
+                                    stroke="var(--chart-1)"
+                                    strokeWidth={2}
+                                    dot={false}
+                                    isAnimationActive={false}
+                                  />
+                                  <ChartTooltip
+                                    animationDuration={0}
+                                    cursor={false}
+                                    content={
+                                      <FilterTooltipContent
+                                        formatWavelength={(value) =>
+                                          t("filter-chart.tooltip.wavelength", {
+                                            value: Number.isFinite(Number(value)) ? Number(value).toFixed(2) : "-",
+                                          })
+                                        }
+                                        transmissionText={t("filter-chart.tooltip.transmission")}
+                                      />
+                                    }
+                                  />
+                                </LineChart>
+                              </ChartContainer>
+                            ) : (
+                              <div className="flex justify-center items-center w-80 h-60 text-muted-foreground text-sm">
+                                No filter data available.
+                              </div>
+                            )}
+                          </HoverCardContent>
+                        </HoverCard>
+                      </div>
                       <FormMessage />
                     </FormItem>
                   )}
