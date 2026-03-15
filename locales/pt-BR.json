@@ -138,10 +138,22 @@
       "wavelength-min": "Mín",
       "wavelength-max": "Máx",
       "redshift": "Desvio para o Vermelho",
-      "filter": "Filtro",
+      "filter": {
+        "label": "Filtro",
+        "placeholder": "Selecione um filtro"
+      },
+      "filter-chart": {
+        "title": "Curva do filtro: {name}",
+        "title-fallback": "Curva do filtro",
+        "x-axis-label": "Comprimento de Onda (nm)",
+        "y-axis-label": "Transmissão",
+        "tooltip": {
+          "wavelength": "{value} nm",
+          "transmission": "Transmissão"
+        }
+      },
       "instrument": "Instrumento",
       "sky-condition": "Condição do Céu",
-      "select-filter": "Selecione um filtro",
       "calculate-snr": "Calcular SNR",
       "object": {
         "title": "Objeto Não Estelar",

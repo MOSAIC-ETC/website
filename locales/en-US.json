@@ -138,10 +138,22 @@
       "wavelength-min": "Min",
       "wavelength-max": "Max",
       "redshift": "Redshift",
-      "filter": "Filter",
+      "filter": {
+        "label": "Filter",
+        "placeholder": "Select a filter"
+      },
+      "filter-chart": {
+        "title": "Filter curve: {name}",
+        "title-fallback": "Filter curve",
+        "x-axis-label": "Wavelength (nm)",
+        "y-axis-label": "Transmission",
+        "tooltip": {
+          "wavelength": "{value} nm",
+          "transmission": "Transmission"
+        }
+      },
       "instrument": "Instrument",
       "sky-condition": "Sky Condition",
-      "select-filter": "Select filter",
       "calculate-snr": "Calculate SNR",
       "object": {
         "title": "Non-Stellar Object",
