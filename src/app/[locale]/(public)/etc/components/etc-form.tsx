@@ -36,6 +36,7 @@ import {
 import { fetchFilterCurve } from "../lib/filters";
 import { createEtcFormSchema, type ETCFormSchema } from "../lib/schema";
 import type { UseFITSCubeReturn } from "../hooks/use-fits-cube";
+
 interface ETCFormProps {
   filters: FilterEntry[];
   objects: ObjectEntry[];
@@ -177,8 +178,8 @@ function ETCFormInner({ filters, objects, selectedObject, onSelectObject, object
     defaultValues: {
       objectId: selectedObject?.id ?? "",
       numberOfExposures: 1,
-      exposureTime: 3600,
-      magnitude: 20,
+      exposureTime: 60,
+      magnitude: 21,
       magnitudeUnit: MagnitudeUnit.AB,
       wavelengthMin: 400,
       wavelengthMax: 900,
@@ -186,7 +187,7 @@ function ETCFormInner({ filters, objects, selectedObject, onSelectObject, object
       redshiftUnit: RedshiftUnit.Z,
       filterId: filters[0]?.id || "",
       instrument: Instrument.MOS_VIS,
-      skyCondition: SkyCondition.NO_MOON,
+      skyCondition: SkyCondition.NO_MOON_TH,
     },
   });
 
