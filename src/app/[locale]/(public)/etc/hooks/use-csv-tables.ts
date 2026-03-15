@@ -73,7 +73,7 @@ export function useCSVTables(): UseCSVTablesReturn {
     return () => {
       cancelled = true;
     };
-  }, [store.get, store.put]);
+  }, [store, store.get, store.put]);
 
   return { tables, loading, error };
 }

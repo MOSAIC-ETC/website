@@ -115,6 +115,7 @@ export function NextJSIcon(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg viewBox="-3 0 262 262" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid">

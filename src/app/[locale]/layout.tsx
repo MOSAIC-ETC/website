@@ -6,7 +6,6 @@ import { notFound } from "next/navigation";
 
 import { Footer } from "@/components/footer";
 import { Navbar } from "@/components/navbar";
-import { PerfMeasureGuard } from "@/components/perf-measure-guard";
 import { Sidebar } from "@/components/sidebar";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -57,7 +56,6 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
   return (
     <html lang={locale} suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <PerfMeasureGuard />
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <NextIntlClientProvider>
             <TooltipProvider>
