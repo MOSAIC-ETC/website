@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { Brush, CartesianGrid, ComposedChart, Line, Tooltip, XAxis, YAxis } from "recharts";
 
@@ -235,6 +235,16 @@ export function InteractiveChart<T extends Record<string, any>>({
 }: InteractiveChartProps<T>): React.JSX.Element {
   const { range, setRange, chartWrapperRef, overlayRef } = useChartInteraction(data.length, height);
   const brushY = Math.max(CHART_MARGIN.top, height - BRUSH_VISUAL_HEIGHT);
+
+  const downsampledData = useMemo(() => {
+    const MAX_POINTS = 800; // Adjust based on your chart width
+    if (data.length <= MAX_POINTS) return data;
+
+    const step = Math.ceil(data.length / MAX_POINTS);
+
+    // Simple decimation: take every Nth point
+    return data.filter((_, index) => index % step === 0);
+  }, [data]);
 
   const reset = useCallback(() => {
     setRange({ left: 0, right: data.length - 1 });

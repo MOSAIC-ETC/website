@@ -176,7 +176,7 @@ function drawPolygonSelection(
     }
 
     // Draw pixel outline
-    const edges = getPixelOutlineEdges(selectedCells);
+    const edges = getPixelOutlineEdges(selectedCells, numRows, numCols);
     ctx.strokeStyle = "#ffffff";
     ctx.lineWidth = 2;
     ctx.beginPath();
@@ -305,6 +305,7 @@ function drawAxes(ctx: CanvasRenderingContext2D, options: DrawAxesOptions) {
     showAxes,
     xLabel,
     yLabel,
+    width,
     height,
     mutedForegroundColor,
   } = options;

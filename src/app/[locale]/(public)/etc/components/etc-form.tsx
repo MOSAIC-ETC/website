@@ -269,7 +269,7 @@ function ETCFormInner({ filters, objects, selectedObject, onSelectObject, object
       setPreview(null);
       schemaRef.current = createEtcFormSchema(t);
     }
-  }, [form, object.preview, t]);
+  }, [object.preview, t]);
 
   function handleFormSubmit(values: ETCFormSchema) {
     if (selection.length === 0) {

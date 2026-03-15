@@ -71,7 +71,11 @@ export function getCellsInPolygon(polygon: HeatmapPoint[], numRows: number, numC
 /**
  * Get edges for drawing pixel outline around selected cells
  */
-export function getPixelOutlineEdges(selectedCells: Set<string>): { x1: number; y1: number; x2: number; y2: number }[] {
+export function getPixelOutlineEdges(
+  selectedCells: Set<string>,
+  numRows: number,
+  numCols: number,
+): { x1: number; y1: number; x2: number; y2: number }[] {
   const edges: { x1: number; y1: number; x2: number; y2: number }[] = [];
 
   selectedCells.forEach((cellKey) => {
