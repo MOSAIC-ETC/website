@@ -1,19 +1,20 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
-import { Geist, Geist_Mono } from "next/font/google";
-import { getTranslations, setRequestLocale } from "next-intl/server";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import { Geist, Geist_Mono } from "next/font/google";
+import { notFound } from "next/navigation";
 
-import { normalizeRequestedLocale, routing } from "@/i18n/routing";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { ThemeProvider } from "@/components/theme-provider";
-import { SidebarProvider } from "@/components/ui/sidebar";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Sidebar } from "@/components/sidebar";
-import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
+import { Navbar } from "@/components/navbar";
 import { PerfMeasureGuard } from "@/components/perf-measure-guard";
+import { Sidebar } from "@/components/sidebar";
+import { ThemeProvider } from "@/components/theme-provider";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { normalizeRequestedLocale, routing } from "@/i18n/routing";
+
 import "../globals.css";
 
 const geistSans = Geist({

@@ -1,8 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { CSVParser, CSVFile } from "@/lib/parser";
+import { useEffect, useState } from "react";
+
 import { useIndexedDB } from "@/hooks/use-indexed-db";
+import { CSVFile, CSVParser } from "@/lib/parser";
+
 import { DB_NAME, DB_STORES } from "../lib/db";
 
 const TABLE_PATHS = {

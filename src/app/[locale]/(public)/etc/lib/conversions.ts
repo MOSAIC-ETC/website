@@ -1,6 +1,6 @@
+import { PLANCK_CONSTANT, VELOCITY_OF_LIGHT, ZERO_POINT } from "./constants";
 import type { FilterEntry, MagnitudeUnit } from "./types";
 import { MagnitudeUnit as MU } from "./types";
-import { ZERO_POINT, VELOCITY_OF_LIGHT, PLANCK_CONSTANT } from "./constants";
 
 const c = VELOCITY_OF_LIGHT * 1e9; // Speed of light in nm/s
 const h = PLANCK_CONSTANT * 1e7; // Planck's constant in erg·s

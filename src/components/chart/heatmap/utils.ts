@@ -1,4 +1,4 @@
-import type { HeatmapPoint, HeatmapRect, HeatmapCell } from "./types";
+import type { HeatmapCell, HeatmapPoint, HeatmapRect } from "./types";
 
 /**
  * Get all cells that are inside a rectangle selection

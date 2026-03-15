@@ -1,6 +1,6 @@
-import type { Colormap, HeatmapRect, HeatmapPolygon, HeatmapPoint, HeatmapMargins } from "./types";
-import { getCellsInPolygon, getPixelOutlineEdges, generateColorBarTicks, cellToCanvas } from "./utils";
 import { interpolateColormap } from "./colormaps";
+import type { Colormap, HeatmapMargins, HeatmapPoint, HeatmapPolygon, HeatmapRect } from "./types";
+import { cellToCanvas, generateColorBarTicks, getCellsInPolygon, getPixelOutlineEdges } from "./utils";
 
 interface DrawHeatmapOptions {
   ctx: CanvasRenderingContext2D;

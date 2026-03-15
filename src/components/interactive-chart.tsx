@@ -1,9 +1,11 @@
 "use client";
 
-import React, { useState, useCallback, useRef, useEffect, useMemo } from "react";
-import { CartesianGrid, Line, XAxis, YAxis, Brush, ComposedChart, Tooltip } from "recharts";
-import { type ChartConfig, ChartContainer, ChartLegend, ChartLegendContent } from "@/components/ui/chart";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+
+import { Brush, CartesianGrid, ComposedChart, Line, Tooltip, XAxis, YAxis } from "recharts";
+
 import { Button } from "@/components/ui/button";
+import { type ChartConfig, ChartContainer, ChartLegend, ChartLegendContent } from "@/components/ui/chart";
 
 export interface LineConfig {
   dataKey: string;
@@ -37,10 +39,12 @@ function useChartInteraction(dataLength: number, height: number) {
   const [range, setRange] = useState({ left: 0, right: Math.max(0, dataLength - 1) });
   const chartWrapperRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
-  
+
   // Keep refs synced for native event listeners without causing stale closures
   const rangeRef = useRef(range);
-  useEffect(() => { rangeRef.current = range; }, [range]);
+  useEffect(() => {
+    rangeRef.current = range;
+  }, [range]);
 
   const rafRef = useRef<number | null>(null);
   const isDragging = useRef(false);
@@ -178,7 +182,7 @@ function useChartInteraction(dataLength: number, height: number) {
         const idxLeft = pixelToIndex(x1);
         const idxRight = pixelToIndex(x2);
         const [newLeft, newRight] = [idxLeft, idxRight].sort((a, b) => a - b);
-        
+
         const clampedLeft = Math.max(0, newLeft);
         const clampedRight = Math.min(dataLength - 1, newRight);
 
@@ -237,7 +241,7 @@ export function InteractiveChart<T extends Record<string, any>>({
     if (data.length <= MAX_POINTS) return data;
 
     const step = Math.ceil(data.length / MAX_POINTS);
-    
+
     // Simple decimation: take every Nth point
     return data.filter((_, index) => index % step === 0);
   }, [data]);
@@ -257,7 +261,7 @@ export function InteractiveChart<T extends Record<string, any>>({
           </Button>
         </div>
       )}
-      
+
       <div className="relative w-full select-none" style={{ height }} ref={chartWrapperRef}>
         <div
           ref={overlayRef}
@@ -272,7 +276,7 @@ export function InteractiveChart<T extends Record<string, any>>({
             zIndex: 10,
           }}
         />
-        
+
         <ChartContainer
           config={chartConfig}
           className="[&_.recharts-brush-slide]:fill-opacity-15 [&_.recharts-brush-slide]:fill-[oklch(0.488_0.243_264.376)] w-full h-full aspect-auto [&_.recharts-surface]:overflow-visible [&_.recharts-wrapper]:overflow-visible"
@@ -296,7 +300,7 @@ export function InteractiveChart<T extends Record<string, any>>({
               label={yAxisLabel ? { value: yAxisLabel, angle: -90, position: "left", offset: 2 } : undefined}
               style={{ userSelect: "none" }}
             />
-            
+
             {tooltipContent ? <Tooltip content={tooltipContent} animationDuration={0} /> : <Tooltip />}
 
             {lines.map((line) => (

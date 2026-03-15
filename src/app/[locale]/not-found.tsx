@@ -1,12 +1,13 @@
 "use client";
 
-import Image from "next/image";
-import { ArrowLeftIcon } from "lucide-react";
 import { useEffect, useRef } from "react";
+
+import { ArrowLeftIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
+import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
-import { useTranslations } from "next-intl";
 
 interface Star {
   x: number;
@@ -111,7 +112,7 @@ export default function NotFound() {
           shootingStar.x,
           shootingStar.y,
           shootingStar.x - Math.cos(shootingStar.angle) * shootingStar.length,
-          shootingStar.y - Math.sin(shootingStar.angle) * shootingStar.length
+          shootingStar.y - Math.sin(shootingStar.angle) * shootingStar.length,
         );
         gradient.addColorStop(0, withAlpha(primary, shootingStar.opacity));
         gradient.addColorStop(0.5, withAlpha(primary, shootingStar.opacity * 0.5));
@@ -123,7 +124,7 @@ export default function NotFound() {
         ctx.moveTo(shootingStar.x, shootingStar.y);
         ctx.lineTo(
           shootingStar.x - Math.cos(shootingStar.angle) * shootingStar.length,
-          shootingStar.y - Math.sin(shootingStar.angle) * shootingStar.length
+          shootingStar.y - Math.sin(shootingStar.angle) * shootingStar.length,
         );
         ctx.stroke();
 
@@ -133,11 +134,7 @@ export default function NotFound() {
         shootingStar.opacity -= 0.01;
 
         // Remove if out of bounds or faded
-        if (
-          shootingStar.opacity <= 0 ||
-          shootingStar.x > canvas.width ||
-          shootingStar.y > canvas.height
-        ) {
+        if (shootingStar.opacity <= 0 || shootingStar.x > canvas.width || shootingStar.y > canvas.height) {
           shootingStars.splice(index, 1);
         }
       });

@@ -1,10 +1,12 @@
 "use client";
 
-import { useState, useCallback, useEffect, useRef } from "react";
-import type { ObjectEntry } from "../lib/types";
-import { FITSParser, type FITSFile } from "@/lib/parser";
+import { useCallback, useEffect, useRef, useState } from "react";
+
 import { useIndexedDB } from "@/hooks/use-indexed-db";
+import { type FITSFile, FITSParser } from "@/lib/parser";
+
 import { DB_NAME, DB_STORES } from "../lib/db";
+import type { ObjectEntry } from "../lib/types";
 
 export interface UseFITSCubeReturn {
   /** 2D flux array for heatmap preview (null until loaded) */

@@ -1,24 +1,18 @@
 "use client";
 
-import { z } from "zod";
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { LoaderCircleIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Link } from "@/i18n/navigation";
-import { Input } from "@/components/ui/input";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
+import { GoogleIcon, MosaicLogo } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { GoogleIcon, MosaicLogo } from "@/components/icons";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { LoaderCircleIcon } from "lucide-react";
+import { Link } from "@/i18n/navigation";
 
 export default function LoginPage() {
   const t = useTranslations("login");

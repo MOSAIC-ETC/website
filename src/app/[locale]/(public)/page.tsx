@@ -1,9 +1,9 @@
-import Image from "next/image";
-import { useTranslations } from "next-intl";
 import { ExternalLinkIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
+import Image from "next/image";
 
+import { NextJSIcon, ReactIcon, ShadcnIcon, TailwindIcon, TypescriptIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
-import { ReactIcon, ShadcnIcon, TailwindIcon, TypescriptIcon, NextJSIcon } from "@/components/icons";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 
@@ -69,7 +69,7 @@ export default function Home() {
                     <tech.icon
                       className={cn(
                         "saturate-0 group-hover:saturate-100 size-6 transition-all",
-                        tech.invert && "dark:invert"
+                        tech.invert && "dark:invert",
                       )}
                     />
                     <span className="sr-only">{tech.name}</span>

@@ -2,19 +2,15 @@
 
 import { ChevronDownIcon } from "lucide-react";
 
+import { MosaicLogo } from "@/components/icons";
+import { LocaleSwitcher } from "@/components/locale-switcher";
+import { Search } from "@/components/search";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import { User } from "@/components/user";
 import { useNavigation } from "@/hooks/use-navigation";
 import { Link, usePathname } from "@/i18n/navigation";
-import { Search } from "@/components/search";
-import { MosaicLogo } from "@/components/icons";
-import { ThemeToggle } from "@/components/theme-toggle";
-import { LocaleSwitcher } from "@/components/locale-switcher";
-import { SidebarTrigger } from "@/components/ui/sidebar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { User } from "@/components/user";
 
 export function Navbar() {
   const navigation = useNavigation();
@@ -48,10 +44,7 @@ export function Navbar() {
                       }`}
                     >
                       <span>{item.name}</span>
-                      <ChevronDownIcon
-                        className="rotate-0 transition-transform duration-200"
-                        size={16}
-                      />
+                      <ChevronDownIcon className="rotate-0 transition-transform duration-200" size={16} />
                     </Link>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="start" className="w-56">
@@ -75,9 +68,7 @@ export function Navbar() {
             <li key={item.name} className="flex justify-center items-center mx-3 my-2.5">
               <Link
                 href={item.href as any}
-                className={`hover:text-primary transition-colors select-none ${
-                  isActive && "text-primary"
-                }`}
+                className={`hover:text-primary transition-colors select-none ${isActive && "text-primary"}`}
               >
                 {item.name}
               </Link>
