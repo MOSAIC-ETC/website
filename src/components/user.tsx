@@ -1,4 +1,4 @@
-import { ChevronRightIcon, EllipsisVerticalIcon } from "lucide-react";
+import { ChevronRightIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 
@@ -13,8 +13,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
-
-import { Separator } from "./ui/separator";
 
 type UserProps = React.ComponentProps<"button"> & {
   variant?: "icon" | "sidebar";

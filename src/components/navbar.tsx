@@ -23,9 +23,9 @@ export function Navbar() {
       </div>
 
       <div className="flex lg:flex-none justify-center lg:justify-start">
-        <a href="/">
+        <Link href="/">
           <MosaicLogo height={32} className="fill-primary select-none" />
-        </a>
+        </Link>
       </div>
 
       <ul className="hidden lg:flex gap-1 w-full font-medium text-muted-foreground text-sm">
