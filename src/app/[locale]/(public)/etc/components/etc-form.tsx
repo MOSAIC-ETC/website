@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChartLine, Check, Download, Eraser, Info, SquareDashedMousePointer } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { type Resolver, useForm } from "react-hook-form";
+import { type Resolver, useForm, useWatch } from "react-hook-form";
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
 
 import {
@@ -194,8 +194,8 @@ function ETCFormInner({ filters, objects, selectedObject, onSelectObject, object
     },
   });
 
-  const watchedObjectId = form.watch("objectId");
-  const watchedFilterId = form.watch("filterId");
+  const watchedObjectId = useWatch({ control: form.control, name: "objectId" });
+  const watchedFilterId = useWatch({ control: form.control, name: "filterId" });
   const selectedFilterName = filters.find((filter) => filter.id === watchedFilterId)?.name;
   const [filterCurveData, setFilterCurveData] = useState<NMFile[]>([]);
   const [isFilterCurveLoading, setIsFilterCurveLoading] = useState(false);
@@ -231,7 +231,7 @@ function ETCFormInner({ filters, objects, selectedObject, onSelectObject, object
     return () => {
       isCancelled = true;
     };
-  }, [filters, watchedFilterId]);
+  }, [form.control, filters, watchedFilterId]);
 
   useEffect(() => {
     const obj = objects.find((o) => o.id === watchedObjectId) ?? null;

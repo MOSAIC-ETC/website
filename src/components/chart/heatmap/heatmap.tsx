@@ -139,7 +139,7 @@ export function Heatmap({
       draggingVertexRef.current = null;
       scheduleRedraw();
     }
-  }, [heatmapContext?.selection, scheduleRedraw]);
+  }, [heatmapContext, heatmapContext?.selection, scheduleRedraw]);
 
   // Unified cell-from-coordinates helper
   const getCellFromCoords = useCallback(
