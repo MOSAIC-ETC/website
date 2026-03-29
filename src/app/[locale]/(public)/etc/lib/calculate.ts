@@ -34,8 +34,6 @@ export function calculateSNR(
     exposureTime,
     magnitude,
     magnitudeUnit,
-    wavelengthMin,
-    wavelengthMax,
     redshift,
     redshiftUnit,
     instrument,
@@ -75,10 +73,7 @@ export function calculateSNR(
     flux: point.flux / valueAt550nm,
   }));
 
-  // Filter by wavelength range
-  const filteredSpectrum = normalizedSpectrum.filter(
-    (p) => p.wavelength >= wavelengthMin && p.wavelength <= wavelengthMax,
-  );
+  const filteredSpectrum = normalizedSpectrum;
   if (filteredSpectrum.length === 0) return [];
 
   // Convert magnitude to F_λ at the normalization wavelength (550 nm)

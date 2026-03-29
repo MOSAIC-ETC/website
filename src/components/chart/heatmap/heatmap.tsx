@@ -34,7 +34,7 @@ export function Heatmap({
   const selectionMode = heatmapContext?.selectionMode ?? "rectangle";
 
   // Memoize stable values to prevent unnecessary callback/draw invalidation
-  const margin = useMemo(() => ({ top: 50, right: 80, bottom: 50, left: 50 }), []);
+  const margin = useMemo(() => ({ top: title ? 50 : 20, right: 80, bottom: 50, left: 50 }), [title]);
   const selectedColormap = useMemo(() => getColormap(colormap) as Colormap, [colormap]);
   const maxVal = useMemo(() => values.reduce((max, row) => Math.max(max, ...row), 0), [values]);
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChartLine, Check, Download, Eraser, Info, SquareDashedMousePointer } from "lucide-react";
@@ -118,7 +118,7 @@ function SelectionControls() {
   const { selectionMode, setSelectionMode, clearSelections } = useHeatmapSelectionContext();
 
   return (
-    <div className="flex lg:flex-col gap-2 lg:mt-10">
+    <div className="flex lg:flex-col gap-2 lg:mt-3">
       <Tooltip delayDuration={1000}>
         <TooltipTrigger asChild>
           <Button
@@ -171,21 +171,17 @@ function ETCFormInner({ filters, objects, selectedObject, onSelectObject, object
   const { selection } = useHeatmapSelectionContext();
 
   const [preview, setPreview] = useState<number[][] | null>(null);
+  const [wavelengthRange, setWavelengthRange] = useState<{ min: number; max: number } | null>(null);
   const [selectionError, setSelectionError] = useState(false);
 
-  const schemaRef = useRef(createEtcFormSchema(t));
-
   const form = useForm<ETCFormSchema>({
-    resolver: ((values, context, options) =>
-      (zodResolver(schemaRef.current) as any)(values, context, options)) as Resolver<ETCFormSchema>,
+    resolver: zodResolver(createEtcFormSchema(t)) as Resolver<ETCFormSchema>,
     defaultValues: {
       objectId: selectedObject?.id ?? "",
       numberOfExposures: 1,
       exposureTime: 60,
       magnitude: 21,
       magnitudeUnit: MagnitudeUnit.AB,
-      wavelengthMin: 400,
-      wavelengthMax: 900,
       redshift: 0,
       redshiftUnit: RedshiftUnit.Z,
       filterId: filters[0]?.id || "",
@@ -248,28 +244,26 @@ function ETCFormInner({ filters, objects, selectedObject, onSelectObject, object
       if (!fluxHdu) {
         console.warn("FLUX extension not found in FITS file");
         setPreview(null);
-        schemaRef.current = createEtcFormSchema(t);
+        setWavelengthRange(null);
         return;
       }
 
       const wmin = parseFloat(fluxHdu.header["WMIN"]);
       const wmax = parseFloat(fluxHdu.header["WMAX"]);
-      if (isNaN(wmin) || isNaN(wmax)) {
+      if (!isNaN(wmin) && !isNaN(wmax)) {
+        setWavelengthRange({ min: Math.round(wmin * 100) / 100, max: Math.round(wmax * 100) / 100 });
+      } else {
         console.warn("WMIN or WMAX header not found or invalid in FITS file");
-        schemaRef.current = createEtcFormSchema(t);
-        return;
+        setWavelengthRange(null);
       }
-
-      schemaRef.current = createEtcFormSchema(t, Math.round(wmin * 100) / 100, Math.round(wmax * 100) / 100);
-      form.trigger(["wavelengthMin", "wavelengthMax"]);
 
       const flux = fluxHdu.data as number[][] | undefined;
       setPreview(flux ?? null);
     } else {
       setPreview(null);
-      schemaRef.current = createEtcFormSchema(t);
+      setWavelengthRange(null);
     }
-  }, [object.preview, t]);
+  }, [object.preview]);
 
   function handleFormSubmit(values: ETCFormSchema) {
     if (selection.length === 0) {
@@ -345,39 +339,6 @@ function ETCFormInner({ filters, objects, selectedObject, onSelectObject, object
                     </FormItem>
                   )}
                 />
-
-                <div>
-                  <FormLabel>{t("wavelength-range")}</FormLabel>
-                  <div className="flex items-center gap-2 mt-2">
-                    <FormField
-                      control={form.control}
-                      name="wavelengthMin"
-                      render={({ field }) => (
-                        <FormItem className="flex-1">
-                          <FormControl>
-                            <Input type="number" min={0} step="any" placeholder={t("wavelength-min")} {...field} />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-                    <span className="text-muted-foreground">–</span>
-                    <FormField
-                      control={form.control}
-                      name="wavelengthMax"
-                      render={({ field }) => (
-                        <FormItem className="flex-1">
-                          <FormControl>
-                            <Input type="number" min={0} step="any" placeholder={t("wavelength-max")} {...field} />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <FormMessage>
-                    {form.formState.errors.wavelengthMin?.message || form.formState.errors.wavelengthMax?.message}
-                  </FormMessage>
-                </div>
 
                 <FormField
                   control={form.control}
@@ -559,7 +520,7 @@ function ETCFormInner({ filters, objects, selectedObject, onSelectObject, object
                 />
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-3">
                 <FormField
                   control={form.control}
                   name="objectId"
@@ -621,12 +582,18 @@ function ETCFormInner({ filters, objects, selectedObject, onSelectObject, object
                   )}
                 />
 
+                {wavelengthRange && (
+                  <p className="text-muted-foreground text-xs">
+                    {t("wavelength-range", { min: wavelengthRange.min, max: wavelengthRange.max })}
+                  </p>
+                )}
+
                 {preview && (
                   <div className="flex lg:flex-row flex-col justify-center items-center lg:items-start gap-3">
                     <Heatmap
                       values={preview}
-                      width={isMobile ? 280 : 520}
-                      height={isMobile ? 260 : 500}
+                      width={isMobile ? 310 : 460}
+                      height={isMobile ? 260 : 410}
                       colormap="inferno"
                       tooltip
                       selectable
