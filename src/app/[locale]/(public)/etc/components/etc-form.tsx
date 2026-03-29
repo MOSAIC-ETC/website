@@ -82,7 +82,7 @@ function FilterTooltipContent({
             <div className="rounded-[2px] w-2.5 h-2.5 shrink-0" style={{ backgroundColor: `var(--color-chart-1)` }} />
             <span className="text-muted-foreground">{transmissionText}</span>
           </div>
-          <span className="font-mono font-medium tabular-nums">{Number(entry.value).toFixed(2)}</span>
+          <span className="font-mono font-medium tabular-nums">{(Number(entry.value) * 100).toFixed(0)}%</span>
         </div>
       ))}
     </div>
@@ -469,6 +469,7 @@ function ETCFormInner({ filters, objects, selectedObject, onSelectObject, object
                                       position: "insideBottom",
                                       offset: -5,
                                     }}
+                                    tickFormatter={(value) => `${value.toFixed(1)}`}
                                   />
                                   <YAxis
                                     dataKey="transmission"
@@ -478,7 +479,9 @@ function ETCFormInner({ filters, objects, selectedObject, onSelectObject, object
                                       value: t("filter-chart.y-axis-label"),
                                       angle: -90,
                                       position: "insideLeft",
+                                      offset: 15,
                                     }}
+                                    tickFormatter={(value) => `${(value * 100).toFixed(0)}%`}
                                   />
                                   <Line
                                     type="monotone"
@@ -495,7 +498,7 @@ function ETCFormInner({ filters, objects, selectedObject, onSelectObject, object
                                       <FilterTooltipContent
                                         formatWavelength={(value) =>
                                           t("filter-chart.tooltip.wavelength", {
-                                            value: Number.isFinite(Number(value)) ? Number(value).toFixed(2) : "-",
+                                            value: Number.isFinite(Number(value)) ? Number(value).toFixed(1) : "-",
                                           })
                                         }
                                         transmissionText={t("filter-chart.tooltip.transmission")}
