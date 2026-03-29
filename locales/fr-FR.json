@@ -134,9 +134,7 @@
       "number-of-exposures": "Nombre d'Expositions",
       "exposure-time": "Temps d'Exposition (s)",
       "magnitude": "Magnitude",
-      "wavelength-range": "Longueur d'onde (nm)",
-      "wavelength-min": "Min",
-      "wavelength-max": "Max",
+      "wavelength-range": "Plage de longueur d'onde : {min} – {max} nm",
       "redshift": "Décalage vers le Rouge",
       "filter": {
         "label": "Filtre",
@@ -169,10 +167,7 @@
       },
       "errors": {
         "select-object": "Sélectionnez un objet",
-        "select-filter": "Sélectionnez un filtre",
-        "wavelength-max-greater": "La longueur d'onde maximale doit être supérieure à la minimale",
-        "wavelength-min-gte": "La longueur d'onde minimale doit être ≥ {wmin}",
-        "wavelength-max-lte": "La longueur d'onde maximale doit être ≤ {wmax}"
+        "select-filter": "Sélectionnez un filtre"
       }
     },
     "chart": {

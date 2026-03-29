@@ -134,9 +134,7 @@
       "number-of-exposures": "Número de Exposições",
       "exposure-time": "Tempo de Exposição (s)",
       "magnitude": "Magnitude",
-      "wavelength-range": "Comprimento de Onda (nm)",
-      "wavelength-min": "Mín",
-      "wavelength-max": "Máx",
+      "wavelength-range": "Faixa de comprimento de onda: {min} – {max} nm",
       "redshift": "Desvio para o Vermelho",
       "filter": {
         "label": "Filtro",
@@ -169,10 +167,7 @@
       },
       "errors": {
         "select-object": "Selecione um objeto",
-        "select-filter": "Selecione um filtro",
-        "wavelength-max-greater": "O comprimento de onda máximo deve ser maior que o mínimo",
-        "wavelength-min-gte": "O comprimento de onda mínimo deve ser ≥ {wmin}",
-        "wavelength-max-lte": "O comprimento de onda máximo deve ser ≤ {wmax}"
+        "select-filter": "Selecione um filtro"
       }
     },
     "chart": {

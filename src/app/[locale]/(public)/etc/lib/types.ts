@@ -50,8 +50,6 @@ export interface ETCFormValues {
   exposureTime: number;
   magnitude: number;
   magnitudeUnit: MagnitudeUnit;
-  wavelengthMin: number;
-  wavelengthMax: number;
   redshift: number;
   redshiftUnit: RedshiftUnit;
   filterId: string;

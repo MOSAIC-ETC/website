@@ -134,9 +134,7 @@
       "number-of-exposures": "Number of Exposures",
       "exposure-time": "Exposure Time (s)",
       "magnitude": "Magnitude",
-      "wavelength-range": "Wavelength (nm)",
-      "wavelength-min": "Min",
-      "wavelength-max": "Max",
+      "wavelength-range": "Wavelength range: {min} – {max} nm",
       "redshift": "Redshift",
       "filter": {
         "label": "Filter",
@@ -169,10 +167,7 @@
       },
       "errors": {
         "select-object": "Select an object",
-        "select-filter": "Select a filter",
-        "wavelength-max-greater": "Max wavelength must be greater than min wavelength",
-        "wavelength-min-gte": "Min wavelength must be ≥ {wmin}",
-        "wavelength-max-lte": "Max wavelength must be ≤ {wmax}"
+        "select-filter": "Select a filter"
       }
     },
     "chart": {
