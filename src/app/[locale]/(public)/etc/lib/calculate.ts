@@ -16,11 +16,6 @@ import { convertToFluxLambda } from "./conversions";
 import { RedshiftUnit } from "./types";
 import type { ETCFormValues, FilterEntry, NMFile, SNRDataPoint } from "./types";
 
-type Spectrum = {
-  wavelength: number;
-  flux: number;
-}[];
-
 export function calculateSNR(
   values: ETCFormValues,
   filter: FilterEntry,
@@ -137,6 +132,11 @@ export function calculateSNR(
 
 // --- Spectrum extraction helpers ---
 
+export type Spectrum = {
+  wavelength: number;
+  flux: number;
+}[];
+
 function getSelected(flux: number[][][], selection: HeatmapCell[]): number[][] {
   const selected: number[][] = [];
   for (const cell of selection) {
@@ -171,7 +171,7 @@ function getNearestFlux(spectrum: Spectrum, targetWavelength: number): number {
 
 // --- CSV table lookup ---
 
-function lookupNearest(table: CSVRow[], wavelength: number, column: string): number {
+export function lookupNearest(table: CSVRow[], wavelength: number, column: string): number {
   let best = table[0];
   let bestDiff = Math.abs(Number(best["wavelength"]) - wavelength);
 
@@ -187,14 +187,14 @@ function lookupNearest(table: CSVRow[], wavelength: number, column: string): num
 
 // --- Filter resampling (linear interpolation) ---
 
-function resampleFilter(spectrum: Spectrum, filter: NMFile[]): { wavelength: number; transmission: number }[] {
+export function resampleFilter(spectrum: Spectrum, filter: NMFile[]): { wavelength: number; transmission: number }[] {
   return spectrum.map(({ wavelength }) => ({
     wavelength,
     transmission: interpolateTransmission(filter, wavelength),
   }));
 }
 
-function interpolateTransmission(filter: NMFile[], wavelength: number): number {
+export function interpolateTransmission(filter: NMFile[], wavelength: number): number {
   if (wavelength <= filter[0].wavelength) return filter[0].transmission;
 
   const last = filter.length - 1;
@@ -215,7 +215,7 @@ function interpolateTransmission(filter: NMFile[], wavelength: number): number {
 
 // --- Integration ---
 
-function integrateSpectrum(data: Spectrum): number {
+export function integrateSpectrum(data: Spectrum): number {
   let integral = 0;
   for (let i = 1; i < data.length; i++) {
     const dx = data[i].wavelength - data[i - 1].wavelength;
@@ -224,7 +224,7 @@ function integrateSpectrum(data: Spectrum): number {
   return integral;
 }
 
-function integrateTransmission(data: { wavelength: number; transmission: number }[]): number {
+export function integrateTransmission(data: { wavelength: number; transmission: number }[]): number {
   let integral = 0;
   for (let i = 1; i < data.length; i++) {
     const dx = data[i].wavelength - data[i - 1].wavelength;
