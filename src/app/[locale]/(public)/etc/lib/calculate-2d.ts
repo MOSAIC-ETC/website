@@ -1,5 +1,4 @@
 import type { FITSFile } from "@/lib/parser";
-import type { CSVRow } from "@/lib/parser";
 
 import type { CSVTables } from "../hooks/use-csv-tables";
 import { type Spectrum, lookupNearest, resampleFilter } from "./calculate";
@@ -12,14 +11,13 @@ import {
   MOSAIC_PIXEL_AREA,
   MOSAIC_PIXEL_SCALE,
   PLANCK_CONSTANT,
-  SPEED_OF_LIGHT_ANGSTROM,
+  SPEED_OF_LIGHT,
   THROUGHPUT_COLUMNS,
-  VELOCITY_OF_LIGHT,
   ZERO_POINT,
   getInstrumentSettings,
 } from "./constants";
-import { MagnitudeUnit, RedshiftUnit } from "./types";
 import type { FilterEntry, NMFile, SubcubeFormValues } from "./types";
+import { MagnitudeUnit, RedshiftUnit } from "./types";
 
 const SUB_CUBE_HALF_WIDTH = 30; // nm
 
@@ -51,7 +49,7 @@ function collapseToTotalSpectrum(flux: number[][][], wavelengths: number[]): Spe
  * m_temp = -2.5 · log10(<f_ν>) - 48.60
  */
 function syntheticPhotometry(totalSpectrum: Spectrum, filterCurve: NMFile[]): number {
-  const c = SPEED_OF_LIGHT_ANGSTROM; // Å/s
+  const c = SPEED_OF_LIGHT * 1e10; // Å/s
 
   // Resample filter curve onto the spectrum wavelengths
   const resampled = resampleFilter(totalSpectrum, filterCurve);
@@ -182,7 +180,7 @@ function convertToABMag(
   wavelengthNm: number,
   filter: FilterEntry,
 ): number {
-  const c = VELOCITY_OF_LIGHT * 1e9; // nm/s
+  const c = SPEED_OF_LIGHT * 1e9; // nm/s
 
   let fNu: number; // erg/s/cm²/Hz
 
@@ -282,7 +280,7 @@ export function calculate2DSNR(
   const mosaicFluxMap = resampledSB.map((row) => row.map((sb) => sb * MOSAIC_PIXEL_AREA));
 
   // Step 7: Compute SNR per pixel at targetWavelength
-  const c = VELOCITY_OF_LIGHT * 1e9; // nm/s
+  const c = SPEED_OF_LIGHT * 1e9; // nm/s
   const h = PLANCK_CONSTANT; // J·s
   const d = ELT_DIAMETER; // m
   const eltAreaCm2 = Math.PI * ((d * 100) / 2) ** 2; // cm²
@@ -294,7 +292,7 @@ export function calculate2DSNR(
   if (redshiftUnit === RedshiftUnit.Z) {
     deltaLambda = targetWavelength * redshift;
   } else {
-    deltaLambda = targetWavelength * ((redshift * 1e3) / VELOCITY_OF_LIGHT);
+    deltaLambda = targetWavelength * ((redshift * 1e3) / SPEED_OF_LIGHT);
   }
   const lambdaNm = targetWavelength + deltaLambda;
   const lambdaUm = lambdaNm * 1e-3;
