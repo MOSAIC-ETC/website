@@ -61,3 +61,17 @@ export interface SNRDataPoint {
   wavelength: number;
   snr: number;
 }
+
+export interface SubcubeFormValues {
+  objectId: string;
+  numberOfExposures: number;
+  exposureTime: number;
+  magnitude: number;
+  magnitudeUnit: MagnitudeUnit;
+  redshift: number;
+  redshiftUnit: RedshiftUnit;
+  filterId: string;
+  instrument: Instrument;
+  skyCondition: SkyCondition;
+  targetWavelength: number;
+}

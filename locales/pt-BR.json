@@ -129,6 +129,10 @@
   "etc": {
     "title": "Calculadora de Tempo de Exposição",
     "cube-warning": "Por favor, baixe o cubo de dados do objeto antes de calcular.",
+    "tabs": {
+      "snr-spectrum": "Espectro SNR",
+      "snr-map": "Mapa SNR 2D"
+    },
     "form": {
       "parameters": "Parâmetros",
       "number-of-exposures": "Número de Exposições",
@@ -167,7 +171,8 @@
       },
       "errors": {
         "select-object": "Selecione um objeto",
-        "select-filter": "Selecione um filtro"
+        "select-filter": "Selecione um filtro",
+        "target-wavelength": "Insira um comprimento de onda alvo válido"
       }
     },
     "chart": {
@@ -177,6 +182,16 @@
       "snr-label": "SNR"
     },
     "object-not-loaded": "Objeto não carregado. Por favor, baixe o cubo de dados do objeto antes de calcular.",
-    "tables-not-loaded": "Tabelas de dados não carregadas. Por favor, aguarde."
+    "tables-not-loaded": "Tabelas de dados não carregadas. Por favor, aguarde.",
+    "subcube-form": {
+      "parameters": "Parâmetros",
+      "target-wavelength": "Comprimento de Onda Alvo (nm)",
+      "target-wavelength-placeholder": "ex. 550",
+      "calculate-snr-map": "Calcular Mapa SNR 2D"
+    },
+    "snr-map": {
+      "title": "Mapa SNR 2D",
+      "empty-state": "Envie o formulário para gerar o mapa SNR."
+    }
   }
 }

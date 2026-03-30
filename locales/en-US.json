@@ -129,6 +129,10 @@
   "etc": {
     "title": "Exposure Time Calculator",
     "cube-warning": "Please download the object data cube before calculating.",
+    "tabs": {
+      "snr-spectrum": "SNR Spectrum",
+      "snr-map": "2D SNR Map"
+    },
     "form": {
       "parameters": "Parameters",
       "number-of-exposures": "Number of Exposures",
@@ -167,7 +171,8 @@
       },
       "errors": {
         "select-object": "Select an object",
-        "select-filter": "Select a filter"
+        "select-filter": "Select a filter",
+        "target-wavelength": "Enter a valid target wavelength"
       }
     },
     "chart": {
@@ -177,6 +182,16 @@
       "snr-label": "SNR"
     },
     "object-not-loaded": "Object not loaded. Please download the object data cube before calculating.",
-    "tables-not-loaded": "Data tables not loaded. Please wait."
+    "tables-not-loaded": "Data tables not loaded. Please wait.",
+    "subcube-form": {
+      "parameters": "Parameters",
+      "target-wavelength": "Target Wavelength (nm)",
+      "target-wavelength-placeholder": "e.g. 550",
+      "calculate-snr-map": "Calculate 2D SNR Map"
+    },
+    "snr-map": {
+      "title": "2D SNR Map",
+      "empty-state": "Submit the form to generate the SNR map."
+    }
   }
 }
