@@ -8,8 +8,8 @@ import {
   ELT_DIAMETER,
   ENCLOSED_ENERGY_COLUMNS,
   PLANCK_CONSTANT,
+  SPEED_OF_LIGHT,
   THROUGHPUT_COLUMNS,
-  VELOCITY_OF_LIGHT,
   getInstrumentSettings,
 } from "./constants";
 import { convertToFluxLambda } from "./conversions";
@@ -91,7 +91,7 @@ export function calculateSNR(
   }));
 
   // Compute SNR for each wavelength
-  const c = VELOCITY_OF_LIGHT * 1e9; // nm/s
+  const c = SPEED_OF_LIGHT * 1e9; // nm/s
   const h = PLANCK_CONSTANT; // J·s
   const d = ELT_DIAMETER; // m
   const eltArea = Math.PI * ((d * 100) / 2) ** 2; // cm²
@@ -240,6 +240,6 @@ function calculateDeltaLambda(wavelength: number, redshift: number, unit: Redshi
     case RedshiftUnit.Z:
       return wavelength * redshift;
     case RedshiftUnit.KM_S:
-      return wavelength * ((redshift * 1e3) / VELOCITY_OF_LIGHT);
+      return wavelength * ((redshift * 1e3) / SPEED_OF_LIGHT);
   }
 }

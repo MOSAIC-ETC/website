@@ -3,7 +3,7 @@ import { Instrument, SkyCondition } from "./types";
 // Physical constants
 export const ZERO_POINT = -48.6; // erg/s/cm²/Hz
 export const PLANCK_CONSTANT = 6.63e-34; // J·s
-export const VELOCITY_OF_LIGHT = 299_792_458; // m/s
+export const SPEED_OF_LIGHT = 299_792_458; // m/s
 export const ELT_DIAMETER = 38.542; // m
 
 // Pixel scales
@@ -11,7 +11,6 @@ export const MANGA_PIXEL_SCALE = 0.5; // arcsec/pixel
 export const MOSAIC_PIXEL_SCALE = 0.15; // arcsec/pixel
 export const MANGA_PIXEL_AREA = MANGA_PIXEL_SCALE ** 2; // 0.25 arcsec²
 export const MOSAIC_PIXEL_AREA = MOSAIC_PIXEL_SCALE ** 2; // 0.0225 arcsec²
-export const SPEED_OF_LIGHT_ANGSTROM = 2.9979e18; // Å/s
 
 // Instrument specifications
 export const MOS = {
