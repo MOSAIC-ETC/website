@@ -67,7 +67,7 @@ export function Footer() {
               rel="noopener noreferrer"
               title={sponsor.name}
             >
-              <Image
+              <img
                 src={sponsor.logo}
                 alt={sponsor.name}
                 height={64}

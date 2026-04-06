@@ -93,15 +93,13 @@ export function SubcubeForm({
   disabled,
 }: SubcubeFormProps) {
   const t = useTranslations("etc");
-  const tf = useTranslations("etc.form");
-  const ts = useTranslations("etc.subcube-form");
   const isMobile = useIsMobile();
 
   const [preview, setPreview] = useState<number[][] | null>(null);
   const [wavelengthRange, setWavelengthRange] = useState<{ min: number; max: number } | null>(null);
 
   const form = useForm<SubcubeFormSchema>({
-    resolver: zodResolver(createSubcubeFormSchema(tf)) as Resolver<SubcubeFormSchema>,
+    resolver: zodResolver(createSubcubeFormSchema(t)) as Resolver<SubcubeFormSchema>,
     defaultValues: {
       objectId: selectedObject?.id ?? "",
       numberOfExposures: 1,
@@ -189,7 +187,7 @@ export function SubcubeForm({
   return (
     <Card className="bg-background/60 backdrop-blur-sm border">
       <CardHeader>
-        <CardTitle className="text-base">{ts("parameters")}</CardTitle>
+        <CardTitle className="text-base">{t("subcube-form.parameters")}</CardTitle>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -202,13 +200,13 @@ export function SubcubeForm({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="flex items-center gap-0.5">
-                      {tf("object.title")}
+                      {t("form.object.title")}
                       <Tooltip>
                         <TooltipTrigger>
                           <Info className="ml-1 size-4 text-muted-foreground" />
                         </TooltipTrigger>
                         <TooltipContent>
-                          <p className="max-w-xs text-wrap">{tf("object.tooltip")}</p>
+                          <p className="max-w-xs text-wrap">{t("form.object.tooltip")}</p>
                         </TooltipContent>
                       </Tooltip>
                     </FormLabel>
@@ -216,7 +214,7 @@ export function SubcubeForm({
                       <Select value={field.value} onValueChange={field.onChange}>
                         <FormControl>
                           <SelectTrigger className="flex-1">
-                            <SelectValue placeholder={tf("object.select-placeholder")} />
+                            <SelectValue placeholder={t("form.object.select-placeholder")} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -234,7 +232,7 @@ export function SubcubeForm({
                           variant="outline"
                           size="icon"
                           onClick={object.downloadCube}
-                          title={tf("object.download")}
+                          title={t("form.object.download")}
                         >
                           <Download className="size-4" />
                         </Button>
@@ -259,7 +257,7 @@ export function SubcubeForm({
 
               {wavelengthRange && (
                 <p className="text-muted-foreground text-xs">
-                  {tf("wavelength-range", { min: wavelengthRange.min, max: wavelengthRange.max })}
+                  {t("form.wavelength-range", { min: wavelengthRange.min, max: wavelengthRange.max })}
                 </p>
               )}
 
@@ -295,14 +293,16 @@ export function SubcubeForm({
 
             {/* ── Target ── */}
             <div className="space-y-4">
-              <p className="font-medium text-muted-foreground text-xs uppercase tracking-widest">{tf("section.target")}</p>
+              <p className="font-medium text-muted-foreground text-xs uppercase tracking-widest">
+                {t("form.section.target")}
+              </p>
 
               <FormField
                 control={form.control}
                 name="magnitude"
                 render={({ field: magField }) => (
                   <FormItem>
-                    <FormLabel>{tf("magnitude")}</FormLabel>
+                    <FormLabel>{t("form.magnitude")}</FormLabel>
                     <div className="flex">
                       <FormControl>
                         <Input type="number" step="any" className="border-r-0 rounded-r-none font-mono" {...magField} />
@@ -330,7 +330,7 @@ export function SubcubeForm({
                 name="redshift"
                 render={({ field: redshiftField }) => (
                   <FormItem>
-                    <FormLabel>{tf("redshift")}</FormLabel>
+                    <FormLabel>{t("form.redshift")}</FormLabel>
                     <div className="flex">
                       <FormControl>
                         <Input
@@ -364,21 +364,23 @@ export function SubcubeForm({
 
             {/* ── Observation Setup ── */}
             <div className="space-y-4">
-              <p className="font-medium text-muted-foreground text-xs uppercase tracking-widest">{tf("section.observation")}</p>
+              <p className="font-medium text-muted-foreground text-xs uppercase tracking-widest">
+                {t("form.section.observation")}
+              </p>
 
               <FormField
                 control={form.control}
                 name="targetWavelength"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{ts("target-wavelength")}</FormLabel>
+                    <FormLabel>{t("subcube-form.target-wavelength")}</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
                         min={wavelengthRange?.min}
                         max={wavelengthRange?.max}
                         step="any"
-                        placeholder={ts("target-wavelength-placeholder")}
+                        placeholder={t("subcube-form.target-wavelength-placeholder")}
                         className="font-mono"
                         {...field}
                       />
@@ -394,7 +396,7 @@ export function SubcubeForm({
                   name="numberOfExposures"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{tf("number-of-exposures")}</FormLabel>
+                      <FormLabel>{t("form.number-of-exposures")}</FormLabel>
                       <FormControl>
                         <Input type="number" min={1} step={1} className="font-mono" {...field} />
                       </FormControl>
@@ -408,7 +410,7 @@ export function SubcubeForm({
                   name="exposureTime"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{tf("exposure-time")}</FormLabel>
+                      <FormLabel>{t("form.exposure-time")}</FormLabel>
                       <FormControl>
                         <Input type="number" min={0} step="any" className="font-mono" {...field} />
                       </FormControl>
@@ -423,12 +425,12 @@ export function SubcubeForm({
                 name="filterId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{tf("filter.label")}</FormLabel>
+                    <FormLabel>{t("form.filter.label")}</FormLabel>
                     <div className="flex gap-2">
                       <Select value={field.value} onValueChange={field.onChange}>
                         <FormControl>
                           <SelectTrigger className="w-full">
-                            <SelectValue placeholder={tf("filter.placeholder")} />
+                            <SelectValue placeholder={t("form.filter.placeholder")} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -449,8 +451,8 @@ export function SubcubeForm({
                         <HoverCardContent side="top" className="p-4 w-auto">
                           <p className="mb-2 font-medium text-sm">
                             {selectedFilterName
-                              ? tf("filter-chart.title", { name: selectedFilterName })
-                              : tf("filter-chart.title-fallback")}
+                              ? t("form.filter-chart.title", { name: selectedFilterName })
+                              : t("form.filter-chart.title-fallback")}
                           </p>
                           {isFilterCurveLoading ? (
                             <div className="flex justify-center items-center w-80 h-60 text-muted-foreground text-sm">
@@ -470,7 +472,7 @@ export function SubcubeForm({
                                   domain={["dataMin", "dataMax"]}
                                   unit=" nm"
                                   label={{
-                                    value: tf("filter-chart.x-axis-label"),
+                                    value: t("form.filter-chart.x-axis-label"),
                                     position: "insideBottom",
                                     offset: -5,
                                   }}
@@ -481,7 +483,7 @@ export function SubcubeForm({
                                   type="number"
                                   domain={[0, 1]}
                                   label={{
-                                    value: tf("filter-chart.y-axis-label"),
+                                    value: t("form.filter-chart.y-axis-label"),
                                     angle: -90,
                                     position: "insideLeft",
                                     offset: 15,
@@ -502,11 +504,11 @@ export function SubcubeForm({
                                   content={
                                     <FilterTooltipContent
                                       formatWavelength={(value) =>
-                                        tf("filter-chart.tooltip.wavelength", {
+                                        t("form.filter-chart.tooltip.wavelength", {
                                           value: Number.isFinite(Number(value)) ? Number(value).toFixed(1) : "-",
                                         })
                                       }
-                                      transmissionText={tf("filter-chart.tooltip.transmission")}
+                                      transmissionText={t("form.filter-chart.tooltip.transmission")}
                                     />
                                   }
                                 />
@@ -530,7 +532,9 @@ export function SubcubeForm({
 
             {/* ── Instrument & Sky ── */}
             <div className="space-y-4">
-              <p className="font-medium text-muted-foreground text-xs uppercase tracking-widest">{tf("section.instrument")}</p>
+              <p className="font-medium text-muted-foreground text-xs uppercase tracking-widest">
+                {t("form.section.instrument")}
+              </p>
 
               <div className="gap-4 grid grid-cols-2">
                 <FormField
@@ -538,7 +542,7 @@ export function SubcubeForm({
                   name="instrument"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{tf("instrument")}</FormLabel>
+                      <FormLabel>{t("form.instrument")}</FormLabel>
                       <Select value={field.value} onValueChange={field.onChange}>
                         <FormControl>
                           <SelectTrigger className="w-full">
@@ -557,7 +561,7 @@ export function SubcubeForm({
                   name="skyCondition"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{tf("sky-condition")}</FormLabel>
+                      <FormLabel>{t("form.sky-condition")}</FormLabel>
                       <Select value={field.value} onValueChange={field.onChange}>
                         <FormControl>
                           <SelectTrigger className="w-full">
@@ -576,7 +580,7 @@ export function SubcubeForm({
             <Separator />
 
             <Button type="submit" className="w-full" disabled={disabled}>
-              {ts("calculate-snr-map")}
+              {t("subcube-form.calculate-snr-map")}
             </Button>
           </form>
         </Form>
