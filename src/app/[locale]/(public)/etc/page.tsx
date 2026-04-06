@@ -7,6 +7,7 @@ import Image from "next/image";
 import { toast } from "sonner";
 
 import type { HeatmapCell } from "@/components/chart/heatmap";
+import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { ETCForm } from "./components/etc-form";
@@ -81,34 +82,46 @@ export default function ETCPage() {
           fill
         />
       </div>
-      <div className="space-y-6 mx-auto p-6 max-w-7xl">
-        <h1 className="font-bold text-2xl">{t("title")}</h1>
+      <div className="mx-auto px-4 sm:px-6 lg:px-8 py-6 max-w-screen-2xl">
+        <div className="mb-6">
+          <h1 className="font-bold text-2xl tracking-tight">{t("title")}</h1>
+          <p className="mt-1 text-muted-foreground text-sm">MOSAIC / ELT &mdash; {t("subtitle")}</p>
+          <Separator className="mt-4" />
+        </div>
         <Tabs defaultValue="snr-spectrum">
           <TabsList>
             <TabsTrigger value="snr-spectrum">{t("tabs.snr-spectrum")}</TabsTrigger>
             <TabsTrigger value="snr-map">{t("tabs.snr-map")}</TabsTrigger>
           </TabsList>
-          <TabsContent value="snr-spectrum" className="space-y-6 mt-6">
-            <ETCForm
-              filters={FILTERS}
-              objects={OBJECTS}
-              selectedObject={selectedObject}
-              onSelectObject={setSelectedObject}
-              object={object}
-              onSubmit={handleSubmit}
-            />
-            <SNRChart data={chartData} />
+          <TabsContent value="snr-spectrum" className="mt-6">
+            <div className="items-start gap-6 grid grid-cols-1 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
+              <ETCForm
+                filters={FILTERS}
+                objects={OBJECTS}
+                selectedObject={selectedObject}
+                onSelectObject={setSelectedObject}
+                object={object}
+                onSubmit={handleSubmit}
+              />
+              <div className="lg:top-6 lg:sticky">
+                <SNRChart data={chartData} />
+              </div>
+            </div>
           </TabsContent>
-          <TabsContent value="snr-map" className="space-y-6 mt-6">
-            <SubcubeForm
-              filters={FILTERS}
-              objects={OBJECTS}
-              selectedObject={selectedObject}
-              onSelectObject={setSelectedObject}
-              object={object}
-              onSubmit={handleSubcubeSubmit}
-            />
-            <SNRMap data={snrMapData} />
+          <TabsContent value="snr-map" className="mt-6">
+            <div className="items-start gap-6 grid grid-cols-1 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
+              <SubcubeForm
+                filters={FILTERS}
+                objects={OBJECTS}
+                selectedObject={selectedObject}
+                onSelectObject={setSelectedObject}
+                object={object}
+                onSubmit={handleSubcubeSubmit}
+              />
+              <div className="lg:top-6 lg:sticky">
+                <SNRMap data={snrMapData} />
+              </div>
+            </div>
           </TabsContent>
         </Tabs>
       </div>

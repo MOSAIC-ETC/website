@@ -128,6 +128,7 @@
   },
   "etc": {
     "title": "Exposure Time Calculator",
+    "subtitle": "Signal-to-noise estimation",
     "cube-warning": "Please download the object data cube before calculating.",
     "tabs": {
       "snr-spectrum": "SNR Spectrum",
@@ -157,6 +158,11 @@
       "instrument": "Instrument",
       "sky-condition": "Sky Condition",
       "calculate-snr": "Calculate SNR",
+      "section": {
+        "target": "Target",
+        "observation": "Observation",
+        "instrument": "Instrument & Sky"
+      },
       "object": {
         "title": "Non-Stellar Object",
         "select-placeholder": "Select an object",
@@ -178,6 +184,7 @@
     "chart": {
       "title": "SNR vs Wavelength",
       "empty-state": "Submit the form to generate the chart.",
+      "empty-state-hint": "Configure parameters on the left and click Calculate SNR.",
       "wavelength-label": "Wavelength (nm)",
       "snr-label": "SNR"
     },
@@ -191,7 +198,8 @@
     },
     "snr-map": {
       "title": "2D SNR Map",
-      "empty-state": "Submit the form to generate the SNR map."
+      "empty-state": "Submit the form to generate the SNR map.",
+      "empty-state-hint": "Configure parameters on the left and click Calculate 2D SNR Map."
     }
   }
 }

@@ -24,6 +24,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -281,9 +282,183 @@ function ETCFormInner({ filters, objects, selectedObject, onSelectObject, object
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-4">
-            <div className="items-start gap-6 grid grid-cols-1 lg:grid-cols-2">
-              <div className="gap-x-4 gap-y-4 grid grid-cols-1">
+          <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-5">
+            {/* ── Object Section ── */}
+            <div className="space-y-3">
+              <FormField
+                control={form.control}
+                name="objectId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="flex items-center gap-0.5">
+                      {t("object.title")}
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <Info className="ml-1 size-4 text-muted-foreground" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p className="max-w-xs text-wrap">{t("object.tooltip")}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </FormLabel>
+                    <div className="flex gap-2">
+                      <Select value={field.value} onValueChange={field.onChange}>
+                        <FormControl>
+                          <SelectTrigger className="flex-1">
+                            <SelectValue placeholder={t("object.select-placeholder")} />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {objects.map((obj) => (
+                            <SelectItem key={obj.id} value={obj.id}>
+                              {obj.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+
+                      {selectedObject && !object.cubeReady && object.downloadProgress === null && (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="icon"
+                          onClick={object.downloadCube}
+                          title={t("object.download")}
+                        >
+                          <Download className="size-4" />
+                        </Button>
+                      )}
+
+                      {object.downloadProgress !== null && (
+                        <Button type="button" variant="outline" size="icon" disabled className="pointer-events-none">
+                          <CircularProgress value={object.downloadProgress} />
+                        </Button>
+                      )}
+
+                      {object.cubeReady && (
+                        <Button type="button" variant="outline" size="icon" disabled className="pointer-events-none">
+                          <Check className="size-4" />
+                        </Button>
+                      )}
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {wavelengthRange && (
+                <p className="text-muted-foreground text-xs">
+                  {t("wavelength-range", { min: wavelengthRange.min, max: wavelengthRange.max })}
+                </p>
+              )}
+
+              {preview && (
+                <div className="flex flex-row justify-center items-start gap-3">
+                  <Heatmap
+                    values={preview}
+                    width={isMobile ? 260 : 440}
+                    height={isMobile ? 220 : 400}
+                    colormap="inferno"
+                    tooltip
+                    selectable
+                    renderTooltip={(cell: HeatmapCellData) => (
+                      <>
+                        <p>
+                          x: {cell.x}, y: {cell.y}
+                        </p>
+                        <div className="flex items-center mt-2 min-w-25">
+                          <div style={{ backgroundColor: cell.color }} className="inline-block mr-2 w-3 h-3" />
+                          <p className="mr-auto pr-5 text-muted-foreground">Value</p>
+                          <span>{cell.value.toFixed(1)}</span>
+                        </div>
+                      </>
+                    )}
+                    className="max-w-full"
+                  />
+                  <SelectionControls />
+                </div>
+              )}
+
+              {selectionError && <p className="text-destructive text-sm">{t("object.selection-required")}</p>}
+              {object.error && <p className="text-destructive text-sm">{object.error}</p>}
+            </div>
+
+            <Separator />
+
+            {/* ── Target ── */}
+            <div className="space-y-4">
+              <p className="font-medium text-muted-foreground text-xs uppercase tracking-widest">{t("section.target")}</p>
+
+              <FormField
+                control={form.control}
+                name="magnitude"
+                render={({ field: magField }) => (
+                  <FormItem>
+                    <FormLabel>{t("magnitude")}</FormLabel>
+                    <div className="flex">
+                      <FormControl>
+                        <Input type="number" step="any" className="border-r-0 rounded-r-none font-mono" {...magField} />
+                      </FormControl>
+                      <FormField
+                        control={form.control}
+                        name="magnitudeUnit"
+                        render={({ field: unitField }) => (
+                          <Select value={unitField.value} onValueChange={unitField.onChange}>
+                            <SelectTrigger className="shadow-none rounded-l-none w-44">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>{enumOptions(MagnitudeUnit)}</SelectContent>
+                          </Select>
+                        )}
+                      />
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="redshift"
+                render={({ field: redshiftField }) => (
+                  <FormItem>
+                    <FormLabel>{t("redshift")}</FormLabel>
+                    <div className="flex">
+                      <FormControl>
+                        <Input
+                          type="number"
+                          min={0}
+                          step="any"
+                          className="border-r-0 rounded-r-none font-mono"
+                          {...redshiftField}
+                        />
+                      </FormControl>
+                      <FormField
+                        control={form.control}
+                        name="redshiftUnit"
+                        render={({ field: unitField }) => (
+                          <Select value={unitField.value} onValueChange={unitField.onChange}>
+                            <SelectTrigger className="shadow-none rounded-l-none w-48">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>{enumOptions(RedshiftUnit)}</SelectContent>
+                          </Select>
+                        )}
+                      />
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <Separator />
+
+            {/* ── Observation Setup ── */}
+            <div className="space-y-4">
+              <p className="font-medium text-muted-foreground text-xs uppercase tracking-widest">{t("section.observation")}</p>
+
+              <div className="gap-4 grid grid-cols-2">
                 <FormField
                   control={form.control}
                   name="numberOfExposures"
@@ -291,7 +466,7 @@ function ETCFormInner({ filters, objects, selectedObject, onSelectObject, object
                     <FormItem>
                       <FormLabel>{t("number-of-exposures")}</FormLabel>
                       <FormControl>
-                        <Input type="number" min={1} step={1} {...field} />
+                        <Input type="number" min={1} step={1} className="font-mono" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -305,182 +480,129 @@ function ETCFormInner({ filters, objects, selectedObject, onSelectObject, object
                     <FormItem>
                       <FormLabel>{t("exposure-time")}</FormLabel>
                       <FormControl>
-                        <Input type="number" min={0} step="any" {...field} />
+                        <Input type="number" min={0} step="any" className="font-mono" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
+              </div>
 
-                <FormField
-                  control={form.control}
-                  name="magnitude"
-                  render={({ field: magField }) => (
-                    <FormItem>
-                      <FormLabel>{t("magnitude")}</FormLabel>
-                      <div className="flex">
+              <FormField
+                control={form.control}
+                name="filterId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("filter.label")}</FormLabel>
+                    <div className="flex gap-2">
+                      <Select value={field.value} onValueChange={field.onChange}>
                         <FormControl>
-                          <Input type="number" step="any" className="border-r-0 rounded-r-none" {...magField} />
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder={t("filter.placeholder")} />
+                          </SelectTrigger>
                         </FormControl>
-                        <FormField
-                          control={form.control}
-                          name="magnitudeUnit"
-                          render={({ field: unitField }) => (
-                            <Select value={unitField.value} onValueChange={unitField.onChange}>
-                              <SelectTrigger className="shadow-none rounded-l-none w-44">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>{enumOptions(MagnitudeUnit)}</SelectContent>
-                            </Select>
+                        <SelectContent>
+                          {filters.map((filter) => (
+                            <SelectItem key={filter.id} value={filter.id}>
+                              {filter.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+
+                      <HoverCard openDelay={100} closeDelay={200}>
+                        <HoverCardTrigger asChild>
+                          <Button type="button" variant="outline" size="icon" disabled={!field.value}>
+                            <ChartLine className="size-4" />
+                          </Button>
+                        </HoverCardTrigger>
+                        <HoverCardContent side="top" className="p-4 w-auto">
+                          <p className="mb-2 font-medium text-sm">
+                            {selectedFilterName
+                              ? t("filter-chart.title", { name: selectedFilterName })
+                              : t("filter-chart.title-fallback")}
+                          </p>
+                          {isFilterCurveLoading ? (
+                            <div className="flex justify-center items-center w-80 h-60 text-muted-foreground text-sm">
+                              Loading...
+                            </div>
+                          ) : filterCurveData.length > 0 ? (
+                            <ChartContainer config={{}} className="w-80 h-60">
+                              <LineChart
+                                accessibilityLayer
+                                data={filterCurveData}
+                                margin={{ top: 12, bottom: 12, right: 8 }}
+                              >
+                                <CartesianGrid vertical={false} />
+                                <XAxis
+                                  dataKey="wavelength"
+                                  type="number"
+                                  domain={["dataMin", "dataMax"]}
+                                  unit=" nm"
+                                  label={{
+                                    value: t("filter-chart.x-axis-label"),
+                                    position: "insideBottom",
+                                    offset: -5,
+                                  }}
+                                  tickFormatter={(value) => `${value.toFixed(1)}`}
+                                />
+                                <YAxis
+                                  dataKey="transmission"
+                                  type="number"
+                                  domain={[0, 1]}
+                                  label={{
+                                    value: t("filter-chart.y-axis-label"),
+                                    angle: -90,
+                                    position: "insideLeft",
+                                    offset: 15,
+                                  }}
+                                  tickFormatter={(value) => `${(value * 100).toFixed(0)}%`}
+                                />
+                                <Line
+                                  type="monotone"
+                                  dataKey="transmission"
+                                  stroke="var(--chart-1)"
+                                  strokeWidth={2}
+                                  dot={false}
+                                  isAnimationActive={false}
+                                />
+                                <ChartTooltip
+                                  animationDuration={0}
+                                  cursor={false}
+                                  content={
+                                    <FilterTooltipContent
+                                      formatWavelength={(value) =>
+                                        t("filter-chart.tooltip.wavelength", {
+                                          value: Number.isFinite(Number(value)) ? Number(value).toFixed(1) : "-",
+                                        })
+                                      }
+                                      transmissionText={t("filter-chart.tooltip.transmission")}
+                                    />
+                                  }
+                                />
+                              </LineChart>
+                            </ChartContainer>
+                          ) : (
+                            <div className="flex justify-center items-center w-80 h-60 text-muted-foreground text-sm">
+                              No filter data available.
+                            </div>
                           )}
-                        />
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                        </HoverCardContent>
+                      </HoverCard>
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
-                <FormField
-                  control={form.control}
-                  name="redshift"
-                  render={({ field: redshiftField }) => (
-                    <FormItem>
-                      <FormLabel>{t("redshift")}</FormLabel>
-                      <div className="flex">
-                        <FormControl>
-                          <Input
-                            type="number"
-                            min={0}
-                            step="any"
-                            className="border-r-0 rounded-r-none"
-                            {...redshiftField}
-                          />
-                        </FormControl>
-                        <FormField
-                          control={form.control}
-                          name="redshiftUnit"
-                          render={({ field: unitField }) => (
-                            <Select value={unitField.value} onValueChange={unitField.onChange}>
-                              <SelectTrigger className="shadow-none rounded-l-none w-48">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>{enumOptions(RedshiftUnit)}</SelectContent>
-                            </Select>
-                          )}
-                        />
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+            <Separator />
 
-                <FormField
-                  control={form.control}
-                  name="filterId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t("filter.label")}</FormLabel>
-                      <div className="flex gap-2">
-                        <Select value={field.value} onValueChange={field.onChange}>
-                          <FormControl>
-                            <SelectTrigger className="w-full">
-                              <SelectValue placeholder={t("filter.placeholder")} />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {filters.map((filter) => (
-                              <SelectItem key={filter.id} value={filter.id}>
-                                {filter.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+            {/* ── Instrument & Sky ── */}
+            <div className="space-y-4">
+              <p className="font-medium text-muted-foreground text-xs uppercase tracking-widest">{t("section.instrument")}</p>
 
-                        <HoverCard openDelay={100} closeDelay={200}>
-                          <HoverCardTrigger asChild>
-                            <Button type="button" variant="outline" size="icon" disabled={!field.value}>
-                              <ChartLine className="size-4" />
-                            </Button>
-                          </HoverCardTrigger>
-                          <HoverCardContent side="top" className="p-4 w-auto">
-                            <p className="mb-2 font-medium text-sm">
-                              {selectedFilterName
-                                ? t("filter-chart.title", { name: selectedFilterName })
-                                : t("filter-chart.title-fallback")}
-                            </p>
-                            {isFilterCurveLoading ? (
-                              <div className="flex justify-center items-center w-80 h-60 text-muted-foreground text-sm">
-                                Loading...
-                              </div>
-                            ) : filterCurveData.length > 0 ? (
-                              <ChartContainer config={{}} className="w-80 h-60">
-                                <LineChart
-                                  accessibilityLayer
-                                  data={filterCurveData}
-                                  margin={{ top: 12, bottom: 12, right: 8 }}
-                                >
-                                  <CartesianGrid vertical={false} />
-                                  <XAxis
-                                    dataKey="wavelength"
-                                    type="number"
-                                    domain={["dataMin", "dataMax"]}
-                                    unit=" nm"
-                                    label={{
-                                      value: t("filter-chart.x-axis-label"),
-                                      position: "insideBottom",
-                                      offset: -5,
-                                    }}
-                                    tickFormatter={(value) => `${value.toFixed(1)}`}
-                                  />
-                                  <YAxis
-                                    dataKey="transmission"
-                                    type="number"
-                                    domain={[0, 1]}
-                                    label={{
-                                      value: t("filter-chart.y-axis-label"),
-                                      angle: -90,
-                                      position: "insideLeft",
-                                      offset: 15,
-                                    }}
-                                    tickFormatter={(value) => `${(value * 100).toFixed(0)}%`}
-                                  />
-                                  <Line
-                                    type="monotone"
-                                    dataKey="transmission"
-                                    stroke="var(--chart-1)"
-                                    strokeWidth={2}
-                                    dot={false}
-                                    isAnimationActive={false}
-                                  />
-                                  <ChartTooltip
-                                    animationDuration={0}
-                                    cursor={false}
-                                    content={
-                                      <FilterTooltipContent
-                                        formatWavelength={(value) =>
-                                          t("filter-chart.tooltip.wavelength", {
-                                            value: Number.isFinite(Number(value)) ? Number(value).toFixed(1) : "-",
-                                          })
-                                        }
-                                        transmissionText={t("filter-chart.tooltip.transmission")}
-                                      />
-                                    }
-                                  />
-                                </LineChart>
-                              </ChartContainer>
-                            ) : (
-                              <div className="flex justify-center items-center w-80 h-60 text-muted-foreground text-sm">
-                                No filter data available.
-                              </div>
-                            )}
-                          </HoverCardContent>
-                        </HoverCard>
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
+              <div className="gap-4 grid grid-cols-2">
                 <FormField
                   control={form.control}
                   name="instrument"
@@ -519,106 +641,9 @@ function ETCFormInner({ filters, objects, selectedObject, onSelectObject, object
                   )}
                 />
               </div>
-
-              <div className="space-y-3">
-                <FormField
-                  control={form.control}
-                  name="objectId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="flex items-center gap-0.5">
-                        {t("object.title")}
-                        <Tooltip>
-                          <TooltipTrigger>
-                            <Info className="ml-1 size-4 text-muted-foreground" />
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p className="max-w-xs text-wrap">{t("object.tooltip")}</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </FormLabel>
-                      <div className="flex gap-2">
-                        <Select value={field.value} onValueChange={field.onChange}>
-                          <FormControl>
-                            <SelectTrigger className="flex-1">
-                              <SelectValue placeholder={t("object.select-placeholder")} />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {objects.map((obj) => (
-                              <SelectItem key={obj.id} value={obj.id}>
-                                {obj.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-
-                        {selectedObject && !object.cubeReady && object.downloadProgress === null && (
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="icon"
-                            onClick={object.downloadCube}
-                            title={t("object.download")}
-                          >
-                            <Download className="size-4" />
-                          </Button>
-                        )}
-
-                        {object.downloadProgress !== null && (
-                          <Button type="button" variant="outline" size="icon" disabled className="pointer-events-none">
-                            <CircularProgress value={object.downloadProgress} />
-                          </Button>
-                        )}
-
-                        {object.cubeReady && (
-                          <Button type="button" variant="outline" size="icon" disabled className="pointer-events-none">
-                            <Check className="size-4" />
-                          </Button>
-                        )}
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {wavelengthRange && (
-                  <p className="text-muted-foreground text-xs">
-                    {t("wavelength-range", { min: wavelengthRange.min, max: wavelengthRange.max })}
-                  </p>
-                )}
-
-                {preview && (
-                  <div className="flex lg:flex-row flex-col justify-center items-center lg:items-start gap-3">
-                    <Heatmap
-                      values={preview}
-                      width={isMobile ? 310 : 460}
-                      height={isMobile ? 260 : 410}
-                      colormap="inferno"
-                      tooltip
-                      selectable
-                      renderTooltip={(cell: HeatmapCellData) => (
-                        <>
-                          <p>
-                            x: {cell.x}, y: {cell.y}
-                          </p>
-                          <div className="flex items-center mt-2 min-w-25">
-                            <div style={{ backgroundColor: cell.color }} className="inline-block mr-2 w-3 h-3" />
-                            <p className="mr-auto pr-5 text-muted-foreground">Value</p>
-                            <span>{cell.value.toFixed(1)}</span>
-                          </div>
-                        </>
-                      )}
-                      className="max-w-full"
-                    />
-                    <SelectionControls />
-                  </div>
-                )}
-
-                {selectionError && <p className="text-destructive text-sm">{t("object.selection-required")}</p>}
-                {object.error && <p className="text-destructive text-sm">{object.error}</p>}
-              </div>
             </div>
+
+            <Separator />
 
             <Button type="submit" className="w-full" disabled={disabled}>
               {t("calculate-snr")}
