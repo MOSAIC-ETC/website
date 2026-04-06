@@ -58,9 +58,7 @@ export function Heatmap({
   const rafRef = useRef(0);
 
   // Contrast & bias refs for real-time right-click drag adjustment
-  const contrastBiasRef = useRef<ContrastBias>(
-    heatmapContext?.contrastBias ?? { contrast: 1.0, bias: 0.5 },
-  );
+  const contrastBiasRef = useRef<ContrastBias>(heatmapContext?.contrastBias ?? { contrast: 1.0, bias: 0.5 });
   const isAdjustingCBRef = useRef(false);
   const cbDragStartRef = useRef<{ x: number; y: number } | null>(null);
   const cbStartValuesRef = useRef<ContrastBias>({ contrast: 1.0, bias: 0.5 });
@@ -364,12 +362,9 @@ export function Heatmap({
     [selectable, selectionMode, commitSelection, heatmapContext],
   );
 
-  const handleContextMenu = useCallback(
-    (e: React.MouseEvent<HTMLCanvasElement>) => {
-      e.preventDefault();
-    },
-    [],
-  );
+  const handleContextMenu = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
+    e.preventDefault();
+  }, []);
 
   // Touch handlers
   const handleTouchStart = useCallback(
