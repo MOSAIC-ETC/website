@@ -128,6 +128,7 @@
   },
   "etc": {
     "title": "Calculadora de Tempo de Exposição",
+    "subtitle": "Estimativa de sinal-ruído",
     "cube-warning": "Por favor, baixe o cubo de dados do objeto antes de calcular.",
     "tabs": {
       "snr-spectrum": "Espectro SNR",
@@ -157,6 +158,11 @@
       "instrument": "Instrumento",
       "sky-condition": "Condição do Céu",
       "calculate-snr": "Calcular SNR",
+      "section": {
+        "target": "Alvo",
+        "observation": "Observação",
+        "instrument": "Instrumento & Céu"
+      },
       "object": {
         "title": "Objeto Não Estelar",
         "select-placeholder": "Selecione um objeto",
@@ -178,6 +184,7 @@
     "chart": {
       "title": "SNR vs Comprimento de Onda",
       "empty-state": "Envie o formulário para gerar o gráfico.",
+      "empty-state-hint": "Configure os parâmetros à esquerda e clique em Calcular SNR.",
       "wavelength-label": "Comprimento de Onda (nm)",
       "snr-label": "SNR"
     },
@@ -191,7 +198,8 @@
     },
     "snr-map": {
       "title": "Mapa SNR 2D",
-      "empty-state": "Envie o formulário para gerar o mapa SNR."
+      "empty-state": "Envie o formulário para gerar o mapa SNR.",
+      "empty-state-hint": "Configure os parâmetros à esquerda e clique em Calcular Mapa SNR 2D."
     }
   }
 }

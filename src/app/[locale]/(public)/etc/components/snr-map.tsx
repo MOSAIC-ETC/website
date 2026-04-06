@@ -1,5 +1,6 @@
 "use client";
 
+import { Grid3X3 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Heatmap } from "@/components/chart/heatmap";
@@ -20,8 +21,12 @@ export function SNRMap({ data }: SNRMapProps) {
         <CardHeader>
           <CardTitle>{t("title")}</CardTitle>
         </CardHeader>
-        <CardContent className="flex justify-center items-center h-64 text-muted-foreground text-sm">
-          {t("empty-state")}
+        <CardContent className="flex flex-col justify-center items-center">
+          <div className="flex flex-col items-center gap-3 py-12 border border-dashed rounded-lg w-full text-center">
+            <Grid3X3 className="size-10 text-muted-foreground/50" />
+            <p className="text-muted-foreground text-sm">{t("empty-state")}</p>
+            <p className="text-muted-foreground/60 text-xs">{t("empty-state-hint")}</p>
+          </div>
         </CardContent>
       </Card>
     );
@@ -35,8 +40,8 @@ export function SNRMap({ data }: SNRMapProps) {
       <CardContent className="flex justify-center">
         <Heatmap
           values={data}
-          width={isMobile ? 340 : 560}
-          height={isMobile ? 300 : 510}
+          width={isMobile ? 340 : 520}
+          height={isMobile ? 300 : 470}
           colormap="inferno"
           tooltip
           renderTooltip={(cell) => (
@@ -51,6 +56,7 @@ export function SNRMap({ data }: SNRMapProps) {
               </div>
             </>
           )}
+          className="max-w-full"
         />
       </CardContent>
     </Card>
