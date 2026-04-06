@@ -1,6 +1,11 @@
 import { interpolateColormap } from "./colormaps";
-import type { Colormap, HeatmapMargins, HeatmapPoint, HeatmapPolygon, HeatmapRect } from "./types";
+import type { Colormap, ContrastBias, HeatmapMargins, HeatmapPoint, HeatmapPolygon, HeatmapRect } from "./types";
 import { cellToCanvas, generateColorBarTicks, getCellsInPolygon, getPixelOutlineEdges } from "./utils";
+
+/** Apply DS9-style contrast/bias color mapping: v' = (v - bias) * contrast + 0.5, clamped to [0, 1] */
+function applyContrastBias(v: number, contrast: number, bias: number): number {
+  return Math.max(0, Math.min(1, (v - bias) * contrast + 0.5));
+}
 
 interface DrawHeatmapOptions {
   ctx: CanvasRenderingContext2D;
@@ -22,6 +27,7 @@ interface DrawHeatmapOptions {
   selectionRect?: HeatmapRect | null;
   polygonSel?: HeatmapPolygon | null;
   preview?: HeatmapPoint | null;
+  contrastBias?: ContrastBias;
 }
 
 export function drawHeatmap({
@@ -44,6 +50,7 @@ export function drawHeatmap({
   selectionRect,
   polygonSel,
   preview,
+  contrastBias,
 }: DrawHeatmapOptions) {
   // Clear canvas with transparent background
   ctx.clearRect(0, 0, width, height);
@@ -67,11 +74,15 @@ export function drawHeatmap({
   const cellWidth = plotWidth / numCols;
   const cellHeight = plotHeight / numRows;
 
+  const cbContrast = contrastBias?.contrast ?? 1.0;
+  const cbBias = contrastBias?.bias ?? 0.5;
+
   for (let row = 0; row < numRows; row++) {
     for (let col = 0; col < numCols; col++) {
       const value = values[row][col];
       const normalizedValue = maxVal > 0 ? value / maxVal : 0;
-      ctx.fillStyle = interpolateColormap(normalizedValue, colormap);
+      const mappedValue = applyContrastBias(normalizedValue, cbContrast, cbBias);
+      ctx.fillStyle = interpolateColormap(mappedValue, colormap);
       const x = margin.left + col * cellWidth;
       const y = margin.top + (numRows - 1 - row) * cellHeight;
       ctx.fillRect(x, y, cellWidth + 0.5, cellHeight + 0.5);
@@ -135,6 +146,7 @@ export function drawHeatmap({
     maxVal,
     colormap,
     mutedForegroundColor,
+    contrastBias,
   });
 }
 
@@ -364,10 +376,14 @@ interface DrawColorBarOptions {
   maxVal: number;
   colormap: Colormap;
   mutedForegroundColor: string;
+  contrastBias?: ContrastBias;
 }
 
 function drawColorBar(ctx: CanvasRenderingContext2D, options: DrawColorBarOptions) {
-  const { margin, plotHeight, width, maxVal, colormap, mutedForegroundColor } = options;
+  const { margin, plotHeight, width, maxVal, colormap, mutedForegroundColor, contrastBias } = options;
+
+  const cbContrast = contrastBias?.contrast ?? 1.0;
+  const cbBias = contrastBias?.bias ?? 0.5;
 
   const colorBarWidth = 20;
   const colorBarHeight = plotHeight;
@@ -376,7 +392,8 @@ function drawColorBar(ctx: CanvasRenderingContext2D, options: DrawColorBarOption
 
   for (let i = 0; i < colorBarHeight; i++) {
     const t = 1 - i / colorBarHeight;
-    ctx.fillStyle = interpolateColormap(t, colormap);
+    const mappedT = applyContrastBias(t, cbContrast, cbBias);
+    ctx.fillStyle = interpolateColormap(mappedT, colormap);
     ctx.fillRect(colorBarX, colorBarY + i, colorBarWidth, 1);
   }
 

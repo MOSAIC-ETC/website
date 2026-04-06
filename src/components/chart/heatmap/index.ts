@@ -15,6 +15,7 @@ export type {
   SelectionMode,
   Colormap,
   HeatmapMargins,
+  ContrastBias,
 } from "./types";
 
 // Colormaps

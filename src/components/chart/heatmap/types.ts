@@ -42,6 +42,14 @@ export interface HeatmapPolygon {
 /** Selection mode: rectangle or polygon */
 export type SelectionMode = "rectangle" | "polygon";
 
+/** Contrast and bias values for DS9-style color mapping adjustment */
+export interface ContrastBias {
+  /** Color mapping contrast (default: 1.0). Higher = narrower color window */
+  contrast: number;
+  /** Color mapping bias (default: 0.5). Controls the midpoint shift */
+  bias: number;
+}
+
 /** Props for the Heatmap component */
 export type HeatmapProps = {
   /** 2D array of values (rows x cols) */

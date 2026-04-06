@@ -2,7 +2,7 @@
 
 import { type ReactNode, createContext, useCallback, useContext, useState } from "react";
 
-import type { HeatmapCell, SelectionMode } from "./types";
+import type { ContrastBias, HeatmapCell, SelectionMode } from "./types";
 
 export interface HeatmapContextValue {
   /** Current selection mode */
@@ -15,6 +15,12 @@ export interface HeatmapContextValue {
   setSelection: (selection: HeatmapCell[]) => void;
   /** Clear all selections */
   clearSelections: () => void;
+  /** Current contrast and bias values */
+  contrastBias: ContrastBias;
+  /** Set contrast and bias values */
+  setContrastBias: (cb: ContrastBias) => void;
+  /** Reset contrast and bias to defaults */
+  resetContrastBias: () => void;
 }
 
 export const HeatmapSelectionContext = createContext<HeatmapContextValue | null>(null);
@@ -25,12 +31,19 @@ interface HeatmapProviderProps {
   defaultSelectionMode?: SelectionMode;
 }
 
+const DEFAULT_CONTRAST_BIAS: ContrastBias = { contrast: 1.0, bias: 0.5 };
+
 export function HeatmapProvider({ children, defaultSelectionMode = "rectangle" }: HeatmapProviderProps) {
   const [selectionMode, setSelectionMode] = useState<SelectionMode>(defaultSelectionMode);
   const [selection, setSelection] = useState<HeatmapCell[]>([]);
+  const [contrastBias, setContrastBias] = useState<ContrastBias>(DEFAULT_CONTRAST_BIAS);
 
   const clearSelections = useCallback(() => {
     setSelection([]);
+  }, []);
+
+  const resetContrastBias = useCallback(() => {
+    setContrastBias(DEFAULT_CONTRAST_BIAS);
   }, []);
 
   return (
@@ -41,6 +54,9 @@ export function HeatmapProvider({ children, defaultSelectionMode = "rectangle" }
         selection,
         setSelection,
         clearSelections,
+        contrastBias,
+        setContrastBias,
+        resetContrastBias,
       }}
     >
       {children}

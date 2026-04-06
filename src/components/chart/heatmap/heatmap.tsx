@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 import { getColormap, interpolateColormap } from "./colormaps";
 import { HeatmapSelectionContext } from "./context";
 import { drawHeatmap } from "./draw";
-import type { Colormap, HeatmapCellData, HeatmapPolygon, HeatmapProps, HeatmapRect } from "./types";
+import type { Colormap, ContrastBias, HeatmapCellData, HeatmapPolygon, HeatmapProps, HeatmapRect } from "./types";
 import { cellsSetToCoordinates, getCellsInPolygon, getCellsInRectangle, getVertexAtPosition } from "./utils";
 
 export function Heatmap({
@@ -57,6 +57,14 @@ export function Heatmap({
   const draggingVertexRef = useRef<number | null>(null);
   const rafRef = useRef(0);
 
+  // Contrast & bias refs for real-time right-click drag adjustment
+  const contrastBiasRef = useRef<ContrastBias>(
+    heatmapContext?.contrastBias ?? { contrast: 1.0, bias: 0.5 },
+  );
+  const isAdjustingCBRef = useRef(false);
+  const cbDragStartRef = useRef<{ x: number; y: number } | null>(null);
+  const cbStartValuesRef = useRef<ContrastBias>({ contrast: 1.0, bias: 0.5 });
+
   // Draw canvas from current ref values
   const redraw = useCallback(() => {
     const canvas = canvasRef.current;
@@ -80,10 +88,11 @@ export function Heatmap({
       xLabel,
       yLabel,
       showAxes,
-      highlightCell: hoveredCellRef.current,
+      highlightCell: isAdjustingCBRef.current ? null : hoveredCellRef.current,
       selectionRect: selectionMode === "rectangle" ? rectSelRef.current : null,
       polygonSel: selectionMode === "polygon" ? polySelRef.current : null,
       preview: previewRef.current,
+      contrastBias: contrastBiasRef.current,
     });
   }, [
     values,
@@ -141,6 +150,14 @@ export function Heatmap({
     }
   }, [heatmapContext, heatmapContext?.selection, scheduleRedraw]);
 
+  // Sync contrast/bias ref when context changes externally
+  useEffect(() => {
+    if (heatmapContext?.contrastBias) {
+      contrastBiasRef.current = heatmapContext.contrastBias;
+      scheduleRedraw();
+    }
+  }, [heatmapContext?.contrastBias, scheduleRedraw]);
+
   // Unified cell-from-coordinates helper
   const getCellFromCoords = useCallback(
     (clientX: number, clientY: number) => {
@@ -179,6 +196,21 @@ export function Heatmap({
   // Event handlers — update refs and schedule redraw (no React state during drag)
   const handleMouseMove = useCallback(
     (e: React.MouseEvent<HTMLCanvasElement>) => {
+      // Handle contrast/bias drag (right-click)
+      if (isAdjustingCBRef.current && cbDragStartRef.current) {
+        const dx = e.clientX - cbDragStartRef.current.x;
+        const dy = e.clientY - cbDragStartRef.current.y;
+
+        // Normalize deltas relative to canvas dimensions
+        const newBias = Math.max(0, Math.min(1, cbStartValuesRef.current.bias + dx / width));
+        // Invert Y: moving up (negative dy) increases contrast
+        const newContrast = Math.max(0, Math.min(10, cbStartValuesRef.current.contrast - (dy / height) * 5));
+
+        contrastBiasRef.current = { contrast: newContrast, bias: newBias };
+        scheduleRedraw();
+        return;
+      }
+
       const cell = getCellFromCoords(e.clientX, e.clientY);
 
       if (selectable && selectionMode === "polygon") {
@@ -227,6 +259,18 @@ export function Heatmap({
 
   const handleMouseDown = useCallback(
     (e: React.MouseEvent<HTMLCanvasElement>) => {
+      // Right-click: start contrast/bias drag
+      if (e.button === 2) {
+        isAdjustingCBRef.current = true;
+        cbDragStartRef.current = { x: e.clientX, y: e.clientY };
+        cbStartValuesRef.current = { ...contrastBiasRef.current };
+        // Hide tooltip and cell highlight while adjusting
+        hoveredCellRef.current = null;
+        setHoverInfo(null);
+        setHoveredCellPos(null);
+        return;
+      }
+
       if (e.button !== 0 || !selectable) return;
       const cell = getCellFromCoords(e.clientX, e.clientY);
 
@@ -296,6 +340,15 @@ export function Heatmap({
 
   const handleMouseUp = useCallback(
     (e: React.MouseEvent<HTMLCanvasElement>) => {
+      // End contrast/bias drag
+      if (isAdjustingCBRef.current && e.button === 2) {
+        isAdjustingCBRef.current = false;
+        cbDragStartRef.current = null;
+        // Commit to context
+        heatmapContext?.setContrastBias({ ...contrastBiasRef.current });
+        return;
+      }
+
       if (!selectable) return;
       if (selectionMode === "polygon" && draggingVertexRef.current !== null) {
         draggingVertexRef.current = null;
@@ -308,16 +361,14 @@ export function Heatmap({
         commitSelection();
       }
     },
-    [selectable, selectionMode, commitSelection],
+    [selectable, selectionMode, commitSelection, heatmapContext],
   );
 
   const handleContextMenu = useCallback(
     (e: React.MouseEvent<HTMLCanvasElement>) => {
-      if (!selectable) return;
       e.preventDefault();
-      clearSelections();
     },
-    [selectable, clearSelections],
+    [],
   );
 
   // Touch handlers
@@ -411,8 +462,14 @@ export function Heatmap({
     if (draggingVertexRef.current !== null) {
       draggingVertexRef.current = null;
     }
+    // Cancel contrast/bias drag if mouse leaves canvas
+    if (isAdjustingCBRef.current) {
+      isAdjustingCBRef.current = false;
+      cbDragStartRef.current = null;
+      heatmapContext?.setContrastBias({ ...contrastBiasRef.current });
+    }
     scheduleRedraw();
-  }, [scheduleRedraw]);
+  }, [scheduleRedraw, heatmapContext]);
 
   const getTooltipPosition = () => {
     if (!hoveredCellPos || !canvasRef.current || numRows === 0 || numCols === 0) return { left: 0, top: 0 };
