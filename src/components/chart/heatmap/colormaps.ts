@@ -63,6 +63,8 @@ export function interpolateColormap(t: number, colormap: Colormap): string {
   return `rgb(${r}, ${g}, ${b})`;
 }
 
+export const COLORMAP_NAMES = Object.keys(colormaps);
+
 export function getColormap(colormap: Colormap | string): Colormap {
   if (Array.isArray(colormap)) {
     return colormap;

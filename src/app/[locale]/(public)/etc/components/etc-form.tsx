@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ChartLine, Check, Download, Eraser, Info, SquareDashedMousePointer } from "lucide-react";
+import { ChartLine, Check, Download, Info } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { type Resolver, useForm, useWatch } from "react-hook-form";
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
@@ -16,7 +16,6 @@ import {
   useHeatmapSelectionContext,
 } from "@/components/chart/heatmap";
 import { CircularProgress } from "@/components/circular-progress";
-import { PolygonDashedMousePointer } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
@@ -111,58 +110,6 @@ export function ETCForm({
         object={object}
       />
     </HeatmapProvider>
-  );
-}
-
-function SelectionControls() {
-  const t = useTranslations("etc.form.selection-controls");
-  const { selectionMode, setSelectionMode, clearSelections } = useHeatmapSelectionContext();
-
-  return (
-    <div className="flex lg:flex-col gap-2 lg:mt-3">
-      <Tooltip delayDuration={1000}>
-        <TooltipTrigger asChild>
-          <Button
-            type="button"
-            onClick={() => setSelectionMode("rectangle")}
-            variant={selectionMode === "rectangle" ? "default" : "outline"}
-            size="icon-sm"
-          >
-            <SquareDashedMousePointer />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent side="right">
-          <p className="max-w-xs text-wrap">{t("square-selection")}</p>
-        </TooltipContent>
-      </Tooltip>
-
-      <Tooltip delayDuration={1000}>
-        <TooltipTrigger asChild>
-          <Button
-            type="button"
-            onClick={() => setSelectionMode("polygon")}
-            variant={selectionMode === "polygon" ? "default" : "outline"}
-            size="icon-sm"
-          >
-            <PolygonDashedMousePointer />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent side="right">
-          <p className="max-w-xs text-wrap">{t("polygon-selection")}</p>
-        </TooltipContent>
-      </Tooltip>
-
-      <Tooltip delayDuration={1000}>
-        <TooltipTrigger asChild>
-          <Button type="button" onClick={clearSelections} variant="destructive" size="icon-sm">
-            <Eraser />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent side="right">
-          <p className="max-w-xs text-wrap">{t("erase-selection")}</p>
-        </TooltipContent>
-      </Tooltip>
-    </div>
   );
 }
 
@@ -353,7 +300,7 @@ function ETCFormInner({ filters, objects, selectedObject, onSelectObject, object
               )}
 
               {preview && (
-                <div className="flex flex-row justify-center items-start gap-3">
+                <div className="flex justify-center">
                   <Heatmap
                     values={preview}
                     width={isMobile ? 260 : 440}
@@ -361,6 +308,7 @@ function ETCFormInner({ filters, objects, selectedObject, onSelectObject, object
                     colormap="inferno"
                     tooltip
                     selectable
+                    selectionControls
                     renderTooltip={(cell: HeatmapCellData) => (
                       <>
                         <p>
@@ -375,7 +323,6 @@ function ETCFormInner({ filters, objects, selectedObject, onSelectObject, object
                     )}
                     className="max-w-full"
                   />
-                  <SelectionControls />
                 </div>
               )}
 
@@ -387,7 +334,9 @@ function ETCFormInner({ filters, objects, selectedObject, onSelectObject, object
 
             {/* ── Target ── */}
             <div className="space-y-4">
-              <p className="font-medium text-muted-foreground text-xs uppercase tracking-widest">{t("section.target")}</p>
+              <p className="font-medium text-muted-foreground text-xs uppercase tracking-widest">
+                {t("section.target")}
+              </p>
 
               <FormField
                 control={form.control}
@@ -456,7 +405,9 @@ function ETCFormInner({ filters, objects, selectedObject, onSelectObject, object
 
             {/* ── Observation Setup ── */}
             <div className="space-y-4">
-              <p className="font-medium text-muted-foreground text-xs uppercase tracking-widest">{t("section.observation")}</p>
+              <p className="font-medium text-muted-foreground text-xs uppercase tracking-widest">
+                {t("section.observation")}
+              </p>
 
               <div className="gap-4 grid grid-cols-2">
                 <FormField
@@ -600,7 +551,9 @@ function ETCFormInner({ filters, objects, selectedObject, onSelectObject, object
 
             {/* ── Instrument & Sky ── */}
             <div className="space-y-4">
-              <p className="font-medium text-muted-foreground text-xs uppercase tracking-widest">{t("section.instrument")}</p>
+              <p className="font-medium text-muted-foreground text-xs uppercase tracking-widest">
+                {t("section.instrument")}
+              </p>
 
               <div className="gap-4 grid grid-cols-2">
                 <FormField

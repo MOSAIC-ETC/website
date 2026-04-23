@@ -19,7 +19,7 @@ export type {
 } from "./types";
 
 // Colormaps
-export { colormaps, interpolateColormap, getColormap } from "./colormaps";
+export { colormaps, COLORMAP_NAMES, getColormap, interpolateColormap } from "./colormaps";
 
 // Utilities
 export {
