@@ -74,6 +74,10 @@ export type HeatmapProps = {
   colormap?: Colormap | string;
   /** Whether to enable selection (default: false) */
   selectable?: boolean;
+  /** Whether to show selection controls (rectangle, polygon, eraser) overlay (default: false) */
+  selectionControls?: boolean;
+  /** Whether to show colormap selector button overlay (default: false) */
+  colormapSelector?: boolean;
 } & React.HTMLAttributes<HTMLDivElement>;
 
 /** Margins around the heatmap for axes and labels */

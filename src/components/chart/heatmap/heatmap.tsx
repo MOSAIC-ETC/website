@@ -2,11 +2,21 @@
 
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 
+import { Check, Eraser, Palette, SquareDashedMousePointer } from "lucide-react";
 import { useTheme } from "next-themes";
 
+import { PolygonDashedMousePointer } from "@/components/icons";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
-import { getColormap, interpolateColormap } from "./colormaps";
+import { COLORMAP_NAMES, getColormap, interpolateColormap } from "./colormaps";
 import { HeatmapSelectionContext } from "./context";
 import { drawHeatmap } from "./draw";
 import type { Colormap, ContrastBias, HeatmapCellData, HeatmapPolygon, HeatmapProps, HeatmapRect } from "./types";
@@ -24,6 +34,8 @@ export function Heatmap({
   renderTooltip,
   colormap = "viridis",
   selectable = false,
+  selectionControls = false,
+  colormapSelector = true,
   className,
   ...props
 }: HeatmapProps) {
@@ -35,8 +47,16 @@ export function Heatmap({
 
   // Memoize stable values to prevent unnecessary callback/draw invalidation
   const margin = useMemo(() => ({ top: title ? 50 : 20, right: 80, bottom: 50, left: 50 }), [title]);
-  const selectedColormap = useMemo(() => getColormap(colormap) as Colormap, [colormap]);
+
+  // Active colormap — local state so the selector can change it without re-mounting
+  const [activeColormap, setActiveColormap] = useState<Colormap | string>(colormap);
+  const selectedColormap = useMemo(() => getColormap(activeColormap) as Colormap, [activeColormap]);
   const maxVal = useMemo(() => values.reduce((max, row) => Math.max(max, ...row), 0), [values]);
+
+  // Keep activeColormap in sync if the colormap prop changes externally
+  useEffect(() => {
+    setActiveColormap(colormap);
+  }, [colormap]);
 
   const plotWidth = width - margin.left - margin.right;
   const plotHeight = height - margin.top - margin.bottom;
@@ -179,17 +199,6 @@ export function Heatmap({
     const rect = canvas.getBoundingClientRect();
     return { x: clientX - rect.left, y: clientY - rect.top };
   }, []);
-
-  const clearSelections = useCallback(() => {
-    rectSelRef.current = null;
-    polySelRef.current = null;
-    isSelectingRef.current = false;
-    selectionStartRef.current = null;
-    previewRef.current = null;
-    draggingVertexRef.current = null;
-    heatmapContext?.clearSelections();
-    scheduleRedraw();
-  }, [heatmapContext, scheduleRedraw]);
 
   // Event handlers — update refs and schedule redraw (no React state during drag)
   const handleMouseMove = useCallback(
@@ -478,8 +487,10 @@ export function Heatmap({
   const tooltipPos = getTooltipPosition();
   const showTooltip = hoverInfo && tooltip;
 
+  const showControls = (selectionControls && heatmapContext) || colormapSelector;
+
   return (
-    <div className={cn("inline-block relative", className)} {...props}>
+    <div className={cn("relative flex gap-2", className)} {...props}>
       <canvas
         ref={canvasRef}
         width={width}
@@ -515,6 +526,87 @@ export function Heatmap({
                 <p className="mr-auto pr-5 text-muted-foreground">Value</p>
                 <span>{hoverInfo.value}</span>
               </div>
+            </>
+          )}
+        </div>
+      )}
+
+      {/* TODO: Implement i18n */}
+      {showControls && (
+        <div className="z-10 flex flex-col gap-1.5 mt-2">
+          {colormapSelector && (
+            <DropdownMenu>
+              <Tooltip delayDuration={1000}>
+                <TooltipTrigger asChild>
+                  <DropdownMenuTrigger asChild>
+                    <Button type="button" variant="outline" size="icon-sm">
+                      <Palette />
+                    </Button>
+                  </DropdownMenuTrigger>
+                </TooltipTrigger>
+                <TooltipContent side="right">
+                  <p className="max-w-xs text-wrap">Colormap</p>
+                </TooltipContent>
+              </Tooltip>
+              <DropdownMenuContent side="right" align="start">
+                {COLORMAP_NAMES.map((name) => (
+                  <DropdownMenuCheckboxItem
+                    key={name}
+                    checked={activeColormap === name}
+                    onCheckedChange={() => setActiveColormap(name)}
+                    className="capitalize"
+                  >
+                    {name}
+                  </DropdownMenuCheckboxItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+
+          {selectionControls && heatmapContext && (
+            <>
+              <Tooltip delayDuration={1000}>
+                <TooltipTrigger asChild>
+                  <Button
+                    type="button"
+                    onClick={() => heatmapContext.setSelectionMode("rectangle")}
+                    variant={heatmapContext.selectionMode === "rectangle" ? "default" : "outline"}
+                    size="icon-sm"
+                  >
+                    <SquareDashedMousePointer />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="right">
+                  <p className="max-w-xs text-wrap">Rectangle selection</p>
+                </TooltipContent>
+              </Tooltip>
+
+              <Tooltip delayDuration={1000}>
+                <TooltipTrigger asChild>
+                  <Button
+                    type="button"
+                    onClick={() => heatmapContext.setSelectionMode("polygon")}
+                    variant={heatmapContext.selectionMode === "polygon" ? "default" : "outline"}
+                    size="icon-sm"
+                  >
+                    <PolygonDashedMousePointer />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="right">
+                  <p className="max-w-xs text-wrap">Polygon selection</p>
+                </TooltipContent>
+              </Tooltip>
+
+              <Tooltip delayDuration={1000}>
+                <TooltipTrigger asChild>
+                  <Button type="button" onClick={heatmapContext.clearSelections} variant="destructive" size="icon-sm">
+                    <Eraser />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="right">
+                  <p className="max-w-xs text-wrap">Erase selection</p>
+                </TooltipContent>
+              </Tooltip>
             </>
           )}
         </div>
