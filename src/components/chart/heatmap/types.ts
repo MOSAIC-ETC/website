@@ -42,6 +42,9 @@ export interface HeatmapPolygon {
 /** Selection mode: rectangle or polygon */
 export type SelectionMode = "rectangle" | "polygon";
 
+/** Scale/normalization mode for value-to-color mapping */
+export type ScaleMode = "minmax" | "zscale";
+
 /** Contrast and bias values for DS9-style color mapping adjustment */
 export interface ContrastBias {
   /** Color mapping contrast (default: 1.0). Higher = narrower color window */
@@ -78,6 +81,10 @@ export type HeatmapProps = {
   selectionControls?: boolean;
   /** Whether to show colormap selector button overlay (default: false) */
   colormapSelector?: boolean;
+  /** Whether to show scale mode selector button overlay (default: false) */
+  scaleSelector?: boolean;
+  /** Default scale mode for value-to-color mapping (default: "minmax") */
+  defaultScaleMode?: ScaleMode;
 } & React.HTMLAttributes<HTMLDivElement>;
 
 /** Margins around the heatmap for axes and labels */

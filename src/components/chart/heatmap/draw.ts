@@ -17,7 +17,7 @@ interface DrawHeatmapOptions {
   plotHeight: number;
   numRows: number;
   numCols: number;
-  maxVal: number;
+  displayRange: { min: number; max: number };
   colormap: Colormap;
   title?: string;
   xLabel: string;
@@ -40,7 +40,7 @@ export function drawHeatmap({
   plotHeight,
   numRows,
   numCols,
-  maxVal,
+  displayRange,
   colormap,
   title,
   xLabel,
@@ -77,10 +77,12 @@ export function drawHeatmap({
   const cbContrast = contrastBias?.contrast ?? 1.0;
   const cbBias = contrastBias?.bias ?? 0.5;
 
+  const displayRangeSize = displayRange.max - displayRange.min;
+
   for (let row = 0; row < numRows; row++) {
     for (let col = 0; col < numCols; col++) {
       const value = values[row][col];
-      const normalizedValue = maxVal > 0 ? value / maxVal : 0;
+      const normalizedValue = displayRangeSize > 0 ? (value - displayRange.min) / displayRangeSize : 0;
       const mappedValue = applyContrastBias(normalizedValue, cbContrast, cbBias);
       ctx.fillStyle = interpolateColormap(mappedValue, colormap);
       const x = margin.left + col * cellWidth;
@@ -143,7 +145,7 @@ export function drawHeatmap({
     margin,
     plotHeight,
     width,
-    maxVal,
+    displayRange,
     colormap,
     mutedForegroundColor,
     contrastBias,
@@ -373,14 +375,14 @@ interface DrawColorBarOptions {
   margin: HeatmapMargins;
   plotHeight: number;
   width: number;
-  maxVal: number;
+  displayRange: { min: number; max: number };
   colormap: Colormap;
   mutedForegroundColor: string;
   contrastBias?: ContrastBias;
 }
 
 function drawColorBar(ctx: CanvasRenderingContext2D, options: DrawColorBarOptions) {
-  const { margin, plotHeight, width, maxVal, colormap, mutedForegroundColor, contrastBias } = options;
+  const { margin, plotHeight, width, displayRange, colormap, mutedForegroundColor, contrastBias } = options;
 
   const cbContrast = contrastBias?.contrast ?? 1.0;
   const cbBias = contrastBias?.bias ?? 0.5;
@@ -405,9 +407,13 @@ function drawColorBar(ctx: CanvasRenderingContext2D, options: DrawColorBarOption
   ctx.fillStyle = mutedForegroundColor;
   ctx.font = "12px sans-serif";
   ctx.textAlign = "left";
-  const colorBarTicks = generateColorBarTicks(maxVal, 6);
+  const colorBarTicks = generateColorBarTicks(displayRange.min, displayRange.max, 6);
+  const colorBarRange = displayRange.max - displayRange.min;
   colorBarTicks.forEach((tick) => {
-    const y = maxVal > 0 ? colorBarY + ((maxVal - tick) / maxVal) * colorBarHeight : colorBarY + colorBarHeight;
+    const y =
+      colorBarRange > 0
+        ? colorBarY + ((displayRange.max - tick) / colorBarRange) * colorBarHeight
+        : colorBarY + colorBarHeight;
     if (y >= colorBarY && y <= colorBarY + colorBarHeight) {
       ctx.fillText(tick.toString(), colorBarX + colorBarWidth + 5, y + 4);
     }
