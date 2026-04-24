@@ -99,23 +99,96 @@ export function getPixelOutlineEdges(selectedCells: Set<string>): { x1: number; 
 }
 
 /**
- * Generate evenly spaced ticks for color bar
+ * Generate evenly spaced ticks for color bar with adaptive rounding.
+ * Ticks run from maxValue (top of bar) down to minValue (bottom).
  */
-export function generateColorBarTicks(maxValue: number, numTicks = 6): number[] {
-  if (maxValue === 0) return [0];
+export function generateColorBarTicks(minValue: number, maxValue: number, numTicks = 6): number[] {
+  const range = maxValue - minValue;
+  if (range === 0) return [minValue];
 
+  // Round to the nearest power-of-10 fraction of the range
+  const magnitude = Math.pow(10, Math.floor(Math.log10(range / numTicks)));
   const ticks: number[] = [];
   for (let i = 0; i < numTicks; i++) {
-    if (i === 0) {
-      ticks.push(maxValue);
-    } else if (i === numTicks - 1) {
-      ticks.push(0);
-    } else {
-      const rawValue = maxValue * (1 - i / (numTicks - 1));
-      ticks.push(Math.round(rawValue));
-    }
+    const rawValue = maxValue - (range * i) / (numTicks - 1);
+    ticks.push(Math.round(rawValue / magnitude) * magnitude);
   }
   return ticks;
+}
+
+/**
+ * ZScale normalization (IRAF/DS9 algorithm, Lupton & Gunn 1986).
+ *
+ * Fits a line through the sorted pixel values to estimate the "density" of the
+ * data distribution. The slope of that line controls how wide the display window
+ * is: a small slope (many pixels at similar background values) → wide window that
+ * shows fine structure; a large slope (data spread over a wide range, dominated by
+ * outliers) → narrow window centred on the bulk of the data.
+ *
+ * Steps:
+ *  1. Flatten and sort all pixel values.
+ *  2. Subsample to `nsamples` uniformly spaced elements.
+ *  3. Linear-regression: fit  value = slope × rank + intercept.
+ *  4. z1 = median − contrast × (center_rank / slope)
+ *     z2 = median + contrast × ((n−1−center_rank) / slope)
+ *  5. Clamp to [zmin, zmax]. Fall back to full range if slope ≤ 0.
+ *
+ * @param values   2-D array of pixel values
+ * @param contrast Controls the width of the display window (DS9 default: 0.25)
+ * @param nsamples Number of pixels to subsample (default: 600)
+ */
+export function computeZScale(values: number[][], contrast = 0.25, nsamples = 600): { z1: number; z2: number } {
+  const flat: number[] = [];
+
+  for (const row of values) {
+    for (const v of row) {
+      // 1. O PULO DO GATO: Ignore os valores nulos/fundo absurdos!
+      // Se o seu fundo é -899 ou -999, filtre qualquer coisa abaixo de -100
+      if (v > -100 && !isNaN(v)) {
+        flat.push(v);
+      }
+    }
+  }
+
+  if (flat.length === 0) return { z1: 0, z2: 1 };
+
+  flat.sort((a, b) => a - b);
+  const zmin = flat[0];
+  const zmax = flat[flat.length - 1];
+  if (zmin === zmax) return { z1: zmin, z2: zmax };
+
+  // Subsample uniformly
+  const n = Math.min(nsamples, flat.length);
+  const step = flat.length / n;
+  const samples: number[] = [];
+  for (let i = 0; i < n; i++) samples.push(flat[Math.floor(i * step)]);
+
+  // Linear regression
+  let sumX = 0,
+    sumY = 0,
+    sumXY = 0,
+    sumX2 = 0;
+  for (let i = 0; i < n; i++) {
+    sumX += i;
+    sumY += samples[i];
+    sumXY += i * samples[i];
+    sumX2 += i * i;
+  }
+  const denom = n * sumX2 - sumX * sumX;
+  if (denom === 0) return { z1: zmin, z2: zmax };
+
+  const slope = (n * sumXY - sumX * sumY) / denom;
+  if (slope <= 0) return { z1: zmin, z2: zmax };
+
+  const centerIdx = Math.floor(n / 2);
+  const median = samples[centerIdx];
+
+  const slopeAdjusted = slope / contrast;
+  const z1 = Math.max(zmin, median - centerIdx * slopeAdjusted);
+  const z2 = Math.min(zmax, median + (n - 1 - centerIdx) * slopeAdjusted);
+
+  if (z1 >= z2) return { z1: zmin, z2: zmax };
+  return { z1, z2 };
 }
 
 /**

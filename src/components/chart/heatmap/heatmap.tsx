@@ -2,7 +2,7 @@
 
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 
-import { Check, Eraser, Palette, SquareDashedMousePointer } from "lucide-react";
+import { Check, Contrast, Eraser, Palette, SquareDashedMousePointer } from "lucide-react";
 import { useTheme } from "next-themes";
 
 import { PolygonDashedMousePointer } from "@/components/icons";
@@ -19,8 +19,22 @@ import { cn } from "@/lib/utils";
 import { COLORMAP_NAMES, getColormap, interpolateColormap } from "./colormaps";
 import { HeatmapSelectionContext } from "./context";
 import { drawHeatmap } from "./draw";
-import type { Colormap, ContrastBias, HeatmapCellData, HeatmapPolygon, HeatmapProps, HeatmapRect } from "./types";
-import { cellsSetToCoordinates, getCellsInPolygon, getCellsInRectangle, getVertexAtPosition } from "./utils";
+import type {
+  Colormap,
+  ContrastBias,
+  HeatmapCellData,
+  HeatmapPolygon,
+  HeatmapProps,
+  HeatmapRect,
+  ScaleMode,
+} from "./types";
+import {
+  cellsSetToCoordinates,
+  computeZScale,
+  getCellsInPolygon,
+  getCellsInRectangle,
+  getVertexAtPosition,
+} from "./utils";
 
 export function Heatmap({
   values,
@@ -36,6 +50,8 @@ export function Heatmap({
   selectable = false,
   selectionControls = false,
   colormapSelector = true,
+  scaleSelector = true,
+  defaultScaleMode = "zscale",
   className,
   ...props
 }: HeatmapProps) {
@@ -51,7 +67,26 @@ export function Heatmap({
   // Active colormap — local state so the selector can change it without re-mounting
   const [activeColormap, setActiveColormap] = useState<Colormap | string>(colormap);
   const selectedColormap = useMemo(() => getColormap(activeColormap) as Colormap, [activeColormap]);
-  const maxVal = useMemo(() => values.reduce((max, row) => Math.max(max, ...row), 0), [values]);
+
+  // Scale mode — "minmax" uses the min and max of the current data, "zscale" uses a contrast-enhanced scale based on the distribution of values
+  const [activeScaleMode, setActiveScaleMode] = useState<ScaleMode>(defaultScaleMode);
+  const displayRange = useMemo(() => {
+    if (activeScaleMode === "zscale") {
+      const { z1, z2 } = computeZScale(values);
+      return { min: z1, max: z2 };
+    }
+
+    let minVal = Infinity;
+    let maxVal = -Infinity;
+    for (const row of values) {
+      for (const val of row) {
+        if (val < minVal) minVal = val;
+        if (val > maxVal) maxVal = val;
+      }
+    }
+
+    return { min: minVal, max: maxVal };
+  }, [activeScaleMode, values]);
 
   // Keep activeColormap in sync if the colormap prop changes externally
   useEffect(() => {
@@ -100,7 +135,7 @@ export function Heatmap({
       plotHeight,
       numRows,
       numCols,
-      maxVal,
+      displayRange,
       colormap: selectedColormap,
       title,
       xLabel,
@@ -121,7 +156,7 @@ export function Heatmap({
     plotHeight,
     numRows,
     numCols,
-    maxVal,
+    displayRange,
     selectedColormap,
     title,
     xLabel,
@@ -247,7 +282,10 @@ export function Heatmap({
         // Only update tooltip state when not actively selecting (avoids unnecessary React re-renders)
         if (!isSelectingRef.current && draggingVertexRef.current === null) {
           const cellValue = values[cell.y]?.[cell.x] ?? 0;
-          const normalizedValue = maxVal > 0 ? cellValue / maxVal : 0;
+          const normalizedValue =
+            displayRange.max > displayRange.min
+              ? (cellValue - displayRange.min) / (displayRange.max - displayRange.min)
+              : 0;
           const cellColor = interpolateColormap(normalizedValue, selectedColormap);
           setHoverInfo({ x: cell.x, y: cell.y, value: cellValue, color: cellColor });
           setHoveredCellPos(cell);
@@ -261,7 +299,7 @@ export function Heatmap({
         scheduleRedraw();
       }
     },
-    [selectable, selectionMode, values, maxVal, selectedColormap, getCellFromCoords, scheduleRedraw],
+    [selectable, selectionMode, values, displayRange, selectedColormap, getCellFromCoords, scheduleRedraw],
   );
 
   const handleMouseDown = useCallback(
@@ -388,14 +426,17 @@ export function Heatmap({
         rectSelRef.current = { start: { x: cell.x, y: cell.y }, end: { x: cell.x, y: cell.y } };
         hoveredCellRef.current = cell;
         const cellValue = values[cell.y]?.[cell.x] ?? 0;
-        const normalizedValue = maxVal > 0 ? cellValue / maxVal : 0;
+        const normalizedValue =
+          displayRange.max > displayRange.min
+            ? (cellValue - displayRange.min) / (displayRange.max - displayRange.min)
+            : 0;
         const cellColor = interpolateColormap(normalizedValue, selectedColormap);
         setHoveredCellPos(cell);
         setHoverInfo({ x: cell.x, y: cell.y, value: cellValue, color: cellColor });
         scheduleRedraw();
       }
     },
-    [selectable, selectionMode, values, maxVal, selectedColormap, getCellFromCoords, scheduleRedraw],
+    [selectable, selectionMode, values, displayRange, selectedColormap, getCellFromCoords, scheduleRedraw],
   );
 
   const handleTouchMove = useCallback(
@@ -429,13 +470,16 @@ export function Heatmap({
       if (cell) {
         hoveredCellRef.current = cell;
         const cellValue = values[cell.y]?.[cell.x] ?? 0;
-        const normalizedValue = maxVal > 0 ? cellValue / maxVal : 0;
+        const normalizedValue =
+          displayRange.max > displayRange.min
+            ? (cellValue - displayRange.min) / (displayRange.max - displayRange.min)
+            : 0;
         const cellColor = interpolateColormap(normalizedValue, selectedColormap);
         setHoveredCellPos(cell);
         setHoverInfo({ x: cell.x, y: cell.y, value: cellValue, color: cellColor });
       }
     },
-    [selectable, selectionMode, values, maxVal, selectedColormap, getCellFromCoords, scheduleRedraw],
+    [selectable, selectionMode, values, displayRange, selectedColormap, getCellFromCoords, scheduleRedraw],
   );
 
   const handleTouchEnd = useCallback(() => {
@@ -487,7 +531,7 @@ export function Heatmap({
   const tooltipPos = getTooltipPosition();
   const showTooltip = hoverInfo && tooltip;
 
-  const showControls = (selectionControls && heatmapContext) || colormapSelector;
+  const showControls = (selectionControls && heatmapContext) || colormapSelector || scaleSelector;
 
   return (
     <div className={cn("relative flex gap-2", className)} {...props}>
@@ -559,6 +603,37 @@ export function Heatmap({
                     {name}
                   </DropdownMenuCheckboxItem>
                 ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+
+          {scaleSelector && (
+            <DropdownMenu>
+              <Tooltip delayDuration={1000}>
+                <TooltipTrigger asChild>
+                  <DropdownMenuTrigger asChild>
+                    <Button type="button" variant="outline" size="icon-sm">
+                      <Contrast />
+                    </Button>
+                  </DropdownMenuTrigger>
+                </TooltipTrigger>
+                <TooltipContent side="right">
+                  <p className="max-w-xs text-wrap">Scale</p>
+                </TooltipContent>
+              </Tooltip>
+              <DropdownMenuContent side="right" align="start">
+                <DropdownMenuCheckboxItem
+                  checked={activeScaleMode === "minmax"}
+                  onCheckedChange={() => setActiveScaleMode("minmax")}
+                >
+                  Min-Max
+                </DropdownMenuCheckboxItem>
+                <DropdownMenuCheckboxItem
+                  checked={activeScaleMode === "zscale"}
+                  onCheckedChange={() => setActiveScaleMode("zscale")}
+                >
+                  ZScale
+                </DropdownMenuCheckboxItem>
               </DropdownMenuContent>
             </DropdownMenu>
           )}

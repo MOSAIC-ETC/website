@@ -13,6 +13,7 @@ export type {
   HeatmapPolygon,
   HeatmapCell,
   SelectionMode,
+  ScaleMode,
   Colormap,
   HeatmapMargins,
   ContrastBias,
@@ -31,4 +32,5 @@ export {
   generateColorBarTicks,
   cellToCanvas,
   getVertexAtPosition,
+  computeZScale,
 } from "./utils";
