@@ -27,7 +27,9 @@ export default function ETCPage() {
   const t = useTranslations("etc");
 
   const [chartData, setChartData] = useState<SNRDataPoint[]>([]);
+  const [chartFormValues, setChartFormValues] = useState<ETCFormSchema | undefined>();
   const [snrMapData, setSnrMapData] = useState<number[][]>([]);
+  const [snrMapFormValues, setSnrMapFormValues] = useState<SubcubeFormSchema | undefined>();
   const [selectedObject, setSelectedObject] = useState<ObjectEntry | null>(OBJECTS[0] ?? null);
 
   const object = useFITSCube(selectedObject);
@@ -50,6 +52,7 @@ export default function ETCPage() {
     const filterCurve = await fetchFilterCurve(filter);
     const data = calculateSNR(values, filter, filterCurve, selection, object.cube, tables.tables);
     setChartData(data);
+    setChartFormValues(values);
   }
 
   async function handleSubcubeSubmit(values: SubcubeFormSchema) {
@@ -69,6 +72,7 @@ export default function ETCPage() {
     const filterCurve = await fetchFilterCurve(filter);
     const data = calculate2DSNR(values, filter, filterCurve, object.cube, tables.tables);
     setSnrMapData(data);
+    setSnrMapFormValues(values);
   }
 
   return (
@@ -104,7 +108,7 @@ export default function ETCPage() {
                 onSubmit={handleSubmit}
               />
               <div className="lg:top-6 lg:sticky">
-                <SNRChart data={chartData} />
+                <SNRChart data={chartData} formValues={chartFormValues} />
               </div>
             </div>
           </TabsContent>
@@ -119,7 +123,7 @@ export default function ETCPage() {
                 onSubmit={handleSubcubeSubmit}
               />
               <div className="lg:top-6 lg:sticky">
-                <SNRMap data={snrMapData} />
+                <SNRMap data={snrMapData} formValues={snrMapFormValues} />
               </div>
             </div>
           </TabsContent>

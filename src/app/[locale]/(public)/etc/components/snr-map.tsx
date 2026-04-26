@@ -1,17 +1,22 @@
 "use client";
 
-import { Grid3X3 } from "lucide-react";
+import { Download, Grid3X3 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Heatmap } from "@/components/chart/heatmap";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useIsMobile } from "@/hooks/use-mobile";
 
+import { downloadSNRMapFITS } from "../lib/export";
+import type { SubcubeFormValues } from "../lib/types";
+
 interface SNRMapProps {
   data: number[][];
+  formValues?: SubcubeFormValues;
 }
 
-export function SNRMap({ data }: SNRMapProps) {
+export function SNRMap({ data, formValues }: SNRMapProps) {
   const t = useTranslations("etc.snr-map");
   const isMobile = useIsMobile();
 
@@ -34,8 +39,17 @@ export function SNRMap({ data }: SNRMapProps) {
 
   return (
     <Card className="bg-background/60 backdrop-blur-sm border">
-      <CardHeader>
+      <CardHeader className="flex flex-row justify-between items-center gap-2">
         <CardTitle>{t("title")}</CardTitle>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => downloadSNRMapFITS(data, formValues)}
+          aria-label={t("download-fits")}
+        >
+          <Download />
+          {t("download-fits")}
+        </Button>
       </CardHeader>
       <CardContent className="flex justify-center">
         <Heatmap

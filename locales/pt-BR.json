@@ -186,7 +186,8 @@
       "empty-state": "Envie o formulário para gerar o gráfico.",
       "empty-state-hint": "Configure os parâmetros à esquerda e clique em Calcular SNR.",
       "wavelength-label": "Comprimento de Onda (nm)",
-      "snr-label": "SNR"
+      "snr-label": "SNR",
+      "download-txt": "Baixar TXT"
     },
     "object-not-loaded": "Objeto não carregado. Por favor, baixe o cubo de dados do objeto antes de calcular.",
     "tables-not-loaded": "Tabelas de dados não carregadas. Por favor, aguarde.",
@@ -199,7 +200,8 @@
     "snr-map": {
       "title": "Mapa SNR 2D",
       "empty-state": "Envie o formulário para gerar o mapa SNR.",
-      "empty-state-hint": "Configure os parâmetros à esquerda e clique em Calcular Mapa SNR 2D."
+      "empty-state-hint": "Configure os parâmetros à esquerda e clique em Calcular Mapa SNR 2D.",
+      "download-fits": "Baixar FITS"
     }
   }
 }
