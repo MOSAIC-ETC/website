@@ -46,6 +46,8 @@ export function downloadSNRSpectrumTXT(data: SNRDataPoint[], values?: ETCFormVal
 
   if (values) {
     const filter = FILTERS.find((f) => f.id === values.filterId);
+    const object = OBJECTS.find((o) => o.id === values.objectId);
+    lines.push(`# Object: ${object?.name ?? values.objectId}`);
     lines.push(`# Instrument: ${values.instrument}`);
     lines.push(`# Filter: ${filter?.name ?? values.filterId}`);
     lines.push(`# Sky condition: ${values.skyCondition}`);
@@ -53,6 +55,12 @@ export function downloadSNRSpectrumTXT(data: SNRDataPoint[], values?: ETCFormVal
     lines.push(`# Exposure time (s): ${values.exposureTime}`);
     lines.push(`# Magnitude: ${values.magnitude} ${values.magnitudeUnit}`);
     lines.push(`# Redshift: ${values.redshift} (${values.redshiftUnit})`);
+    if (values.selection.length === 0) {
+      lines.push("# Selected pixels: all");
+    } else {
+      const coords = values.selection.map((p) => `(${p.x},${p.y})`).join(" ");
+      lines.push(`# Selected pixels (${values.selection.length}): ${coords}`);
+    }
   }
 
   const colWavelength = "Wavelength (nm)";

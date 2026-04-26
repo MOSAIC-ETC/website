@@ -16,17 +16,17 @@ import { SNRMap } from "./components/snr-map";
 import { SubcubeForm } from "./components/subcube-form";
 import { useCSVTables } from "./hooks/use-csv-tables";
 import { useFITSCube } from "./hooks/use-fits-cube";
-import type { WorkerRequest, WorkerResponse } from "./lib/etc.worker";
 import { FILTERS, fetchFilterCurve } from "./lib/filters";
 import { OBJECTS } from "./lib/objects";
 import type { ETCFormSchema, SubcubeFormSchema } from "./lib/schema";
-import type { ObjectEntry, SNRDataPoint } from "./lib/types";
+import type { ETCFormValues, ObjectEntry, SNRDataPoint } from "./lib/types";
+import type { WorkerRequest, WorkerResponse } from "./lib/worker";
 
 export default function ETCPage() {
   const t = useTranslations("etc");
 
   const [chartData, setChartData] = useState<SNRDataPoint[]>([]);
-  const [chartFormValues, setChartFormValues] = useState<ETCFormSchema | undefined>();
+  const [chartFormValues, setChartFormValues] = useState<ETCFormValues | undefined>();
   const [snrMapData, setSnrMapData] = useState<number[][]>([]);
   const [snrMapFormValues, setSnrMapFormValues] = useState<SubcubeFormSchema | undefined>();
   const [selectedObject, setSelectedObject] = useState<ObjectEntry | null>(OBJECTS[0] ?? null);
@@ -40,7 +40,7 @@ export default function ETCPage() {
   const pendingRef = useRef<Map<number, (response: WorkerResponse) => void>>(new Map());
 
   useEffect(() => {
-    const worker = new Worker(new URL("./lib/etc.worker.ts", import.meta.url));
+    const worker = new Worker(new URL("./lib/worker.ts", import.meta.url));
     workerRef.current = worker;
     worker.onmessage = (event: MessageEvent<WorkerResponse>) => {
       const response = event.data;
@@ -95,13 +95,13 @@ export default function ETCPage() {
     setIsCalculating(true);
     try {
       const filterCurve = await fetchFilterCurve(filter);
+      const etcValues: ETCFormValues = { ...values, selection };
       const response = await dispatch(
         nextRequest({
           type: "snr",
-          values,
+          values: etcValues,
           filter,
           filterCurve,
-          selection,
           flux,
           wavelengths,
           tables: tables.tables,
@@ -111,7 +111,7 @@ export default function ETCPage() {
         toast.error(response.message);
       } else if (response.type === "snr") {
         setChartData(response.data);
-        setChartFormValues(values);
+        setChartFormValues(etcValues);
       }
     } finally {
       setIsCalculating(false);
