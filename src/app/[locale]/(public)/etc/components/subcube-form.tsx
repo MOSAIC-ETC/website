@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ChartLine, Check, Download, Info } from "lucide-react";
+import { ChartLine, Check, Download, Info, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { type Resolver, useForm, useWatch } from "react-hook-form";
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
@@ -580,7 +580,14 @@ export function SubcubeForm({
             <Separator />
 
             <Button type="submit" className="w-full" disabled={disabled}>
-              {t("subcube-form.calculate-snr-map")}
+              {disabled ? (
+                <>
+                  <Loader2 className="size-4 animate-spin" />
+                  {t("subcube-form.calculate-snr-map")}
+                </>
+              ) : (
+                t("subcube-form.calculate-snr-map")
+              )}
             </Button>
           </form>
         </Form>

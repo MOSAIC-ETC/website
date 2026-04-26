@@ -1,5 +1,3 @@
-import type { FITSFile } from "@/lib/parser";
-
 import type { CSVTables } from "../hooks/use-csv-tables";
 import { type Spectrum, lookupNearest, resampleFilter } from "./calculate";
 import {
@@ -232,7 +230,8 @@ export function calculate2DSNR(
   values: SubcubeFormValues,
   filter: FilterEntry,
   filterCurve: NMFile[],
-  object: FITSFile,
+  flux: number[][][],
+  wavelengths: number[],
   tables: CSVTables,
 ): number[][] {
   const {
@@ -248,14 +247,6 @@ export function calculate2DSNR(
   } = values;
 
   const { background, enclosedEnergy, lrThroughput } = tables;
-
-  const flux = object.get("FLUX")?.data as number[][][] | undefined;
-  const wavelengths = object.get("WAVE")?.data as number[] | undefined;
-
-  if (!flux || !wavelengths) {
-    console.warn("FLUX or WAVE data not found in FITS file");
-    return [];
-  }
 
   // Step 1: Extract sub-cube
   const fluxMap = extractSubCube(flux, wavelengths, targetWavelength);

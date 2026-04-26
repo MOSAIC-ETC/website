@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { useTranslations } from "next-intl";
 import Image from "next/image";
@@ -16,8 +16,7 @@ import { SNRMap } from "./components/snr-map";
 import { SubcubeForm } from "./components/subcube-form";
 import { useCSVTables } from "./hooks/use-csv-tables";
 import { useFITSCube } from "./hooks/use-fits-cube";
-import { calculateSNR } from "./lib/calculate";
-import { calculate2DSNR } from "./lib/calculate-2d";
+import type { WorkerRequest, WorkerResponse } from "./lib/etc.worker";
 import { FILTERS, fetchFilterCurve } from "./lib/filters";
 import { OBJECTS } from "./lib/objects";
 import type { ETCFormSchema, SubcubeFormSchema } from "./lib/schema";
@@ -31,9 +30,46 @@ export default function ETCPage() {
   const [snrMapData, setSnrMapData] = useState<number[][]>([]);
   const [snrMapFormValues, setSnrMapFormValues] = useState<SubcubeFormSchema | undefined>();
   const [selectedObject, setSelectedObject] = useState<ObjectEntry | null>(OBJECTS[0] ?? null);
+  const [isCalculating, setIsCalculating] = useState(false);
 
   const object = useFITSCube(selectedObject);
   const tables = useCSVTables();
+
+  const workerRef = useRef<Worker | null>(null);
+  const nextIdRef = useRef(0);
+  const pendingRef = useRef<Map<number, (response: WorkerResponse) => void>>(new Map());
+
+  useEffect(() => {
+    const worker = new Worker(new URL("./lib/etc.worker.ts", import.meta.url));
+    workerRef.current = worker;
+    worker.onmessage = (event: MessageEvent<WorkerResponse>) => {
+      const response = event.data;
+      const resolve = pendingRef.current.get(response.id);
+      if (resolve) {
+        pendingRef.current.delete(response.id);
+        resolve(response);
+      }
+    };
+    return () => {
+      worker.terminate();
+      workerRef.current = null;
+    };
+  }, []);
+
+  const dispatch = useCallback((request: WorkerRequest): Promise<WorkerResponse> => {
+    return new Promise((resolve, reject) => {
+      if (!workerRef.current) {
+        reject(new Error("Worker not initialized"));
+        return;
+      }
+      pendingRef.current.set(request.id, resolve);
+      workerRef.current.postMessage(request);
+    });
+  }, []);
+
+  function nextRequest<T extends Omit<WorkerRequest, "id">>(req: T): T & { id: number } {
+    return { ...req, id: nextIdRef.current++ } as T & { id: number };
+  }
 
   async function handleSubmit(values: ETCFormSchema, selection: HeatmapCell[]) {
     if (!object.cube) {
@@ -49,10 +85,37 @@ export default function ETCPage() {
     const filter = FILTERS.find((f) => f.id === values.filterId);
     if (!filter) return;
 
-    const filterCurve = await fetchFilterCurve(filter);
-    const data = calculateSNR(values, filter, filterCurve, selection, object.cube, tables.tables);
-    setChartData(data);
-    setChartFormValues(values);
+    const flux = object.cube.get("FLUX")?.data as number[][][] | undefined;
+    const wavelengths = object.cube.get("WAVE")?.data as number[] | undefined;
+    if (!flux || !wavelengths) {
+      toast.error(t("object-not-loaded"));
+      return;
+    }
+
+    setIsCalculating(true);
+    try {
+      const filterCurve = await fetchFilterCurve(filter);
+      const response = await dispatch(
+        nextRequest({
+          type: "snr",
+          values,
+          filter,
+          filterCurve,
+          selection,
+          flux,
+          wavelengths,
+          tables: tables.tables,
+        }),
+      );
+      if (response.type === "error") {
+        toast.error(response.message);
+      } else if (response.type === "snr") {
+        setChartData(response.data);
+        setChartFormValues(values);
+      }
+    } finally {
+      setIsCalculating(false);
+    }
   }
 
   async function handleSubcubeSubmit(values: SubcubeFormSchema) {
@@ -69,10 +132,36 @@ export default function ETCPage() {
     const filter = FILTERS.find((f) => f.id === values.filterId);
     if (!filter) return;
 
-    const filterCurve = await fetchFilterCurve(filter);
-    const data = calculate2DSNR(values, filter, filterCurve, object.cube, tables.tables);
-    setSnrMapData(data);
-    setSnrMapFormValues(values);
+    const flux = object.cube.get("FLUX")?.data as number[][][] | undefined;
+    const wavelengths = object.cube.get("WAVE")?.data as number[] | undefined;
+    if (!flux || !wavelengths) {
+      toast.error(t("object-not-loaded"));
+      return;
+    }
+
+    setIsCalculating(true);
+    try {
+      const filterCurve = await fetchFilterCurve(filter);
+      const response = await dispatch(
+        nextRequest({
+          type: "snr-2d",
+          values,
+          filter,
+          filterCurve,
+          flux,
+          wavelengths,
+          tables: tables.tables,
+        }),
+      );
+      if (response.type === "error") {
+        toast.error(response.message);
+      } else if (response.type === "snr-2d") {
+        setSnrMapData(response.data);
+        setSnrMapFormValues(values);
+      }
+    } finally {
+      setIsCalculating(false);
+    }
   }
 
   return (
@@ -106,6 +195,7 @@ export default function ETCPage() {
                 onSelectObject={setSelectedObject}
                 object={object}
                 onSubmit={handleSubmit}
+                disabled={isCalculating}
               />
               <div className="lg:top-6 lg:sticky">
                 <SNRChart data={chartData} formValues={chartFormValues} />
@@ -121,6 +211,7 @@ export default function ETCPage() {
                 onSelectObject={setSelectedObject}
                 object={object}
                 onSubmit={handleSubcubeSubmit}
+                disabled={isCalculating}
               />
               <div className="lg:top-6 lg:sticky">
                 <SNRMap data={snrMapData} formValues={snrMapFormValues} />
