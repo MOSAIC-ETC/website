@@ -258,3 +258,110 @@ export class FITSParser {
     return hdus;
   }
 }
+
+/** A header card to write into a FITS HDU. */
+export interface FITSHeaderCard {
+  key: string;
+  value: string | number | boolean;
+  comment?: string;
+}
+
+function formatCard(card: FITSHeaderCard): string {
+  const key = card.key.toUpperCase().padEnd(8, " ").slice(0, 8);
+  let valueField: string;
+
+  if (typeof card.value === "boolean") {
+    valueField = (card.value ? "T" : "F").padStart(20, " ");
+  } else if (typeof card.value === "number") {
+    let s: string;
+    if (Number.isInteger(card.value)) {
+      s = card.value.toString();
+    } else {
+      s = card.value.toExponential(13).toUpperCase().replace("E", "E");
+    }
+    valueField = s.padStart(20, " ");
+  } else {
+    const escaped = String(card.value).replace(/'/g, "''");
+    const padded = escaped.padEnd(8, " ");
+    valueField = `'${padded}'`;
+  }
+
+  let line = `${key}= ${valueField}`;
+  if (card.comment) {
+    const remaining = 80 - line.length - 3;
+    const comment = card.comment.slice(0, Math.max(0, remaining));
+    if (comment.length > 0) line += ` / ${comment}`;
+  }
+  return line.padEnd(80, " ").slice(0, 80);
+}
+
+function buildHeaderBytes(cards: FITSHeaderCard[]): Uint8Array {
+  const lines = cards.map(formatCard);
+  lines.push("END".padEnd(80, " "));
+
+  const cardsPerBlock = BLOCK / CARD;
+  while (lines.length % cardsPerBlock !== 0) {
+    lines.push(" ".repeat(80));
+  }
+
+  const out = new Uint8Array(lines.length * CARD);
+  for (let i = 0; i < lines.length; i++) {
+    for (let j = 0; j < CARD; j++) {
+      out[i * CARD + j] = lines[i].charCodeAt(j) & 0xff;
+    }
+  }
+  return out;
+}
+
+/**
+ * Writer for simple single-HDU FITS images (BITPIX = -64, big-endian Float64).
+ *
+ * Produces a standards-compliant FITS file with mandatory keywords
+ * (SIMPLE, BITPIX, NAXIS, NAXIS1, NAXIS2) followed by any user-supplied cards.
+ * Data is written in FITS axis order (NAXIS1 = innermost / fastest-varying),
+ * matching the row-major convention used by {@link FITSHDU.data}.
+ */
+export class FITSWriter {
+  /**
+   * Encodes a 2D array as a single-HDU FITS file.
+   *
+   * @param data       Row-major 2D array. Outer length = NAXIS2, inner length = NAXIS1.
+   * @param extraCards Additional header cards inserted after the mandatory keywords.
+   */
+  static write2D(data: number[][], extraCards: FITSHeaderCard[] = []): ArrayBuffer {
+    const naxis2 = data.length;
+    const naxis1 = naxis2 > 0 ? data[0].length : 0;
+    const bitpix = -64;
+
+    const cards: FITSHeaderCard[] = [
+      { key: "SIMPLE", value: true, comment: "Standard FITS format" },
+      { key: "BITPIX", value: bitpix, comment: "64-bit floating point" },
+      { key: "NAXIS", value: 2 },
+      { key: "NAXIS1", value: naxis1 },
+      { key: "NAXIS2", value: naxis2 },
+      ...extraCards,
+    ];
+
+    const headerBytes = buildHeaderBytes(cards);
+
+    const pixelCount = naxis1 * naxis2;
+    const dataLength = pixelCount * 8;
+    const dataPadded = Math.ceil(dataLength / BLOCK) * BLOCK;
+    const dataBytes = new Uint8Array(dataPadded);
+    const view = new DataView(dataBytes.buffer);
+
+    let off = 0;
+    for (let y = 0; y < naxis2; y++) {
+      const row = data[y];
+      for (let x = 0; x < naxis1; x++) {
+        view.setFloat64(off, row[x], false);
+        off += 8;
+      }
+    }
+
+    const out = new Uint8Array(headerBytes.length + dataBytes.length);
+    out.set(headerBytes, 0);
+    out.set(dataBytes, headerBytes.length);
+    return out.buffer;
+  }
+}

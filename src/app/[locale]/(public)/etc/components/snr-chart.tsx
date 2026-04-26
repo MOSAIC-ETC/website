@@ -1,16 +1,19 @@
 "use client";
 
-import { ChartColumnIncreasing, RotateCw } from "lucide-react";
+import { ChartColumnIncreasing, Download, RotateCw } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { InteractiveChart } from "@/components/interactive-chart";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { ChartConfig } from "@/components/ui/chart";
 
-import type { SNRDataPoint } from "../lib/types";
+import { downloadSNRSpectrumTXT } from "../lib/export";
+import type { ETCFormValues, SNRDataPoint } from "../lib/types";
 
 interface SNRChartProps {
   data: SNRDataPoint[];
+  formValues?: ETCFormValues;
 }
 
 const chartConfig: ChartConfig = {
@@ -52,7 +55,7 @@ function SNRTooltipContent({
   );
 }
 
-export function SNRChart({ data }: SNRChartProps) {
+export function SNRChart({ data, formValues }: SNRChartProps) {
   const t = useTranslations("etc.chart");
 
   if (data.length === 0) {
@@ -74,8 +77,17 @@ export function SNRChart({ data }: SNRChartProps) {
 
   return (
     <Card className="bg-background/60 backdrop-blur-sm border">
-      <CardHeader>
+      <CardHeader className="flex flex-row justify-between items-center gap-2">
         <CardTitle>{t("title")}</CardTitle>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => downloadSNRSpectrumTXT(data, formValues)}
+          aria-label={t("download-txt")}
+        >
+          <Download />
+          {t("download-txt")}
+        </Button>
       </CardHeader>
       <CardContent>
         <InteractiveChart
