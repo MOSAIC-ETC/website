@@ -244,15 +244,14 @@ export function InteractiveChart<T extends Record<string, any>>({
 
   return (
     <div className="w-full">
-      {isZoomed && (
-        <div className="top-8 right-8 z-20 absolute mb-2">
-          <Button size="sm" variant="outline" className="rounded" onClick={reset}>
-            {resetLabel}
-          </Button>
-        </div>
-      )}
-
       <div className="relative w-full select-none" style={{ height }} ref={chartWrapperRef}>
+        {isZoomed && (
+          <div className="top-0 right-0 z-20 absolute">
+            <Button size="sm" variant="outline" className="rounded" onClick={reset}>
+              {resetLabel}
+            </Button>
+          </div>
+        )}
         <div
           ref={overlayRef}
           style={{

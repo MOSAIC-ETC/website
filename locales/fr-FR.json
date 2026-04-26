@@ -1,4 +1,15 @@
 {
+  "heatmap": {
+    "controls": {
+      "colormap": "Palette de couleurs",
+      "scale": "Échelle",
+      "scale-minmax": "Min-Max",
+      "scale-zscale": "ZScale",
+      "rectangle-selection": "Sélection rectangulaire",
+      "polygon-selection": "Sélection polygonale",
+      "erase-selection": "Effacer la sélection"
+    }
+  },
   "metadata": {
     "etc": {
       "title": "Calculateur de Temps d'Exposition | MOSAIC",
