@@ -1,5 +1,3 @@
-import type { HeatmapCell } from "@/components/chart/heatmap";
-
 import type { CSVTables } from "../hooks/use-csv-tables";
 import { calculateSNR } from "./calculate";
 import { calculate2DSNR } from "./calculate-2d";
@@ -12,7 +10,6 @@ export type WorkerRequest =
       values: ETCFormValues;
       filter: FilterEntry;
       filterCurve: NMFile[];
-      selection: HeatmapCell[];
       flux: number[][][];
       wavelengths: number[];
       tables: CSVTables;
@@ -41,7 +38,7 @@ self.onmessage = (event: MessageEvent<WorkerRequest>) => {
         req.values,
         req.filter,
         req.filterCurve,
-        req.selection,
+        req.values.selection,
         req.flux,
         req.wavelengths,
         req.tables,

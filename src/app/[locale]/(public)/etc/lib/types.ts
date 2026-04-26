@@ -1,6 +1,8 @@
+import type { HeatmapCell } from "@/components/chart/heatmap";
 import type { WavelengthUnit } from "@/lib/parser";
 
 export { WavelengthUnit, type NMFile } from "@/lib/parser";
+export type { HeatmapCell };
 
 export enum MagnitudeUnit {
   APPARENT = "mag",
@@ -46,6 +48,7 @@ export interface ObjectEntry {
 }
 
 export interface ETCFormValues {
+  objectId: string;
   numberOfExposures: number;
   exposureTime: number;
   magnitude: number;
@@ -55,6 +58,7 @@ export interface ETCFormValues {
   filterId: string;
   instrument: Instrument;
   skyCondition: SkyCondition;
+  selection: HeatmapCell[];
 }
 
 export interface SNRDataPoint {
