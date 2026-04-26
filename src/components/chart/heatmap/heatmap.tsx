@@ -2,8 +2,9 @@
 
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 
-import { Check, Contrast, Eraser, Palette, SquareDashedMousePointer } from "lucide-react";
+import { Contrast, Eraser, Palette, SquareDashedMousePointer } from "lucide-react";
 import { useTheme } from "next-themes";
+import { useTranslations } from "next-intl";
 
 import { PolygonDashedMousePointer } from "@/components/icons";
 import { Button } from "@/components/ui/button";
@@ -57,6 +58,7 @@ export function Heatmap({
 }: HeatmapProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { resolvedTheme } = useTheme();
+  const t = useTranslations("heatmap.controls");
 
   const heatmapContext = useContext(HeatmapSelectionContext);
   const selectionMode = heatmapContext?.selectionMode ?? "rectangle";
@@ -575,7 +577,6 @@ export function Heatmap({
         </div>
       )}
 
-      {/* TODO: Implement i18n */}
       {showControls && (
         <div className="z-10 flex flex-col gap-1.5 mt-2">
           {colormapSelector && (
@@ -589,7 +590,7 @@ export function Heatmap({
                   </DropdownMenuTrigger>
                 </TooltipTrigger>
                 <TooltipContent side="right">
-                  <p className="max-w-xs text-wrap">Colormap</p>
+                  <p className="max-w-xs text-wrap">{t("colormap")}</p>
                 </TooltipContent>
               </Tooltip>
               <DropdownMenuContent side="right" align="start">
@@ -618,7 +619,7 @@ export function Heatmap({
                   </DropdownMenuTrigger>
                 </TooltipTrigger>
                 <TooltipContent side="right">
-                  <p className="max-w-xs text-wrap">Scale</p>
+                  <p className="max-w-xs text-wrap">{t("scale")}</p>
                 </TooltipContent>
               </Tooltip>
               <DropdownMenuContent side="right" align="start">
@@ -626,13 +627,13 @@ export function Heatmap({
                   checked={activeScaleMode === "minmax"}
                   onCheckedChange={() => setActiveScaleMode("minmax")}
                 >
-                  Min-Max
+                  {t("scale-minmax")}
                 </DropdownMenuCheckboxItem>
                 <DropdownMenuCheckboxItem
                   checked={activeScaleMode === "zscale"}
                   onCheckedChange={() => setActiveScaleMode("zscale")}
                 >
-                  ZScale
+                  {t("scale-zscale")}
                 </DropdownMenuCheckboxItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -652,7 +653,7 @@ export function Heatmap({
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="right">
-                  <p className="max-w-xs text-wrap">Rectangle selection</p>
+                  <p className="max-w-xs text-wrap">{t("rectangle-selection")}</p>
                 </TooltipContent>
               </Tooltip>
 
@@ -668,7 +669,7 @@ export function Heatmap({
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="right">
-                  <p className="max-w-xs text-wrap">Polygon selection</p>
+                  <p className="max-w-xs text-wrap">{t("polygon-selection")}</p>
                 </TooltipContent>
               </Tooltip>
 
@@ -679,7 +680,7 @@ export function Heatmap({
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="right">
-                  <p className="max-w-xs text-wrap">Erase selection</p>
+                  <p className="max-w-xs text-wrap">{t("erase-selection")}</p>
                 </TooltipContent>
               </Tooltip>
             </>

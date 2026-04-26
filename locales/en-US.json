@@ -1,4 +1,15 @@
 {
+  "heatmap": {
+    "controls": {
+      "colormap": "Colormap",
+      "scale": "Scale",
+      "scale-minmax": "Min-Max",
+      "scale-zscale": "ZScale",
+      "rectangle-selection": "Rectangle selection",
+      "polygon-selection": "Polygon selection",
+      "erase-selection": "Erase selection"
+    }
+  },
   "metadata": {
     "etc": {
       "title": "Exposure Time Calculator | MOSAIC",
