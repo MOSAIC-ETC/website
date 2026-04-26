@@ -1,5 +1,4 @@
 import type { HeatmapCell } from "@/components/chart/heatmap";
-import type { FITSFile } from "@/lib/parser";
 import type { CSVRow } from "@/lib/parser";
 
 import type { CSVTables } from "../hooks/use-csv-tables";
@@ -21,7 +20,8 @@ export function calculateSNR(
   filter: FilterEntry,
   filterCurve: NMFile[],
   objectSelection: HeatmapCell[],
-  object: FITSFile,
+  flux: number[][][],
+  wavelengths: number[],
   tables: CSVTables,
 ): SNRDataPoint[] {
   const {
@@ -36,14 +36,6 @@ export function calculateSNR(
   } = values;
 
   const { background, enclosedEnergy, lrThroughput } = tables;
-
-  const flux = object.get("FLUX")?.data as number[][][] | undefined; // shape (n_wave, ny, nx) = (4563, 54, 54)
-  const wavelengths = object.get("WAVE")?.data as number[] | undefined; // shape (4563,)
-
-  if (!flux || !wavelengths) {
-    console.warn("FLUX or WAVE data not found in FITS file");
-    return [];
-  }
 
   // Extract and sum fluxes for selected pixels, then normalize at 550 nm
   const selectedFluxes: number[][] = getSelected(flux, objectSelection);

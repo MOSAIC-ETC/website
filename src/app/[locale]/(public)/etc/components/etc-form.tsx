@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ChartLine, Check, Download, Info } from "lucide-react";
+import { ChartLine, Check, Download, Info, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { type Resolver, useForm, useWatch } from "react-hook-form";
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
@@ -599,7 +599,14 @@ function ETCFormInner({ filters, objects, selectedObject, onSelectObject, object
             <Separator />
 
             <Button type="submit" className="w-full" disabled={disabled}>
-              {t("calculate-snr")}
+              {disabled ? (
+                <>
+                  <Loader2 className="size-4 animate-spin" />
+                  {t("calculate-snr")}
+                </>
+              ) : (
+                t("calculate-snr")
+              )}
             </Button>
           </form>
         </Form>
