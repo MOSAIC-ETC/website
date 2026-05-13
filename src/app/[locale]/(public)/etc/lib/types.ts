@@ -38,6 +38,8 @@ export interface FilterEntry {
   effWavelength: number;
   effWavelengthUnit: WavelengthUnit;
   zeroPoint: number;
+  /** SHA-256 of the current version, from /api/manifest. Used for cache keys. */
+  hash: string;
 }
 
 export interface ObjectEntry {
@@ -45,6 +47,9 @@ export interface ObjectEntry {
   name: string;
   previewPath: string;
   cubePath: string;
+  /** Per-asset SHA-256 from /api/manifest. Used for cache keys. */
+  previewHash: string;
+  cubeHash: string;
 }
 
 export interface ETCFormValues {

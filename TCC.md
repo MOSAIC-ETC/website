@@ -190,12 +190,101 @@ Isso elimina a possibilidade de servir um objeto com *preview* de uma calibraç�
 
 ## 6. Padrões de implementação reutilizáveis
 
-Esta seção será preenchida conforme o código for escrito.
+### 6.1. Singleton do `PrismaClient` em Next.js
 
-<!-- Seções a adicionar quando implementadas:
-- 6.1. Padrão de *Prisma Client* singleton para Next.js
-- 6.2. Padrão de *route handler* com guarda de permissão
-- 6.3. Padrão de *middleware* encadeado (i18n + auth)
-- 6.4. Padrão de *stream-hash-and-write*
-- 6.5. *Migration* de IndexedDB sem perda de dados (quando aplicável)
--->
+O *hot reload* do Next.js em desenvolvimento recarrega módulos a cada edição, o que naturalmente cria múltiplas instâncias do `PrismaClient` — cada uma com seu próprio *pool* de conexões. Em poucos minutos, o número de conexões abertas ao Postgres excede o limite configurado e o servidor passa a recusar novas conexões.
+
+A solução adotada (em [src/lib/prisma.ts](src/lib/prisma.ts)) é armazenar o cliente em uma propriedade do objeto global em desenvolvimento:
+
+```ts
+const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
+export const prisma = globalForPrisma.prisma ?? createClient();
+if (process.env.NODE_ENV !== "production") {
+  globalForPrisma.prisma = prisma;
+}
+```
+
+O objeto `globalThis` persiste através de recarregamentos de módulo, evitando a proliferação de clientes. Em produção, onde não há *hot reload*, a guarda do `NODE_ENV` evita "vazar" estado entre execuções.
+
+### 6.2. Guarda de permissão em *route handlers*
+
+Cada *route handler* administrativo segue o mesmo padrão:
+
+```ts
+export async function POST(req: Request) {
+  try {
+    const session = await requirePermission(PERMISSIONS.FILES_UPLOAD);
+    // … lógica do *handler*, com session.user.id disponível …
+    return Response.json(result);
+  } catch (err) {
+    return errorResponse(err);
+  }
+}
+```
+
+A função `requirePermission` (em [src/lib/api-helpers.ts](src/lib/api-helpers.ts)) lança uma `HttpError` se a sessão não existir ou não carregar a permissão exigida; `errorResponse` traduz a exceção em uma resposta HTTP apropriada (401 / 403 / 4xx / 500). Centralizar essa lógica evita repetição em ~20 *route handlers* e garante que mensagens de erro sigam o mesmo formato.
+
+### 6.3. *Middleware* encadeado: i18n + autenticação
+
+O *middleware* (`src/proxy.ts`, renomeado pelo Next.js 16) precisa fazer duas coisas independentes: rotear prefixos de localidade (`/en`, `/pt`, `/fr`) e bloquear rotas administrativas sem sessão. A composição é feita encadeando o `auth()` do Auth.js v5 (que decora o `req` com `req.auth`) por fora, e chamando o *middleware* de `next-intl` por dentro:
+
+```ts
+export default auth((req) => {
+  if (isAdminPath(req) && !req.auth) return redirectToLogin(req);
+  if (req.nextUrl.pathname.startsWith("/api")) return NextResponse.next();
+  return intl(req);
+});
+```
+
+A ordem importa: o `auth()` precisa rodar primeiro para popular `req.auth`; rotas de API pulam o roteamento i18n (não têm prefixo de localidade); o restante segue para o `intl`.
+
+### 6.4. *Stream-hash-and-write* atômico
+
+A função `writeTempFile` em [src/lib/storage.ts](src/lib/storage.ts) é o coração do pipeline de *upload*:
+
+```ts
+const hash = createHash("sha256");
+await pipeline(
+  stream,
+  async function* (src) {
+    for await (const chunk of src) {
+      hash.update(chunk);    // atualiza hash incrementalmente
+      fileSize += chunk.length;
+      yield chunk;            // passa o chunk adiante sem cópia
+    }
+  },
+  createWriteStream(tmpPath),
+);
+return { tmpPath, fileHash: hash.digest("hex"), fileSize };
+```
+
+O *generator* intermediário atua como *passthrough* que calcula SHA-256 enquanto os bytes fluem para o disco. Importante: o `pipeline` do `stream/promises` propaga erros de qualquer um dos três estágios, garantindo que falhas no `fs` ou no upstream sejam capturadas com a *stack trace* completa. Não há buffer em memória — adequado para os cubos FITS, que tipicamente têm centenas de MB.
+
+### 6.5. Guarda contra *last-admin lockout*
+
+Permissões "auto-bloqueantes" (`users.manage`, `roles.manage`) precisam de uma guarda explícita: se um administrador removesse acidentalmente a última atribuição de uma delas, ninguém poderia restaurar o acesso pela própria UI. Em [src/lib/admin-guards.ts](src/lib/admin-guards.ts):
+
+```ts
+async function ensureUserRoleChangeIsSafe({ userId, newRoleId }) {
+  for (const perm of SELF_LOCKING) {
+    if (oldRoleHas(perm) && !newRoleHas(perm)) {
+      const remaining = await countUsersWithPermission(perm, excludeUserId: userId);
+      if (remaining === 0) throw lockoutError(perm);
+    }
+  }
+}
+```
+
+A mesma estratégia é aplicada à exclusão de usuários, à edição de permissões de *roles* e à exclusão de *roles*. O custo é uma *query* a mais por operação administrativa; o benefício é a impossibilidade de bloquear o sistema por engano. Padrões de "*last-admin protection*" são comuns em sistemas RBAC sérios e merecem destaque na seção do TCC sobre confiabilidade.
+
+### 6.6. Serialização de `BigInt` em respostas JSON
+
+O Prisma representa colunas Postgres `int8` (usadas para `fileSize`) como `BigInt` em JavaScript. O `JSON.stringify` nativo lança erro ao encontrar um `BigInt`, o que quebra qualquer resposta de API que inclua uma `FileVersion`. A solução adotada é estender `BigInt.prototype.toJSON` no módulo do `PrismaClient`:
+
+```ts
+(BigInt.prototype as unknown as { toJSON: () => number }).toJSON = function () {
+  return Number(this as unknown as bigint);
+};
+```
+
+Como tamanhos de arquivo do ETC nunca se aproximam de `Number.MAX_SAFE_INTEGER` (2⁵³ ≈ 9 PB), a conversão para `Number` é segura e os clientes recebem números nativos. Esta é uma das pegadinhas conhecidas do Prisma + Next.js que vale documentar no TCC porque a mensagem de erro original (`Do not know how to serialize a BigInt`) não aponta para a causa óbvia.

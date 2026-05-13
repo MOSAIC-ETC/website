@@ -9,14 +9,18 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 import { downloadSNRMapFITS } from "../lib/export";
-import type { SubcubeFormValues } from "../lib/types";
+import type { FilterEntry, ObjectEntry, SubcubeFormValues } from "../lib/types";
 
 interface SNRMapProps {
   data: number[][];
   formValues?: SubcubeFormValues;
+  filters?: FilterEntry[];
+  objects?: ObjectEntry[];
 }
 
-export function SNRMap({ data, formValues }: SNRMapProps) {
+export function SNRMap({ data, formValues, filters, objects }: SNRMapProps) {
+  const filter = formValues ? filters?.find((f) => f.id === formValues.filterId) : null;
+  const object = formValues ? objects?.find((o) => o.id === formValues.objectId) : null;
   const t = useTranslations("etc.snr-map");
   const isMobile = useIsMobile();
 
@@ -44,7 +48,7 @@ export function SNRMap({ data, formValues }: SNRMapProps) {
         <Button
           variant="outline"
           size="sm"
-          onClick={() => downloadSNRMapFITS(data, formValues)}
+          onClick={() => downloadSNRMapFITS(data, formValues, { filter, object })}
           aria-label={t("download-fits")}
         >
           <Download />

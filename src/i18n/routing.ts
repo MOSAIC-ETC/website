@@ -51,16 +51,18 @@ export const routing = defineRouting({
     },
 
     "/admin": "/admin",
+    "/admin/filters": "/admin/filters",
+    "/admin/objects": "/admin/objects",
+    "/admin/tables": "/admin/tables",
+    "/admin/params": "/admin/params",
     "/admin/users": {
       "pt-BR": "/admin/usuarios",
       "en-US": "/admin/users",
       "fr-FR": "/admin/utilisateurs",
     },
-    "/admin/settings": {
-      "pt-BR": "/admin/configuracoes",
-      "en-US": "/admin/settings",
-      "fr-FR": "/admin/parametres",
-    },
+    "/admin/roles": "/admin/roles",
+    "/admin/invites": "/admin/invites",
+    "/admin/audit": "/admin/audit",
 
     "/about": {
       "pt-BR": "/sobre",

@@ -9,11 +9,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { ChartConfig } from "@/components/ui/chart";
 
 import { downloadSNRSpectrumTXT } from "../lib/export";
-import type { ETCFormValues, SNRDataPoint } from "../lib/types";
+import type { ETCFormValues, FilterEntry, ObjectEntry, SNRDataPoint } from "../lib/types";
 
 interface SNRChartProps {
   data: SNRDataPoint[];
   formValues?: ETCFormValues;
+  filters?: FilterEntry[];
+  objects?: ObjectEntry[];
 }
 
 const chartConfig: ChartConfig = {
@@ -55,8 +57,10 @@ function SNRTooltipContent({
   );
 }
 
-export function SNRChart({ data, formValues }: SNRChartProps) {
+export function SNRChart({ data, formValues, filters, objects }: SNRChartProps) {
   const t = useTranslations("etc.chart");
+  const filter = formValues ? filters?.find((f) => f.id === formValues.filterId) : null;
+  const object = formValues ? objects?.find((o) => o.id === formValues.objectId) : null;
 
   if (data.length === 0) {
     return (
@@ -82,7 +86,7 @@ export function SNRChart({ data, formValues }: SNRChartProps) {
         <Button
           variant="outline"
           size="sm"
-          onClick={() => downloadSNRSpectrumTXT(data, formValues)}
+          onClick={() => downloadSNRSpectrumTXT(data, formValues, { filter, object })}
           aria-label={t("download-txt")}
         >
           <Download />
