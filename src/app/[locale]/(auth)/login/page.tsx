@@ -2,20 +2,25 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoaderCircleIcon } from "lucide-react";
+import { signIn } from "next-auth/react";
 import { useTranslations } from "next-intl";
+import { useSearchParams } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { GoogleIcon, MosaicLogo } from "@/components/icons";
+import { MosaicLogo } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
 import { Link } from "@/i18n/navigation";
 
 export default function LoginPage() {
   const t = useTranslations("login");
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") ?? "/";
+  const [formError, setFormError] = useState<string | null>(null);
 
   const formSchema = z.object({
     email: z.string().min(1, t("errors.email-required")).email(t("errors.email-invalid")),
@@ -27,17 +32,26 @@ export default function LoginPage() {
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-      remember: false,
-    },
+    defaultValues: { email: "", password: "", remember: false },
     mode: "onSubmit",
   });
 
   async function onSubmit(values: FormValues) {
-    // TODO: Replace with real authentication logic
-    console.log("Login submit", values);
+    setFormError(null);
+    const result = await signIn("credentials", {
+      email: values.email,
+      password: values.password,
+      redirect: false,
+    });
+    if (!result) {
+      setFormError(t("errors.unexpected"));
+      return;
+    }
+    if (result.error) {
+      setFormError(t("errors.invalid-credentials"));
+      return;
+    }
+    window.location.href = callbackUrl;
   }
 
   return (
@@ -107,6 +121,12 @@ export default function LoginPage() {
               </Button>
             </div>
 
+            {formError && (
+              <p className="text-destructive text-sm text-center" role="alert">
+                {formError}
+              </p>
+            )}
+
             <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
               <LoaderCircleIcon
                 className="w-4 h-4 animate-spin"
@@ -114,26 +134,8 @@ export default function LoginPage() {
               />
               {form.formState.isSubmitting ? t("submitting") : t("submit")}
             </Button>
-
-            <div className="flex items-center gap-3">
-              <Separator className="flex-1" />
-              <span className="text-muted-foreground text-sm">{t("or-continue-with")}</span>
-              <Separator className="flex-1" />
-            </div>
-
-            <Button type="button" variant="outline" className="w-full">
-              <GoogleIcon />
-              Google
-            </Button>
           </form>
         </Form>
-
-        <p className="text-muted-foreground text-sm text-center">
-          {t("no-account")}{" "}
-          <Button variant="link" size="sm" className="px-0" asChild>
-            <Link href="/sign-up">{t("sign-up")}</Link>
-          </Button>
-        </p>
 
         <div className="mt-12 text-muted-foreground text-xs text-center">
           {t("footer.agree-prefix")}{" "}
