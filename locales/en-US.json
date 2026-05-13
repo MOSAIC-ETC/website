@@ -86,13 +86,12 @@
     "forgot-password": "Forgot password?",
     "submit": "Sign In",
     "submitting": "Signing in...",
-    "or-continue-with": "or continue with",
-    "no-account": "Don't have an account?",
-    "sign-up": "Sign up",
     "errors": {
       "email-required": "Email is required",
       "email-invalid": "Please enter a valid email",
-      "password-min": "Password must be at least 8 characters"
+      "password-min": "Password must be at least 8 characters",
+      "invalid-credentials": "Invalid email or password",
+      "unexpected": "Something went wrong. Please try again."
     },
     "footer": {
       "agree-prefix": "By signing in, you agree to our",

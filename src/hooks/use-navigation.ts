@@ -1,6 +1,6 @@
 "use client";
 
-import { BookTextIcon, CalculatorIcon, HomeIcon, InfoIcon, SettingsIcon, ShieldIcon, User2Icon } from "lucide-react";
+import { BookTextIcon, CalculatorIcon, HomeIcon, InfoIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 export function useNavigation() {

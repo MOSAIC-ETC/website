@@ -1,0 +1,169 @@
+// MOSAIC ETC — Prisma schema
+// See TCC.md sections 3.1, 3.3, 3.4, 3.8, 3.9 for design rationale.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ──────────────────────────────────────────────────────────────────
+// Auth & RBAC
+// ──────────────────────────────────────────────────────────────────
+
+model Role {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  permissions String[]
+  createdAt   DateTime @default(now())
+
+  users   User[]
+  invites Invite[]
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  passwordHash String
+  roleId       String
+  role         Role     @relation(fields: [roleId], references: [id])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  filesCreated     File[]                @relation("FileCreator")
+  versionsUploaded FileVersion[]
+  paramsCreated    InstrumentParameter[]
+  invitesCreated   Invite[]              @relation("InviteCreator")
+  auditLogs        AuditLog[]
+}
+
+model Invite {
+  id         String    @id @default(cuid())
+  email      String
+  token      String    @unique
+  roleId     String
+  role       Role      @relation(fields: [roleId], references: [id])
+  expiresAt  DateTime
+  consumedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  createdBy String?
+  creator   User?   @relation("InviteCreator", fields: [createdBy], references: [id])
+
+  @@index([token])
+  @@index([email])
+}
+
+// ──────────────────────────────────────────────────────────────────
+// File catalog & versioning
+// ──────────────────────────────────────────────────────────────────
+
+enum FileCategory {
+  FILTER
+  OBJECT
+  TABLE
+}
+
+enum AssetRole {
+  DATA
+  PREVIEW
+  CUBE
+}
+
+model File {
+  id        String       @id @default(cuid())
+  category  FileCategory
+  slug      String
+  assetRole AssetRole
+  name      String
+  isActive  Boolean      @default(true)
+  createdAt DateTime     @default(now())
+
+  createdBy String?
+  creator   User?   @relation("FileCreator", fields: [createdBy], references: [id])
+
+  currentVersionId String?      @unique
+  currentVersion   FileVersion? @relation("CurrentVersion", fields: [currentVersionId], references: [id])
+
+  versions FileVersion[] @relation("AllVersions")
+
+  @@unique([category, slug, assetRole])
+  @@index([category, isActive])
+}
+
+model FileVersion {
+  id          String   @id @default(cuid())
+  fileId      String
+  versionNum  Int
+  uploadedAt  DateTime @default(now())
+  notes       String?
+  filename    String
+  storagePath String
+  fileHash    String
+  fileSize    BigInt
+  mimeType    String
+
+  uploadedBy String?
+  uploader   User?   @relation(fields: [uploadedBy], references: [id])
+
+  file       File @relation("AllVersions", fields: [fileId], references: [id], onDelete: Cascade)
+  currentFor File? @relation("CurrentVersion")
+
+  filterMetadata FilterMetadata?
+
+  @@unique([fileId, versionNum])
+  @@index([fileId])
+  @@index([fileHash])
+}
+
+// Filter-specific metadata, scoped to a FileVersion (see TCC §3.4).
+model FilterMetadata {
+  fileVersionId     String      @id
+  effWavelengthNm   Float
+  effWavelengthUnit String // "NM" | "UM" — preserves the original input unit for the parser
+  zeroPoint         Float
+  fileVersion       FileVersion @relation(fields: [fileVersionId], references: [id], onDelete: Cascade)
+}
+
+// ──────────────────────────────────────────────────────────────────
+// Instrument parameters
+// ──────────────────────────────────────────────────────────────────
+
+model InstrumentParameter {
+  id        String   @id @default(cuid())
+  version   Int      @unique
+  isCurrent Boolean  @default(false)
+  params    Json
+  notes     String?
+  createdAt DateTime @default(now())
+
+  createdBy String?
+  creator   User?   @relation(fields: [createdBy], references: [id])
+
+  @@index([isCurrent])
+}
+
+// ──────────────────────────────────────────────────────────────────
+// Audit log
+// ──────────────────────────────────────────────────────────────────
+
+model AuditLog {
+  id           String   @id @default(cuid())
+  action       String
+  resourceType String
+  resourceId   String
+  description  String
+  metadata     Json?
+  performedAt  DateTime @default(now())
+
+  performedBy String?
+  performer   User?   @relation(fields: [performedBy], references: [id])
+
+  @@index([performedAt])
+  @@index([resourceType, resourceId])
+  @@index([performedBy])
+}

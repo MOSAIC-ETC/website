@@ -86,13 +86,12 @@
     "forgot-password": "Esqueceu a senha?",
     "submit": "Entrar",
     "submitting": "Entrando...",
-    "or-continue-with": "ou continue com",
-    "no-account": "Não tem uma conta?",
-    "sign-up": "Cadastre-se",
     "errors": {
       "email-required": "O e-mail é obrigatório",
       "email-invalid": "Por favor, insira um e-mail válido",
-      "password-min": "A senha deve ter pelo menos 8 caracteres"
+      "password-min": "A senha deve ter pelo menos 8 caracteres",
+      "invalid-credentials": "E-mail ou senha inválidos",
+      "unexpected": "Algo deu errado. Tente novamente."
     },
     "footer": {
       "agree-prefix": "Ao entrar, você concorda com nossos",

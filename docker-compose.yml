@@ -1,0 +1,21 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: mosaic-etc-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: mosaic
+      POSTGRES_PASSWORD: mosaic_dev
+      POSTGRES_DB: mosaic_etc
+    ports:
+      - "5433:5432"
+    volumes:
+      - mosaic-etc-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mosaic -d mosaic_etc"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  mosaic-etc-data:

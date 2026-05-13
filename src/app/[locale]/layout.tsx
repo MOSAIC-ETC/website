@@ -4,6 +4,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Geist, Geist_Mono } from "next/font/google";
 import { notFound } from "next/navigation";
 
+import { AuthSessionProvider } from "@/components/auth-session-provider";
 import { Footer } from "@/components/footer";
 import { Navbar } from "@/components/navbar";
 import { PerfMeasureGuard } from "@/components/perf-measure-guard";
@@ -59,21 +60,23 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <PerfMeasureGuard />
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          <NextIntlClientProvider>
-            <TooltipProvider>
-              <SidebarProvider>
-                <Sidebar className="lg:hidden" />
-                <main className="w-full min-h-screen">
-                  <Navbar />
-                  <ScrollArea className="h-[calc(100vh-4rem)]">
-                    <div className="min-h-[calc(100vh-4rem)]">{children}</div>
-                    <Footer />
-                    <Toaster position="bottom-right" />
-                  </ScrollArea>
-                </main>
-              </SidebarProvider>
-            </TooltipProvider>
-          </NextIntlClientProvider>
+          <AuthSessionProvider>
+            <NextIntlClientProvider>
+              <TooltipProvider>
+                <SidebarProvider>
+                  <Sidebar className="lg:hidden" />
+                  <main className="w-full min-h-screen">
+                    <Navbar />
+                    <ScrollArea className="h-[calc(100vh-4rem)]">
+                      <div className="min-h-[calc(100vh-4rem)]">{children}</div>
+                      <Footer />
+                      <Toaster position="bottom-right" />
+                    </ScrollArea>
+                  </main>
+                </SidebarProvider>
+              </TooltipProvider>
+            </NextIntlClientProvider>
+          </AuthSessionProvider>
         </ThemeProvider>
       </body>
     </html>
