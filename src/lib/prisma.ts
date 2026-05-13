@@ -6,6 +6,14 @@
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
 
+// Make BigInt values JSON-serializable. fileSize columns are BigInt (Postgres
+// int8) but never exceed Number.MAX_SAFE_INTEGER in practice, so it's safe to
+// emit them as numbers. Without this, Response.json() throws on any payload
+// that includes a FileVersion.
+(BigInt.prototype as unknown as { toJSON: () => number }).toJSON = function () {
+  return Number(this as unknown as bigint);
+};
+
 const globalForPrisma = globalThis as unknown as {
   prisma?: PrismaClient;
 };

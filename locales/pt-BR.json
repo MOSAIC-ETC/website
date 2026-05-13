@@ -44,6 +44,8 @@
   },
   "user": {
     "sign-in": "Entrar",
+    "sign-out": "Sair",
+    "admin": "Administração",
     "anonymous": "Anônimo"
   },
   "sidebar": {
@@ -98,6 +100,21 @@
       "terms-of-service": "Termos de Serviço",
       "and": "e",
       "privacy-policy": "Política de Privacidade"
+    }
+  },
+  "accept-invite": {
+    "welcome": "Aceite seu convite",
+    "subtitle": "Você foi convidado para entrar como {role} ({email}). Defina uma senha para ativar sua conta.",
+    "name": { "label": "Nome completo" },
+    "password": { "label": "Senha" },
+    "confirm-password": { "label": "Confirme a senha" },
+    "submit": "Criar conta",
+    "submitting": "Criando conta...",
+    "errors": {
+      "name-required": "Nome é obrigatório",
+      "password-min": "A senha deve ter pelo menos 8 caracteres",
+      "passwords-dont-match": "As senhas não coincidem",
+      "unknown": "Não foi possível carregar o convite. O link pode ser inválido ou estar expirado."
     }
   },
   "sign-up": {

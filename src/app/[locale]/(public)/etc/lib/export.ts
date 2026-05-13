@@ -1,8 +1,8 @@
 import { type FITSHeaderCard, FITSWriter } from "@/lib/parser";
 
-import { FILTERS } from "./filters";
-import { OBJECTS } from "./objects";
-import type { ETCFormValues, SNRDataPoint, SubcubeFormValues } from "./types";
+import type { ETCFormValues, FilterEntry, ObjectEntry, SNRDataPoint, SubcubeFormValues } from "./types";
+
+type ExportContext = { filter?: FilterEntry | null; object?: ObjectEntry | null };
 
 /**
  * Triggers a download of a file with the given blob and filename.
@@ -39,14 +39,14 @@ function timestamp(): string {
  * @param data   An array of SNRDataPoint objects representing the SNR spectrum to be exported.
  * @param values Optional ETCFormValues containing metadata about the observation, which will be included as comments in the TXT file.
  */
-export function downloadSNRSpectrumTXT(data: SNRDataPoint[], values?: ETCFormValues) {
+export function downloadSNRSpectrumTXT(data: SNRDataPoint[], values?: ETCFormValues, ctx?: ExportContext) {
   const lines: string[] = [];
   lines.push("# MOSAIC ETC - SNR vs Wavelength");
   lines.push(`# Generated: ${new Date().toISOString()}`);
 
   if (values) {
-    const filter = FILTERS.find((f) => f.id === values.filterId);
-    const object = OBJECTS.find((o) => o.id === values.objectId);
+    const filter = ctx?.filter ?? null;
+    const object = ctx?.object ?? null;
     lines.push(`# Object: ${object?.name ?? values.objectId}`);
     lines.push(`# Instrument: ${values.instrument}`);
     lines.push(`# Filter: ${filter?.name ?? values.filterId}`);
@@ -83,7 +83,7 @@ export function downloadSNRSpectrumTXT(data: SNRDataPoint[], values?: ETCFormVal
  * @param data   A 2D array of numbers representing the SNR map to be exported.
  * @param values Optional SubcubeFormValues containing metadata about the observation, which will be included as header cards in the FITS file.
  */
-export function downloadSNRMapFITS(data: number[][], values?: SubcubeFormValues) {
+export function downloadSNRMapFITS(data: number[][], values?: SubcubeFormValues, ctx?: ExportContext) {
   const cards: FITSHeaderCard[] = [
     { key: "BUNIT", value: "SNR", comment: "Signal-to-noise ratio (dimensionless)" },
     { key: "ORIGIN", value: "MOSAIC ETC", comment: "Web ETC for MOSAIC on the ELT" },
@@ -93,8 +93,8 @@ export function downloadSNRMapFITS(data: number[][], values?: SubcubeFormValues)
   ];
 
   if (values) {
-    const filter = FILTERS.find((f) => f.id === values.filterId);
-    const object = OBJECTS.find((o) => o.id === values.objectId);
+    const filter = ctx?.filter ?? null;
+    const object = ctx?.object ?? null;
 
     cards.push(
       { key: "INSTRUME", value: values.instrument, comment: "MOSAIC instrument mode" },

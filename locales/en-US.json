@@ -44,6 +44,8 @@
   },
   "user": {
     "sign-in": "Sign In",
+    "sign-out": "Sign Out",
+    "admin": "Admin",
     "anonymous": "Anonymous"
   },
   "sidebar": {
@@ -98,6 +100,21 @@
       "terms-of-service": "Terms of Service",
       "and": "and",
       "privacy-policy": "Privacy Policy"
+    }
+  },
+  "accept-invite": {
+    "welcome": "Accept your invite",
+    "subtitle": "You're invited to join as {role} ({email}). Set a password to activate your account.",
+    "name": { "label": "Full name" },
+    "password": { "label": "Password" },
+    "confirm-password": { "label": "Confirm password" },
+    "submit": "Create account",
+    "submitting": "Creating account...",
+    "errors": {
+      "name-required": "Name is required",
+      "password-min": "Password must be at least 8 characters",
+      "passwords-dont-match": "Passwords don't match",
+      "unknown": "Could not load invite. The link may be invalid or expired."
     }
   },
   "sign-up": {

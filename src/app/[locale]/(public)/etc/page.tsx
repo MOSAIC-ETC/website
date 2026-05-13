@@ -16,8 +16,8 @@ import { SNRMap } from "./components/snr-map";
 import { SubcubeForm } from "./components/subcube-form";
 import { useCSVTables } from "./hooks/use-csv-tables";
 import { useFITSCube } from "./hooks/use-fits-cube";
-import { FILTERS, fetchFilterCurve } from "./lib/filters";
-import { OBJECTS } from "./lib/objects";
+import { fetchFilterCurve, useFilters } from "./lib/filters";
+import { useObjects } from "./lib/objects";
 import type { ETCFormSchema, SubcubeFormSchema } from "./lib/schema";
 import type { ETCFormValues, ObjectEntry, SNRDataPoint } from "./lib/types";
 import type { WorkerRequest, WorkerResponse } from "./lib/worker";
@@ -29,8 +29,16 @@ export default function ETCPage() {
   const [chartFormValues, setChartFormValues] = useState<ETCFormValues | undefined>();
   const [snrMapData, setSnrMapData] = useState<number[][]>([]);
   const [snrMapFormValues, setSnrMapFormValues] = useState<SubcubeFormSchema | undefined>();
-  const [selectedObject, setSelectedObject] = useState<ObjectEntry | null>(OBJECTS[0] ?? null);
+  const [selectedObject, setSelectedObject] = useState<ObjectEntry | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
+
+  const { filters } = useFilters();
+  const { objects } = useObjects();
+
+  // Default-select the first object once the manifest loads.
+  useEffect(() => {
+    if (!selectedObject && objects.length > 0) setSelectedObject(objects[0]);
+  }, [objects, selectedObject]);
 
   const object = useFITSCube(selectedObject);
   const tables = useCSVTables();
@@ -82,7 +90,7 @@ export default function ETCPage() {
       return;
     }
 
-    const filter = FILTERS.find((f) => f.id === values.filterId);
+    const filter = filters.find((f) => f.id === values.filterId);
     if (!filter) return;
 
     const flux = object.cube.get("FLUX")?.data as number[][][] | undefined;
@@ -129,7 +137,7 @@ export default function ETCPage() {
       return;
     }
 
-    const filter = FILTERS.find((f) => f.id === values.filterId);
+    const filter = filters.find((f) => f.id === values.filterId);
     if (!filter) return;
 
     const flux = object.cube.get("FLUX")?.data as number[][][] | undefined;
@@ -189,8 +197,8 @@ export default function ETCPage() {
           <TabsContent value="snr-spectrum" className="mt-6">
             <div className="items-start gap-6 grid grid-cols-1 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
               <ETCForm
-                filters={FILTERS}
-                objects={OBJECTS}
+                filters={filters}
+                objects={objects}
                 selectedObject={selectedObject}
                 onSelectObject={setSelectedObject}
                 object={object}
@@ -198,15 +206,15 @@ export default function ETCPage() {
                 disabled={isCalculating}
               />
               <div className="lg:top-6 lg:sticky">
-                <SNRChart data={chartData} formValues={chartFormValues} />
+                <SNRChart data={chartData} formValues={chartFormValues} filters={filters} objects={objects} />
               </div>
             </div>
           </TabsContent>
           <TabsContent value="snr-map" className="mt-6">
             <div className="items-start gap-6 grid grid-cols-1 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
               <SubcubeForm
-                filters={FILTERS}
-                objects={OBJECTS}
+                filters={filters}
+                objects={objects}
                 selectedObject={selectedObject}
                 onSelectObject={setSelectedObject}
                 object={object}
@@ -214,7 +222,7 @@ export default function ETCPage() {
                 disabled={isCalculating}
               />
               <div className="lg:top-6 lg:sticky">
-                <SNRMap data={snrMapData} formValues={snrMapFormValues} />
+                <SNRMap data={snrMapData} formValues={snrMapFormValues} filters={filters} objects={objects} />
               </div>
             </div>
           </TabsContent>

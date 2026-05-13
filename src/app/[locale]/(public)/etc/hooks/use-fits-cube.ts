@@ -25,6 +25,9 @@ export interface UseFITSCubeReturn {
   error: string | null;
 }
 
+// IndexedDB shape: { data: ArrayBuffer; hash: string }. See TCC.md §3.7.
+type CachedBuffer = { data: ArrayBuffer; hash: string };
+
 export function useFITSCube(object: ObjectEntry | null): UseFITSCubeReturn {
   const [preview, setPreview] = useState<FITSFile | null>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
@@ -34,11 +37,9 @@ export function useFITSCube(object: ObjectEntry | null): UseFITSCubeReturn {
 
   const abortRef = useRef<AbortController | null>(null);
 
-  const store = useIndexedDB<ArrayBuffer>(DB_NAME, DB_STORES, "cubes");
+  const store = useIndexedDB<CachedBuffer>(DB_NAME, DB_STORES, "cubes");
 
-  // Reset state when object changes
   useEffect(() => {
-    // Abort any in-flight download
     abortRef.current?.abort();
     abortRef.current = null;
 
@@ -50,19 +51,16 @@ export function useFITSCube(object: ObjectEntry | null): UseFITSCubeReturn {
 
     if (!object) return;
 
-    // Load preview
     let cancelled = false;
     setPreviewLoading(true);
 
     fetch(object.previewPath)
       .then((res) => {
         if (!res.ok) throw new Error(`Failed to load preview: ${res.status}`);
-
         return res.arrayBuffer();
       })
       .then((buf) => {
         if (cancelled) return;
-
         const file = new FITSParser(buf).parse();
         setPreview(file);
       })
@@ -74,26 +72,25 @@ export function useFITSCube(object: ObjectEntry | null): UseFITSCubeReturn {
         if (!cancelled) setPreviewLoading(false);
       });
 
-    // Check if cube is already in IndexedDB and parse it
+    // Cube cache check: only return if the cached hash matches manifest's current hash.
     store
       .get(object.id)
       .then((stored) => {
-        if (!cancelled && stored) {
-          setCube(new FITSParser(stored).parse());
-        }
+        if (cancelled || !stored) return;
+        if (stored.hash !== object.cubeHash) return; // stale; user will need to re-download
+        if (!stored.data) return;
+        setCube(new FITSParser(stored.data).parse());
       })
       .catch(() => {
-        // Ignore - just means cube isn't stored yet
+        /* no-op */
       });
 
     return () => {
       cancelled = true;
     };
-  }, [object]);
+  }, [object, store.get]);
 
   const downloadCube = useCallback(() => {
-    console.log("Download cube called");
-
     if (!object || downloadProgress !== null) return;
 
     const controller = new AbortController();
@@ -134,7 +131,7 @@ export function useFITSCube(object: ObjectEntry | null): UseFITSCubeReturn {
 
         return pump();
       })
-      .then((buf) => store.put(object.id, buf).then(() => buf))
+      .then((buf) => store.put(object.id, { data: buf, hash: object.cubeHash }).then(() => buf))
       .then((buf) => {
         setCube(new FITSParser(buf).parse());
         setDownloadProgress(null);
@@ -144,7 +141,7 @@ export function useFITSCube(object: ObjectEntry | null): UseFITSCubeReturn {
         setError(err instanceof Error ? err.message : "Download failed");
         setDownloadProgress(null);
       });
-  }, [object, downloadProgress]);
+  }, [object, downloadProgress, store.put]);
 
   const cubeReady = cube !== null;
 

@@ -37,7 +37,7 @@ export const config = {
   matcher: [
     // Skip Next internals, files with extensions, and public API routes
     // (auth handler, file streaming, manifest) that don't need locale routing.
-    "/((?!_next|_vercel|favicon\\.ico|api/auth|api/files|api/manifest|.*\\..*).*)",
+    "/((?!_next|_vercel|favicon\\.ico|api/auth|api/files|api/manifest|api/invites|.*\\..*).*)",
     "/api/admin/:path*",
   ],
 };

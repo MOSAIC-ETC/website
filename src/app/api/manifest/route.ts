@@ -2,18 +2,32 @@
 // cache entries are still valid. See TCC.md §3.7.
 
 import { prisma } from "@/lib/prisma";
+import { DEFAULT_INSTRUMENT_PARAMS, instrumentParamsSchema, type InstrumentParams } from "@/lib/schemas/instrument-params";
 
 type FilterEntry = { slug: string; name: string; hash: string; version: number; effWavelengthNm: number; effWavelengthUnit: string; zeroPoint: number };
 type TableEntry = { slug: string; name: string; hash: string; version: number };
 type ObjectEntry = { slug: string; name: string; version: number; previewHash: string; cubeHash: string };
+type ParamsEntry = { version: number; params: InstrumentParams };
 
 export async function GET() {
-  const [filters, tables, objects] = await Promise.all([loadFilters(), loadTables(), loadObjects()]);
+  const [filters, tables, objects, instrumentParams] = await Promise.all([
+    loadFilters(),
+    loadTables(),
+    loadObjects(),
+    loadInstrumentParams(),
+  ]);
 
   return Response.json(
-    { filters, tables, objects },
+    { filters, tables, objects, instrumentParams },
     { headers: { "Cache-Control": "public, max-age=60" } },
   );
+}
+
+async function loadInstrumentParams(): Promise<ParamsEntry> {
+  const row = await prisma.instrumentParameter.findFirst({ where: { isCurrent: true } });
+  if (!row) return { version: 0, params: DEFAULT_INSTRUMENT_PARAMS };
+  const parsed = instrumentParamsSchema.safeParse(row.params);
+  return { version: row.version, params: parsed.success ? parsed.data : DEFAULT_INSTRUMENT_PARAMS };
 }
 
 async function loadFilters(): Promise<FilterEntry[]> {
