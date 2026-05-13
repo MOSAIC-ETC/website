@@ -11,15 +11,6 @@ export function useNavigation() {
     { name: t("etc"), href: "/etc", icon: CalculatorIcon },
     { name: t("documentation"), href: "/docs", icon: BookTextIcon },
     { name: t("about"), href: "/about", icon: InfoIcon },
-    {
-      name: t("administration"),
-      href: "/admin",
-      icon: ShieldIcon,
-      dropdown: [
-        { name: t("users"), href: "/admin/users", icon: User2Icon },
-        { name: t("settings"), href: "/admin/settings", icon: SettingsIcon },
-      ],
-    },
   ];
 
   return navigation;

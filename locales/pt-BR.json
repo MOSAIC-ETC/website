@@ -40,10 +40,7 @@
     "home": "Início",
     "etc": "ETC",
     "documentation": "Documentação",
-    "about": "Sobre",
-    "administration": "Administração",
-    "users": "Usuários",
-    "settings": "Configurações"
+    "about": "Sobre"
   },
   "user": {
     "sign-in": "Entrar",
