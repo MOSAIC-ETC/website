@@ -1,11 +1,16 @@
 "use client";
 
+import { useState } from "react";
+
+import { Trash2Icon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 type UserRow = { id: string; email: string; name: string; roleId: string; roleName: string; createdAt: string };
 type RoleOption = { id: string; name: string };
@@ -53,44 +58,59 @@ export function UsersAdminClient({ users, roles }: { users: UserRow[]; roles: Ro
   }
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-sm">
-        <thead className="text-left text-muted-foreground border-b">
-          <tr>
-            <th className="py-2 pr-3 font-medium">{t("common.name")}</th>
-            <th className="py-2 pr-3 font-medium">{t("common.email")}</th>
-            <th className="py-2 pr-3 font-medium">{t("common.role")}</th>
-            <th className="py-2 pr-3 font-medium">{t("common.created")}</th>
-            <th className="py-2 font-medium text-right">{t("common.actions")}</th>
-          </tr>
-        </thead>
-        <tbody>
+    <TooltipProvider>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>{t("common.name")}</TableHead>
+            <TableHead>{t("common.email")}</TableHead>
+            <TableHead>{t("common.role")}</TableHead>
+            <TableHead>{t("common.created")}</TableHead>
+            <TableHead className="text-right">{t("common.actions")}</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {users.map((u) => (
-            <tr key={u.id} className="border-b last:border-b-0">
-              <td className="py-2 pr-3">{u.name}</td>
-              <td className="py-2 pr-3 font-mono text-xs">{u.email}</td>
-              <td className="py-2 pr-3">
-                <select
-                  value={u.roleId}
-                  disabled={busyId === u.id}
-                  onChange={(e) => changeRole(u.id, e.target.value)}
-                  className="flex h-9 rounded-md border border-input bg-background px-2 text-sm"
-                >
-                  {roles.map((r) => (
-                    <option key={r.id} value={r.id}>{r.name}</option>
-                  ))}
-                </select>
-              </td>
-              <td className="py-2 pr-3 text-muted-foreground text-xs">{new Date(u.createdAt).toLocaleDateString()}</td>
-              <td className="py-2 text-right">
-                <Button size="sm" variant="ghost" disabled={busyId === u.id} onClick={() => deleteUser(u.id, u.email)}>
-                  {t("common.delete")}
-                </Button>
-              </td>
-            </tr>
+            <TableRow key={u.id}>
+              <TableCell>{u.name}</TableCell>
+              <TableCell className="font-mono text-xs">{u.email}</TableCell>
+              <TableCell>
+                <Select value={u.roleId} disabled={busyId === u.id} onValueChange={(value) => changeRole(u.id, value)}>
+                  <SelectTrigger className="w-40">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {roles.map((r) => (
+                      <SelectItem key={r.id} value={r.id}>
+                        {r.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </TableCell>
+              <TableCell className="text-muted-foreground text-xs">
+                {new Date(u.createdAt).toLocaleDateString()}
+              </TableCell>
+              <TableCell className="text-right">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      size="icon-sm"
+                      variant="ghost"
+                      disabled={busyId === u.id}
+                      onClick={() => deleteUser(u.id, u.email)}
+                      className="hover:text-destructive"
+                    >
+                      <Trash2Icon className="size-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>{t("common.delete")}</TooltipContent>
+                </Tooltip>
+              </TableCell>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
-    </div>
+        </TableBody>
+      </Table>
+    </TooltipProvider>
   );
 }

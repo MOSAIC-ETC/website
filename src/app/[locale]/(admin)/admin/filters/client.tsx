@@ -1,13 +1,20 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
+import { HistoryIcon, PlusIcon, UploadIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 type FilterRow = {
   id: string;
@@ -30,90 +37,90 @@ export function FilterAdminClient({ initial }: { initial: FilterRow[] }) {
   const [openNew, setOpenNew] = useState(false);
 
   return (
-    <div className="space-y-4">
-      <div className="flex justify-end">
-        <Button onClick={() => setOpenNew(true)}>{t("filters.new-filter")}</Button>
-      </div>
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead className="text-left text-muted-foreground border-b">
-            <tr>
-              <th className="py-2 pr-3 font-medium">{t("filters.headers.slug")}</th>
-              <th className="py-2 pr-3 font-medium">{t("common.name")}</th>
-              <th className="py-2 pr-3 font-medium">{t("filters.headers.wavelength")}</th>
-              <th className="py-2 pr-3 font-medium">{t("filters.headers.version")}</th>
-              <th className="py-2 pr-3 font-medium">{t("common.status")}</th>
-              <th className="py-2 font-medium text-right">{t("common.actions")}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {initial.map((row) => {
-              const wl = row.currentVersion?.metadata
-                ? `${row.currentVersion.metadata.effWavelengthNm} ${row.currentVersion.metadata.effWavelengthUnit.toLowerCase()}`
-                : "—";
-              return (
-                <tr key={row.id} className="border-b last:border-b-0">
-                  <td className="py-2 pr-3 font-mono text-xs">{row.slug}</td>
-                  <td className="py-2 pr-3">{row.name}</td>
-                  <td className="py-2 pr-3">{wl}</td>
-                  <td className="py-2 pr-3">v{row.currentVersion?.versionNum ?? "—"}</td>
-                  <td className="py-2 pr-3">{row.isActive ? t("common.active") : t("common.deleted")}</td>
-                  <td className="py-2 text-right">
-                    <div className="flex justify-end gap-2">
-                      <Button size="sm" variant="outline" onClick={() => setOpenUpload(row.slug)}>
-                        {t("filters.upload-version")}
-                      </Button>
-                      <Button size="sm" variant="ghost" onClick={() => setOpenHistory(row.slug)}>
-                        {t("filters.history")}
-                      </Button>
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+    <TooltipProvider>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>{t("common.name")}</TableHead>
+            <TableHead>{t("filters.headers.wavelength")}</TableHead>
+            <TableHead>{t("filters.headers.version")}</TableHead>
+            <TableHead>{t("common.status")}</TableHead>
+            <TableHead className="text-right">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button size="icon-sm" variant="outline" onClick={() => setOpenNew(true)}>
+                    <PlusIcon className="size-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>{t("filters.new-filter")}</TooltipContent>
+              </Tooltip>
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {initial.map((row) => {
+            const wl = row.currentVersion?.metadata
+              ? `${row.currentVersion.metadata.effWavelengthNm} ${row.currentVersion.metadata.effWavelengthUnit.toLowerCase()}`
+              : "—";
+            return (
+              <TableRow key={row.id}>
+                <TableCell>{row.name}</TableCell>
+                <TableCell>{wl}</TableCell>
+                <TableCell>v{row.currentVersion?.versionNum ?? "—"}</TableCell>
+                <TableCell>
+                  <Badge variant={row.isActive ? "default" : "destructive"}>
+                    {row.isActive ? t("common.active") : t("common.deleted")}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-right">
+                  <div className="flex justify-end gap-1">
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button size="icon-sm" variant="ghost" onClick={() => setOpenUpload(row.slug)}>
+                          <UploadIcon className="size-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>{t("filters.upload-version")}</TooltipContent>
+                    </Tooltip>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button size="icon-sm" variant="ghost" onClick={() => setOpenHistory(row.slug)}>
+                          <HistoryIcon className="size-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>{t("filters.history")}</TooltipContent>
+                    </Tooltip>
+                  </div>
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
 
-      {openUpload && <UploadVersionDialog slug={openUpload} onClose={() => setOpenUpload(null)} />}
-      {openHistory && <HistoryDialog slug={openHistory} onClose={() => setOpenHistory(null)} />}
-      {openNew && <NewFilterDialog onClose={() => setOpenNew(false)} />}
-    </div>
+      <UploadVersionDialog open={!!openUpload} slug={openUpload ?? ""} onClose={() => setOpenUpload(null)} />
+      <HistoryDialog open={!!openHistory} slug={openHistory ?? ""} onClose={() => setOpenHistory(null)} />
+      <NewFilterDialog open={openNew} onClose={() => setOpenNew(false)} />
+    </TooltipProvider>
   );
 }
 
-function Modal({ title, onClose, children }: { title: string; onClose: () => void; children: React.ReactNode }) {
-  const t = useTranslations("admin.common");
-  return (
-    <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4" onClick={onClose}>
-      <div className="bg-background border rounded-lg shadow-xl max-w-lg w-full p-6 space-y-4" onClick={(e) => e.stopPropagation()}>
-        <div className="flex justify-between items-center">
-          <h2 className="font-semibold text-lg">{title}</h2>
-          <Button size="sm" variant="ghost" onClick={onClose} aria-label={t("close")}>✕</Button>
-        </div>
-        {children}
-      </div>
-    </div>
-  );
-}
-
-function UploadVersionDialog({ slug, onClose }: { slug: string; onClose: () => void }) {
+function UploadVersionDialog({ open, slug, onClose }: { open: boolean; slug: string; onClose: () => void }) {
   const router = useRouter();
   const t = useTranslations("admin");
   const [submitting, setSubmitting] = useState(false);
+  const [unit, setUnit] = useState<"NM" | "UM">("NM");
 
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function onSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
     const meta = {
       effWavelengthNm: Number(form.get("effWavelengthNm")),
-      effWavelengthUnit: form.get("effWavelengthUnit"),
+      effWavelengthUnit: unit,
       zeroPoint: Number(form.get("zeroPoint")),
     };
     form.set("filterMetadata", JSON.stringify(meta));
     form.delete("effWavelengthNm");
-    form.delete("effWavelengthUnit");
-    form.delete("zeroPoint");
 
     setSubmitting(true);
     try {
@@ -132,61 +139,77 @@ function UploadVersionDialog({ slug, onClose }: { slug: string; onClose: () => v
   }
 
   return (
-    <Modal title={t("filters.upload-dialog.title", { slug })} onClose={onClose}>
-      <form onSubmit={onSubmit} className="space-y-3">
-        <div>
-          <Label htmlFor="file">{t("filters.upload-dialog.file-label")}</Label>
-          <Input id="file" name="file" type="file" accept=".txt" required />
-        </div>
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <Label htmlFor="effWavelengthNm">{t("filters.upload-dialog.eff-wavelength")}</Label>
-            <Input id="effWavelengthNm" name="effWavelengthNm" type="number" step="0.01" required />
+    <Dialog
+      open={open}
+      onOpenChange={(o) => {
+        if (!o) onClose();
+      }}
+    >
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{t("filters.upload-dialog.title", { slug })}</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={onSubmit} className="space-y-4">
+          <div className="space-y-1.5">
+            <Label htmlFor="upload-file">{t("filters.upload-dialog.file-label")}</Label>
+            <Input id="upload-file" name="file" type="file" accept=".txt" required />
           </div>
-          <div>
-            <Label htmlFor="effWavelengthUnit">{t("filters.upload-dialog.unit")}</Label>
-            <select id="effWavelengthUnit" name="effWavelengthUnit" defaultValue="NM" className="flex h-10 w-full rounded-md border border-input bg-background px-3 text-sm">
-              <option value="NM">NM</option>
-              <option value="UM">UM</option>
-            </select>
+          <div className="gap-3 grid grid-cols-2">
+            <div className="space-y-1.5">
+              <Label htmlFor="upload-effWavelengthNm">{t("filters.upload-dialog.eff-wavelength")}</Label>
+              <Input id="upload-effWavelengthNm" name="effWavelengthNm" type="number" step="0.01" required />
+            </div>
+            <div className="space-y-1.5">
+              <Label>{t("filters.upload-dialog.unit")}</Label>
+              <Select value={unit} onValueChange={(v) => setUnit(v as "NM" | "UM")}>
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="NM">NM</SelectItem>
+                  <SelectItem value="UM">UM</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
-        </div>
-        <div>
-          <Label htmlFor="zeroPoint">{t("filters.upload-dialog.zero-point")}</Label>
-          <Input id="zeroPoint" name="zeroPoint" type="number" step="any" required />
-        </div>
-        <div>
-          <Label htmlFor="notes">{t("common.notes-optional")}</Label>
-          <Input id="notes" name="notes" type="text" />
-        </div>
-        <div className="flex justify-end gap-2 pt-2">
-          <Button type="button" variant="ghost" onClick={onClose}>{t("common.cancel")}</Button>
-          <Button type="submit" disabled={submitting}>
-            {submitting ? t("common.uploading") : t("common.upload")}
-          </Button>
-        </div>
-      </form>
-    </Modal>
+          <div className="space-y-1.5">
+            <Label htmlFor="upload-zeroPoint">{t("filters.upload-dialog.zero-point")}</Label>
+            <Input id="upload-zeroPoint" name="zeroPoint" type="number" step="any" required />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="upload-notes">{t("common.notes-optional")}</Label>
+            <Input id="upload-notes" name="notes" type="text" />
+          </div>
+          <div className="flex justify-end gap-2 pt-2">
+            <Button type="button" variant="ghost" onClick={onClose}>
+              {t("common.cancel")}
+            </Button>
+            <Button type="submit" disabled={submitting}>
+              {submitting ? t("common.uploading") : t("common.upload")}
+            </Button>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }
 
-function NewFilterDialog({ onClose }: { onClose: () => void }) {
+function NewFilterDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
   const router = useRouter();
   const t = useTranslations("admin");
   const [submitting, setSubmitting] = useState(false);
+  const [unit, setUnit] = useState<"NM" | "UM">("NM");
 
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function onSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
     const meta = {
       effWavelengthNm: Number(form.get("effWavelengthNm")),
-      effWavelengthUnit: form.get("effWavelengthUnit"),
+      effWavelengthUnit: unit,
       zeroPoint: Number(form.get("zeroPoint")),
     };
     form.set("filterMetadata", JSON.stringify(meta));
     form.delete("effWavelengthNm");
-    form.delete("effWavelengthUnit");
-    form.delete("zeroPoint");
 
     setSubmitting(true);
     try {
@@ -205,47 +228,77 @@ function NewFilterDialog({ onClose }: { onClose: () => void }) {
   }
 
   return (
-    <Modal title={t("filters.new-dialog.title")} onClose={onClose}>
-      <form onSubmit={onSubmit} className="space-y-3">
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <Label htmlFor="slug">{t("filters.new-dialog.slug")}</Label>
-            <Input id="slug" name="slug" type="text" required pattern="[a-z0-9][a-z0-9_-]{0,63}" placeholder={t("filters.new-dialog.slug-placeholder")} />
+    <Dialog
+      open={open}
+      onOpenChange={(o) => {
+        if (!o) onClose();
+      }}
+    >
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{t("filters.new-dialog.title")}</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={onSubmit} className="space-y-4">
+          <div className="gap-3 grid grid-cols-2">
+            <div className="space-y-1.5">
+              <Label htmlFor="new-slug">{t("filters.new-dialog.slug")}</Label>
+              <Input
+                id="new-slug"
+                name="slug"
+                type="text"
+                required
+                pattern="[a-z0-9][a-z0-9_-]{0,63}"
+                placeholder={t("filters.new-dialog.slug-placeholder")}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="new-name">{t("filters.new-dialog.display-name")}</Label>
+              <Input
+                id="new-name"
+                name="name"
+                type="text"
+                required
+                placeholder={t("filters.new-dialog.name-placeholder")}
+              />
+            </div>
           </div>
-          <div>
-            <Label htmlFor="name">{t("filters.new-dialog.display-name")}</Label>
-            <Input id="name" name="name" type="text" required placeholder={t("filters.new-dialog.name-placeholder")} />
+          <div className="space-y-1.5">
+            <Label htmlFor="new-file">{t("filters.upload-dialog.file-label")}</Label>
+            <Input id="new-file" name="file" type="file" accept=".txt" required />
           </div>
-        </div>
-        <div>
-          <Label htmlFor="file">{t("filters.upload-dialog.file-label")}</Label>
-          <Input id="file" name="file" type="file" accept=".txt" required />
-        </div>
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <Label htmlFor="effWavelengthNm">{t("filters.upload-dialog.eff-wavelength")}</Label>
-            <Input id="effWavelengthNm" name="effWavelengthNm" type="number" step="0.01" required />
+          <div className="gap-3 grid grid-cols-2">
+            <div className="space-y-1.5">
+              <Label htmlFor="new-effWavelengthNm">{t("filters.upload-dialog.eff-wavelength")}</Label>
+              <Input id="new-effWavelengthNm" name="effWavelengthNm" type="number" step="0.01" required />
+            </div>
+            <div className="space-y-1.5">
+              <Label>{t("filters.upload-dialog.unit")}</Label>
+              <Select value={unit} onValueChange={(v) => setUnit(v as "NM" | "UM")}>
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="NM">nm</SelectItem>
+                  <SelectItem value="UM">μm</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
-          <div>
-            <Label htmlFor="effWavelengthUnit">{t("filters.upload-dialog.unit")}</Label>
-            <select id="effWavelengthUnit" name="effWavelengthUnit" defaultValue="NM" className="flex h-10 w-full rounded-md border border-input bg-background px-3 text-sm">
-              <option value="NM">NM</option>
-              <option value="UM">UM</option>
-            </select>
+          <div className="space-y-1.5">
+            <Label htmlFor="new-zeroPoint">{t("filters.upload-dialog.zero-point")}</Label>
+            <Input id="new-zeroPoint" name="zeroPoint" type="number" step="any" required />
           </div>
-        </div>
-        <div>
-          <Label htmlFor="zeroPoint">{t("filters.upload-dialog.zero-point")}</Label>
-          <Input id="zeroPoint" name="zeroPoint" type="number" step="any" required />
-        </div>
-        <div className="flex justify-end gap-2 pt-2">
-          <Button type="button" variant="ghost" onClick={onClose}>{t("common.cancel")}</Button>
-          <Button type="submit" disabled={submitting}>
-            {submitting ? t("common.creating") : t("common.create")}
-          </Button>
-        </div>
-      </form>
-    </Modal>
+          <div className="flex justify-end gap-2 pt-2">
+            <Button type="button" variant="ghost" onClick={onClose}>
+              {t("common.cancel")}
+            </Button>
+            <Button type="submit" disabled={submitting}>
+              {submitting ? t("common.creating") : t("common.create")}
+            </Button>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }
 
@@ -261,18 +314,20 @@ type VersionRow = {
   filterMetadata: { effWavelengthNm: number; effWavelengthUnit: string; zeroPoint: number } | null;
 };
 
-function HistoryDialog({ slug, onClose }: { slug: string; onClose: () => void }) {
+function HistoryDialog({ open, slug, onClose }: { open: boolean; slug: string; onClose: () => void }) {
   const router = useRouter();
   const t = useTranslations("admin");
   const [versions, setVersions] = useState<VersionRow[] | null>(null);
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
+    if (!open || !slug) return;
+    setVersions(null);
     fetch(`/api/admin/filters/${slug}/versions`)
       .then((r) => r.json())
       .then((d: { versions: VersionRow[] }) => setVersions(d.versions))
       .catch(() => setVersions([]));
-  }, [slug]);
+  }, [open, slug]);
 
   async function restore(versionId: string) {
     setBusy(true);
@@ -296,29 +351,42 @@ function HistoryDialog({ slug, onClose }: { slug: string; onClose: () => void })
   }
 
   return (
-    <Modal title={t("filters.history-dialog.title", { slug })} onClose={onClose}>
-      {!versions ? (
-        <p className="text-muted-foreground text-sm">{t("common.loading")}</p>
-      ) : versions.length === 0 ? (
-        <p className="text-muted-foreground text-sm">{t("filters.history-dialog.no-versions")}</p>
-      ) : (
-        <ul className="space-y-2 max-h-[60vh] overflow-y-auto">
-          {versions.map((v) => (
-            <li key={v.id} className="flex items-center justify-between gap-3 border rounded-md p-2 text-sm">
-              <div>
-                <div className="font-medium">v{v.versionNum} · {v.filename}</div>
-                <div className="text-muted-foreground text-xs">
-                  {new Date(v.uploadedAt).toLocaleString()} · {v.uploader?.email ?? t("common.unknown-user")} · {v.fileSize} B
+    <Dialog
+      open={open}
+      onOpenChange={(o) => {
+        if (!o) onClose();
+      }}
+    >
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{t("filters.history-dialog.title", { slug })}</DialogTitle>
+        </DialogHeader>
+        {!versions ? (
+          <p className="text-muted-foreground text-sm">{t("common.loading")}</p>
+        ) : versions.length === 0 ? (
+          <p className="text-muted-foreground text-sm">{t("filters.history-dialog.no-versions")}</p>
+        ) : (
+          <ul className="space-y-2 max-h-[60vh] overflow-y-auto">
+            {versions.map((v) => (
+              <li key={v.id} className="flex justify-between items-center gap-3 p-3 border rounded-md text-sm">
+                <div>
+                  <div className="font-medium">
+                    v{v.versionNum} · {v.filename}
+                  </div>
+                  <div className="text-muted-foreground text-xs">
+                    {new Date(v.uploadedAt).toLocaleString()} · {v.uploader?.email ?? t("common.unknown-user")} ·{" "}
+                    {v.fileSize} B
+                  </div>
+                  {v.notes && <div className="text-muted-foreground text-xs italic">{v.notes}</div>}
                 </div>
-                {v.notes && <div className="text-muted-foreground text-xs italic">{v.notes}</div>}
-              </div>
-              <Button size="sm" variant="outline" disabled={busy} onClick={() => restore(v.id)}>
-                {t("common.restore")}
-              </Button>
-            </li>
-          ))}
-        </ul>
-      )}
-    </Modal>
+                <Button size="sm" variant="outline" disabled={busy} onClick={() => restore(v.id)}>
+                  {t("common.restore")}
+                </Button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </DialogContent>
+    </Dialog>
   );
 }

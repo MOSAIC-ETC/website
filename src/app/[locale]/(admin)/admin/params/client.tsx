@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -118,14 +119,14 @@ export function ParamsAdminClient({ current, snapshots }: { current: InstrumentP
 
       <Separator />
 
-      <div className="space-y-2">
-        <Label htmlFor="notes">{t("common.notes-optional")}</Label>
-        <Input id="notes" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder={t("params.notes-placeholder")} />
-        <div className="flex justify-end">
-          <Button onClick={onSave} disabled={submitting}>
-            {submitting ? t("params.saving") : t("params.save-snapshot")}
-          </Button>
+      <div className="flex items-end gap-3">
+        <div className="flex-1 space-y-1.5">
+          <Label htmlFor="notes">{t("common.notes-optional")}</Label>
+          <Input id="notes" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder={t("params.notes-placeholder")} />
         </div>
+        <Button onClick={onSave} disabled={submitting}>
+          {submitting ? t("params.saving") : t("params.save-snapshot")}
+        </Button>
       </div>
 
       <Separator />
@@ -139,9 +140,9 @@ export function ParamsAdminClient({ current, snapshots }: { current: InstrumentP
                 <div className="font-medium">
                   v{s.version}{" "}
                   {s.isCurrent && (
-                    <span className="text-xs ml-2 px-2 py-0.5 rounded bg-green-500/10 text-green-600">
+                    <Badge variant="secondary" className="ml-2 text-xs">
                       {t("common.current")}
-                    </span>
+                    </Badge>
                   )}
                 </div>
                 <div className="text-muted-foreground text-xs">
@@ -173,7 +174,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 function NumField({ label, value, onChange, integer }: { label: string; value: number; onChange: (v: number) => void; integer?: boolean }) {
   return (
-    <div>
+    <div className="space-y-1.5">
       <Label className="text-xs text-muted-foreground">{label}</Label>
       <Input
         type="number"
