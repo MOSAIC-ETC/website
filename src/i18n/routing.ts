@@ -51,18 +51,42 @@ export const routing = defineRouting({
     },
 
     "/admin": "/admin",
-    "/admin/filters": "/admin/filters",
-    "/admin/objects": "/admin/objects",
-    "/admin/tables": "/admin/tables",
-    "/admin/params": "/admin/params",
+    "/admin/filters": {
+      "pt-BR": "/admin/filtros",
+      "en-US": "/admin/filters",
+      "fr-FR": "/admin/filtres",
+    },
+    "/admin/objects": {
+      "pt-BR": "/admin/objetos",
+      "en-US": "/admin/objects",
+      "fr-FR": "/admin/objets",
+    },
+    "/admin/tables": {
+      "pt-BR": "/admin/tabelas",
+      "en-US": "/admin/tables",
+      "fr-FR": "/admin/tables",
+    },
+    "/admin/params": {
+      "pt-BR": "/admin/parametros",
+      "en-US": "/admin/params",
+      "fr-FR": "/admin/parametres",
+    },
     "/admin/users": {
       "pt-BR": "/admin/usuarios",
       "en-US": "/admin/users",
       "fr-FR": "/admin/utilisateurs",
     },
     "/admin/roles": "/admin/roles",
-    "/admin/invites": "/admin/invites",
-    "/admin/audit": "/admin/audit",
+    "/admin/invites": {
+      "pt-BR": "/admin/convites",
+      "en-US": "/admin/invites",
+      "fr-FR": "/admin/invitations",
+    },
+    "/admin/audit": {
+      "pt-BR": "/admin/auditoria",
+      "en-US": "/admin/audit",
+      "fr-FR": "/admin/audit",
+    },
 
     "/about": {
       "pt-BR": "/sobre",

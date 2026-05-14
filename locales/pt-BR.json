@@ -150,6 +150,188 @@
       "passwords-dont-match": "As senhas não coincidem"
     }
   },
+  "admin": {
+    "nav": {
+      "section": "Admin",
+      "dashboard": "Painel",
+      "filters": "Filtros",
+      "objects": "Objetos",
+      "tables": "Tabelas",
+      "params": "Instrumento",
+      "users": "Usuários",
+      "roles": "Funções",
+      "invites": "Convites",
+      "audit": "Auditoria"
+    },
+    "common": {
+      "cancel": "Cancelar",
+      "upload": "Enviar",
+      "uploading": "Enviando…",
+      "create": "Criar",
+      "creating": "Criando…",
+      "delete": "Excluir",
+      "restore": "Restaurar",
+      "loading": "Carregando…",
+      "actions": "Ações",
+      "status": "Status",
+      "name": "Nome",
+      "email": "E-mail",
+      "role": "Função",
+      "created": "Criado",
+      "notes-optional": "Notas (opcional)",
+      "current": "atual",
+      "active": "ativo",
+      "deleted": "excluído",
+      "unexpected": "Algo deu errado. Tente novamente.",
+      "unknown-user": "desconhecido",
+      "system": "sistema",
+      "close": "Fechar"
+    },
+    "dashboard": {
+      "welcome": "Bem-vindo(a), {name}",
+      "role-label": "Função: {role}",
+      "stats": {
+        "filters": "Filtros",
+        "objects": "Objetos",
+        "users": "Usuários",
+        "params-version": "Versão dos parâmetros"
+      },
+      "recent-activity": "Atividade recente",
+      "no-activity": "Nenhuma atividade ainda."
+    },
+    "filters": {
+      "title": "Filtros",
+      "subtitle": "Gerencie curvas de transmissão dos filtros. Novas versões são adicionadas sem apagar o histórico.",
+      "active-card": "Filtros ativos",
+      "headers": {
+        "slug": "Slug",
+        "wavelength": "Comprimento de onda",
+        "version": "Versão"
+      },
+      "upload-version": "Nova versão",
+      "history": "Histórico",
+      "new-filter": "Novo filtro",
+      "upload-dialog": {
+        "title": "Nova versão: {slug}",
+        "file-label": "Arquivo do filtro (.txt)",
+        "eff-wavelength": "Comprimento de onda efetivo (nm)",
+        "unit": "Unidade",
+        "zero-point": "Ponto zero"
+      },
+      "new-dialog": {
+        "title": "Novo filtro",
+        "slug": "Slug",
+        "slug-placeholder": "ex: y_band",
+        "display-name": "Nome de exibição",
+        "name-placeholder": "ex: Y (1.05 μm)"
+      },
+      "history-dialog": {
+        "title": "Histórico: {slug}",
+        "no-versions": "Nenhuma versão ainda."
+      },
+      "toasts": {
+        "uploaded": "Filtro enviado",
+        "created": "Filtro criado",
+        "restored": "Restaurado",
+        "upload-failed": "Falha no envio: {status}",
+        "create-failed": "Falha na criação: {status}",
+        "restore-failed": "Falha na restauração: {status}"
+      }
+    },
+    "params": {
+      "title": "Parâmetros do instrumento",
+      "subtitle": "Edite o subconjunto editável das constantes do MOSAIC. Cada salvamento cria um novo snapshot.",
+      "current-card": "Valores atuais (v{version})",
+      "sections": {
+        "telescope": "Telescópio",
+        "mos-vis": "MOS VIS",
+        "mos-nir": "MOS NIR",
+        "ifu": "IFU",
+        "detectors": "Detectores"
+      },
+      "fields": {
+        "elt-diameter": "Diâmetro do ELT (m)",
+        "manga-pixel-scale": "Escala de pixel MaNGA (arcsec)",
+        "mosaic-pixel-scale": "Escala de pixel MOSAIC (arcsec)",
+        "resolution": "Resolução",
+        "aperture": "Diâmetro da abertura (arcsec)",
+        "pixels-per-object": "Pixels por objeto",
+        "spaxel-size": "Tamanho do spaxel (arcsec)",
+        "spaxels-per-spaxel": "Spaxels por spaxel",
+        "dark-current": "Corrente de escuro (e⁻/s/pix)",
+        "ron": "RON (e⁻/pix)"
+      },
+      "detectors-vis": "VIS",
+      "detectors-nir": "NIR",
+      "save-snapshot": "Salvar como novo snapshot",
+      "saving": "Salvando…",
+      "history": "Histórico",
+      "revert": "Reverter",
+      "reverting": "Revertendo…",
+      "notes-placeholder": "ex: recalibrado após o comissionamento de 2026-04",
+      "toasts": {
+        "saved": "Snapshot salvo",
+        "reverted": "Revertido",
+        "save-failed": "Falha ao salvar: {status}",
+        "revert-failed": "Falha ao reverter: {status}"
+      }
+    },
+    "users": {
+      "title": "Usuários",
+      "subtitle": "Altere funções ou remova contas. O último usuário com uma permissão crítica não pode ser removido ou rebaixado.",
+      "all-card": "Todos os usuários",
+      "delete-confirm": "Excluir usuário {email}? Esta ação não pode ser desfeita.",
+      "toasts": {
+        "updated": "Função atualizada",
+        "deleted": "Usuário excluído",
+        "update-failed": "Falha na atualização: {status}",
+        "delete-failed": "Falha na exclusão: {status}"
+      }
+    },
+    "invites": {
+      "title": "Convites",
+      "subtitle": "Gere links de cadastro de uso único. Os convidados escolhem nome e senha para ativar a conta.",
+      "create-invite": "Criar convite",
+      "expires": "Expira em",
+      "email-placeholder": "colaborador@exemplo.org",
+      "copy-link": "Copiar link",
+      "revoke": "Revogar",
+      "revoking": "Revogando…",
+      "revoke-confirm": "Revogar este convite?",
+      "status": {
+        "active": "ativo",
+        "consumed": "consumido",
+        "expired": "expirado"
+      },
+      "toasts": {
+        "created": "Convite criado",
+        "revoked": "Revogado",
+        "copied": "URL do convite copiada",
+        "copy-failed": "Não foi possível copiar a URL",
+        "create-failed": "Falha na criação: {status}",
+        "revoke-failed": "Falha na revogação: {status}"
+      }
+    },
+    "coming-soon": {
+      "label": "Em breve",
+      "objects": {
+        "title": "Objetos",
+        "description": "Gerencie uploads pareados de preview + cube. UI ainda não construída — os endpoints da API em /api/admin/objects estão funcionais."
+      },
+      "tables": {
+        "title": "Tabelas",
+        "description": "Substitua as 4 tabelas CSV semeadas. UI ainda não construída — os endpoints da API em /api/admin/tables estão funcionais."
+      },
+      "roles": {
+        "title": "Funções",
+        "description": "Crie funções e ajuste seu conjunto de permissões. UI ainda não construída — os endpoints da API em /api/admin/roles estão funcionais."
+      },
+      "audit": {
+        "title": "Auditoria",
+        "description": "Navegue por todas as ações administrativas. UI ainda não construída — o endpoint da API em /api/admin/audit está funcional."
+      }
+    }
+  },
   "etc": {
     "title": "Calculadora de Tempo de Exposição",
     "subtitle": "Estimativa de sinal-ruído",

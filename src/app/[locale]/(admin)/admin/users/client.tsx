@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -11,6 +12,7 @@ type RoleOption = { id: string; name: string };
 
 export function UsersAdminClient({ users, roles }: { users: UserRow[]; roles: RoleOption[] }) {
   const router = useRouter();
+  const t = useTranslations("admin");
   const [busyId, setBusyId] = useState<string | null>(null);
 
   async function changeRole(userId: string, roleId: string) {
@@ -23,10 +25,10 @@ export function UsersAdminClient({ users, roles }: { users: UserRow[]; roles: Ro
       });
       if (!res.ok) {
         const body = (await res.json().catch(() => ({}))) as { error?: string };
-        toast.error(body.error ?? `Update failed: ${res.status}`);
+        toast.error(body.error ?? t("users.toasts.update-failed", { status: res.status }));
         return;
       }
-      toast.success("Role updated");
+      toast.success(t("users.toasts.updated"));
       router.refresh();
     } finally {
       setBusyId(null);
@@ -34,16 +36,16 @@ export function UsersAdminClient({ users, roles }: { users: UserRow[]; roles: Ro
   }
 
   async function deleteUser(userId: string, email: string) {
-    if (!confirm(`Delete user ${email}? This cannot be undone.`)) return;
+    if (!confirm(t("users.delete-confirm", { email }))) return;
     setBusyId(userId);
     try {
       const res = await fetch(`/api/admin/users/${userId}`, { method: "DELETE" });
       if (!res.ok) {
         const body = (await res.json().catch(() => ({}))) as { error?: string };
-        toast.error(body.error ?? `Delete failed: ${res.status}`);
+        toast.error(body.error ?? t("users.toasts.delete-failed", { status: res.status }));
         return;
       }
-      toast.success("User deleted");
+      toast.success(t("users.toasts.deleted"));
       router.refresh();
     } finally {
       setBusyId(null);
@@ -55,11 +57,11 @@ export function UsersAdminClient({ users, roles }: { users: UserRow[]; roles: Ro
       <table className="w-full text-sm">
         <thead className="text-left text-muted-foreground border-b">
           <tr>
-            <th className="py-2 pr-3 font-medium">Name</th>
-            <th className="py-2 pr-3 font-medium">Email</th>
-            <th className="py-2 pr-3 font-medium">Role</th>
-            <th className="py-2 pr-3 font-medium">Created</th>
-            <th className="py-2 font-medium text-right">Actions</th>
+            <th className="py-2 pr-3 font-medium">{t("common.name")}</th>
+            <th className="py-2 pr-3 font-medium">{t("common.email")}</th>
+            <th className="py-2 pr-3 font-medium">{t("common.role")}</th>
+            <th className="py-2 pr-3 font-medium">{t("common.created")}</th>
+            <th className="py-2 font-medium text-right">{t("common.actions")}</th>
           </tr>
         </thead>
         <tbody>
@@ -81,7 +83,9 @@ export function UsersAdminClient({ users, roles }: { users: UserRow[]; roles: Ro
               </td>
               <td className="py-2 pr-3 text-muted-foreground text-xs">{new Date(u.createdAt).toLocaleDateString()}</td>
               <td className="py-2 text-right">
-                <Button size="sm" variant="ghost" disabled={busyId === u.id} onClick={() => deleteUser(u.id, u.email)}>Delete</Button>
+                <Button size="sm" variant="ghost" disabled={busyId === u.id} onClick={() => deleteUser(u.id, u.email)}>
+                  {t("common.delete")}
+                </Button>
               </td>
             </tr>
           ))}

@@ -1,9 +1,12 @@
+import { getTranslations } from "next-intl/server";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { prisma } from "@/lib/prisma";
 
 import { FilterAdminClient } from "./client";
 
 export default async function FiltersAdminPage() {
+  const t = await getTranslations("admin.filters");
   const filters = await prisma.file.findMany({
     where: { category: "FILTER" },
     include: { currentVersion: { include: { filterMetadata: true } } },
@@ -13,11 +16,11 @@ export default async function FiltersAdminPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-bold text-3xl tracking-tight">Filters</h1>
-        <p className="text-muted-foreground">Manage filter transmission curves. New versions are added without losing history.</p>
+        <h1 className="font-bold text-3xl tracking-tight">{t("title")}</h1>
+        <p className="text-muted-foreground">{t("subtitle")}</p>
       </div>
       <Card>
-        <CardHeader><CardTitle>Active filters</CardTitle></CardHeader>
+        <CardHeader><CardTitle>{t("active-card")}</CardTitle></CardHeader>
         <CardContent>
           <FilterAdminClient
             initial={filters.map((f) => ({

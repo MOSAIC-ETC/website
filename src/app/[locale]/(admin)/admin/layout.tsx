@@ -8,9 +8,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   if (!session?.user) redirect("/login?callbackUrl=/admin");
 
   return (
-    <AdminShell
-      user={{ name: session.user.name ?? "", email: session.user.email ?? "", permissions: session.user.permissions }}
-    >
+    <AdminShell user={{ permissions: session.user.permissions }}>
       {children}
     </AdminShell>
   );

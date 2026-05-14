@@ -1,3 +1,5 @@
+import { getTranslations } from "next-intl/server";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { prisma } from "@/lib/prisma";
 import { DEFAULT_INSTRUMENT_PARAMS, instrumentParamsSchema, type InstrumentParams } from "@/lib/schemas/instrument-params";
@@ -5,6 +7,7 @@ import { DEFAULT_INSTRUMENT_PARAMS, instrumentParamsSchema, type InstrumentParam
 import { ParamsAdminClient } from "./client";
 
 export default async function ParamsAdminPage() {
+  const t = await getTranslations("admin.params");
   const snapshots = await prisma.instrumentParameter.findMany({
     orderBy: { version: "desc" },
     include: { creator: { select: { name: true, email: true } } },
@@ -17,11 +20,11 @@ export default async function ParamsAdminPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-bold text-3xl tracking-tight">Instrument parameters</h1>
-        <p className="text-muted-foreground">Edit the editable subset of MOSAIC instrument constants. Each save creates a new snapshot.</p>
+        <h1 className="font-bold text-3xl tracking-tight">{t("title")}</h1>
+        <p className="text-muted-foreground">{t("subtitle")}</p>
       </div>
       <Card>
-        <CardHeader><CardTitle>Current values (v{current?.version ?? 0})</CardTitle></CardHeader>
+        <CardHeader><CardTitle>{t("current-card", { version: current?.version ?? 0 })}</CardTitle></CardHeader>
         <CardContent>
           <ParamsAdminClient
             current={params}
