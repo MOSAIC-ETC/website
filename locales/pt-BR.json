@@ -85,7 +85,6 @@
       "placeholder": "***********"
     },
     "remember-me": "Lembrar de mim",
-    "forgot-password": "Esqueceu a senha?",
     "submit": "Entrar",
     "submitting": "Entrando...",
     "errors": {
@@ -105,9 +104,15 @@
   "accept-invite": {
     "welcome": "Aceite seu convite",
     "subtitle": "Você foi convidado para entrar como {role} ({email}). Defina uma senha para ativar sua conta.",
-    "name": { "label": "Nome completo" },
-    "password": { "label": "Senha" },
-    "confirm-password": { "label": "Confirme a senha" },
+    "name": {
+      "label": "Nome completo"
+    },
+    "password": {
+      "label": "Senha"
+    },
+    "confirm-password": {
+      "label": "Confirme a senha"
+    },
     "submit": "Criar conta",
     "submitting": "Criando conta...",
     "errors": {
@@ -115,39 +120,6 @@
       "password-min": "A senha deve ter pelo menos 8 caracteres",
       "passwords-dont-match": "As senhas não coincidem",
       "unknown": "Não foi possível carregar o convite. O link pode ser inválido ou estar expirado."
-    }
-  },
-  "sign-up": {
-    "welcome": "Crie sua conta",
-    "subtitle": "Comece sua jornada com o MOSAIC ETC",
-    "name": {
-      "label": "Nome completo",
-      "placeholder": "João Silva"
-    },
-    "email": {
-      "label": "Endereço de e-mail",
-      "placeholder": "joaosilva@mail.com.br"
-    },
-    "password": {
-      "label": "Senha",
-      "placeholder": "***********"
-    },
-    "confirm-password": {
-      "label": "Confirmar senha",
-      "placeholder": "***********"
-    },
-    "accept-terms": "Eu aceito os Termos de Serviço e a Política de Privacidade",
-    "submit": "Criar conta",
-    "submitting": "Criando conta...",
-    "or-continue-with": "ou continue com",
-    "have-account": "Já tem uma conta?",
-    "sign-in": "Entrar",
-    "errors": {
-      "name-required": "O nome é obrigatório",
-      "email-required": "O e-mail é obrigatório",
-      "email-invalid": "Por favor, insira um e-mail válido",
-      "password-min": "A senha deve ter pelo menos 8 caracteres",
-      "passwords-dont-match": "As senhas não coincidem"
     }
   },
   "admin": {

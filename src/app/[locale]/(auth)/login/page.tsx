@@ -116,9 +116,6 @@ export default function LoginPage() {
                 )}
               />
 
-              <Button variant="link" size="sm" className="px-0" asChild>
-                <Link href="/forgot-password">{t("forgot-password")}</Link>
-              </Button>
             </div>
 
             {formError && (
