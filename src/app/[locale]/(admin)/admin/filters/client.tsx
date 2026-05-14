@@ -154,23 +154,21 @@ function UploadVersionDialog({ open, slug, onClose }: { open: boolean; slug: str
             <Label htmlFor="upload-file">{t("filters.upload-dialog.file-label")}</Label>
             <Input id="upload-file" name="file" type="file" accept=".txt" required />
           </div>
-          <div className="gap-3 grid grid-cols-2">
-            <div className="space-y-1.5">
-              <Label htmlFor="upload-effWavelengthNm">{t("filters.upload-dialog.eff-wavelength")}</Label>
-              <Input id="upload-effWavelengthNm" name="effWavelengthNm" type="number" step="0.01" required />
-            </div>
-            <div className="space-y-1.5">
-              <Label>{t("filters.upload-dialog.unit")}</Label>
-              <Select value={unit} onValueChange={(v) => setUnit(v as "NM" | "UM")}>
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="NM">NM</SelectItem>
-                  <SelectItem value="UM">UM</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="upload-effWavelengthNm">{t("filters.upload-dialog.eff-wavelength")}</Label>
+            <Input id="upload-effWavelengthNm" name="effWavelengthNm" type="number" step="0.01" required />
+          </div>
+          <div className="space-y-1.5">
+            <Label>{t("filters.upload-dialog.unit")}</Label>
+            <Select value={unit} onValueChange={(v) => setUnit(v as "NM" | "UM")}>
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="NM">nm</SelectItem>
+                <SelectItem value="UM">μm</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="upload-zeroPoint">{t("filters.upload-dialog.zero-point")}</Label>
@@ -266,23 +264,21 @@ function NewFilterDialog({ open, onClose }: { open: boolean; onClose: () => void
             <Label htmlFor="new-file">{t("filters.upload-dialog.file-label")}</Label>
             <Input id="new-file" name="file" type="file" accept=".txt" required />
           </div>
-          <div className="gap-3 grid grid-cols-2">
-            <div className="space-y-1.5">
-              <Label htmlFor="new-effWavelengthNm">{t("filters.upload-dialog.eff-wavelength")}</Label>
-              <Input id="new-effWavelengthNm" name="effWavelengthNm" type="number" step="0.01" required />
-            </div>
-            <div className="space-y-1.5">
-              <Label>{t("filters.upload-dialog.unit")}</Label>
-              <Select value={unit} onValueChange={(v) => setUnit(v as "NM" | "UM")}>
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="NM">nm</SelectItem>
-                  <SelectItem value="UM">μm</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="new-effWavelengthNm">{t("filters.upload-dialog.eff-wavelength")}</Label>
+            <Input id="new-effWavelengthNm" name="effWavelengthNm" type="number" step="0.01" required />
+          </div>
+          <div className="space-y-1.5">
+            <Label>{t("filters.upload-dialog.unit")}</Label>
+            <Select value={unit} onValueChange={(v) => setUnit(v as "NM" | "UM")}>
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="NM">nm</SelectItem>
+                <SelectItem value="UM">μm</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="new-zeroPoint">{t("filters.upload-dialog.zero-point")}</Label>
