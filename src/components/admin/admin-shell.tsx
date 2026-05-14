@@ -5,41 +5,50 @@ import {
   DatabaseIcon,
   FilterIcon,
   KeyIcon,
-  LogOutIcon,
   MailIcon,
   ShapesIcon,
   SettingsIcon,
   ShieldIcon,
   UsersIcon,
 } from "lucide-react";
-import { signOut } from "next-auth/react";
+import { useTranslations } from "next-intl";
 
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { Link, usePathname } from "@/i18n/navigation";
 import { PERMISSIONS } from "@/lib/permissions";
 
-type UserInfo = { name: string; email: string; permissions: string[] };
+type UserInfo = { permissions: string[] };
 
-const NAV: Array<{ href: string; label: string; icon: React.ComponentType<{ className?: string }>; requires?: string[] }> = [
-  { href: "/admin", label: "Dashboard", icon: SettingsIcon },
-  { href: "/admin/filters", label: "Filters", icon: FilterIcon, requires: [PERMISSIONS.FILES_UPLOAD] },
-  { href: "/admin/objects", label: "Objects", icon: ShapesIcon, requires: [PERMISSIONS.FILES_UPLOAD] },
-  { href: "/admin/tables", label: "Tables", icon: DatabaseIcon, requires: [PERMISSIONS.FILES_UPLOAD] },
-  { href: "/admin/params", label: "Instrument", icon: SettingsIcon, requires: [PERMISSIONS.PARAMS_EDIT] },
-  { href: "/admin/users", label: "Users", icon: UsersIcon, requires: [PERMISSIONS.USERS_MANAGE] },
-  { href: "/admin/roles", label: "Roles", icon: ShieldIcon, requires: [PERMISSIONS.ROLES_MANAGE] },
-  { href: "/admin/invites", label: "Invites", icon: MailIcon, requires: [PERMISSIONS.USERS_MANAGE] },
-  { href: "/admin/audit", label: "Audit log", icon: ClockIcon, requires: [PERMISSIONS.USERS_MANAGE] },
+type NavKey =
+  | "dashboard"
+  | "filters"
+  | "objects"
+  | "tables"
+  | "params"
+  | "users"
+  | "roles"
+  | "invites"
+  | "audit";
+
+const NAV: Array<{ href: string; key: NavKey; icon: React.ComponentType<{ className?: string }>; requires?: string[] }> = [
+  { href: "/admin", key: "dashboard", icon: SettingsIcon },
+  { href: "/admin/filters", key: "filters", icon: FilterIcon, requires: [PERMISSIONS.FILES_UPLOAD] },
+  { href: "/admin/objects", key: "objects", icon: ShapesIcon, requires: [PERMISSIONS.FILES_UPLOAD] },
+  { href: "/admin/tables", key: "tables", icon: DatabaseIcon, requires: [PERMISSIONS.FILES_UPLOAD] },
+  { href: "/admin/params", key: "params", icon: SettingsIcon, requires: [PERMISSIONS.PARAMS_EDIT] },
+  { href: "/admin/users", key: "users", icon: UsersIcon, requires: [PERMISSIONS.USERS_MANAGE] },
+  { href: "/admin/roles", key: "roles", icon: ShieldIcon, requires: [PERMISSIONS.ROLES_MANAGE] },
+  { href: "/admin/invites", key: "invites", icon: MailIcon, requires: [PERMISSIONS.USERS_MANAGE] },
+  { href: "/admin/audit", key: "audit", icon: ClockIcon, requires: [PERMISSIONS.USERS_MANAGE] },
 ];
 
 export function AdminShell({ user, children }: { user: UserInfo; children: React.ReactNode }) {
   const pathname = usePathname();
+  const t = useTranslations("admin.nav");
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[16rem_1fr] min-h-[calc(100vh-4rem)]">
-      <aside className="bg-muted/30 border-r p-4 flex flex-col gap-1">
+      <aside className="flex flex-col gap-1 bg-muted/30 p-4 border-r">
         <div className="flex items-center gap-2 mb-4 px-2 text-muted-foreground text-xs uppercase tracking-wider">
-          <KeyIcon className="w-3 h-3" /> Admin
+          <KeyIcon className="w-3 h-3" /> {t("section")}
         </div>
         <nav className="flex flex-col gap-0.5">
           {NAV.map((item) => {
@@ -55,26 +64,11 @@ export function AdminShell({ user, children }: { user: UserInfo; children: React
                 }`}
               >
                 <Icon className="w-4 h-4" />
-                {item.label}
+                {t(item.key)}
               </Link>
             );
           })}
         </nav>
-
-        <Separator className="my-4" />
-
-        <div className="px-2 text-xs">
-          <div className="font-medium">{user.name}</div>
-          <div className="text-muted-foreground truncate">{user.email}</div>
-        </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="justify-start mt-2"
-          onClick={() => signOut({ callbackUrl: "/" })}
-        >
-          <LogOutIcon className="w-4 h-4 mr-2" /> Sign out
-        </Button>
       </aside>
 
       <main className="p-6 lg:p-8 overflow-auto">{children}</main>

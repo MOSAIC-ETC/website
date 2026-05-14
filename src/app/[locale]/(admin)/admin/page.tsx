@@ -1,8 +1,11 @@
+import { getTranslations } from "next-intl/server";
+
 import { auth } from "@/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { prisma } from "@/lib/prisma";
 
 export default async function AdminDashboard() {
+  const t = await getTranslations("admin");
   const session = await auth();
   const [filterCount, objectCount, userCount, paramsVersion, recentAudits] = await Promise.all([
     prisma.file.count({ where: { category: "FILTER", isActive: true } }),
@@ -19,24 +22,26 @@ export default async function AdminDashboard() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="font-bold text-3xl tracking-tight">Welcome, {session?.user.name}</h1>
-        <p className="text-muted-foreground">Role: {session?.user.roleName}</p>
+        <h1 className="font-bold text-3xl tracking-tight">
+          {t("dashboard.welcome", { name: session?.user.name ?? "" })}
+        </h1>
+        <p className="text-muted-foreground">{t("dashboard.role-label", { role: session?.user.roleName ?? "" })}</p>
       </div>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Stat label="Filters" value={filterCount} />
-        <Stat label="Objects" value={objectCount} />
-        <Stat label="Users" value={userCount} />
-        <Stat label="Instrument params version" value={paramsVersion?.version ?? 0} />
+        <Stat label={t("dashboard.stats.filters")} value={filterCount} />
+        <Stat label={t("dashboard.stats.objects")} value={objectCount} />
+        <Stat label={t("dashboard.stats.users")} value={userCount} />
+        <Stat label={t("dashboard.stats.params-version")} value={paramsVersion?.version ?? 0} />
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Recent activity</CardTitle>
+          <CardTitle>{t("dashboard.recent-activity")}</CardTitle>
         </CardHeader>
         <CardContent>
           {recentAudits.length === 0 ? (
-            <p className="text-muted-foreground text-sm">No activity yet.</p>
+            <p className="text-muted-foreground text-sm">{t("dashboard.no-activity")}</p>
           ) : (
             <ul className="space-y-2">
               {recentAudits.map((a) => (
@@ -44,7 +49,7 @@ export default async function AdminDashboard() {
                   <div>
                     <div className="font-medium">{a.description}</div>
                     <div className="text-muted-foreground text-xs">
-                      {a.performer?.email ?? "system"} · {a.action}
+                      {a.performer?.email ?? t("common.system")} · {a.action}
                     </div>
                   </div>
                   <div className="text-muted-foreground text-xs whitespace-nowrap">

@@ -150,6 +150,188 @@
       "passwords-dont-match": "Les mots de passe ne correspondent pas"
     }
   },
+  "admin": {
+    "nav": {
+      "section": "Admin",
+      "dashboard": "Tableau de bord",
+      "filters": "Filtres",
+      "objects": "Objets",
+      "tables": "Tables",
+      "params": "Instrument",
+      "users": "Utilisateurs",
+      "roles": "Rôles",
+      "invites": "Invitations",
+      "audit": "Audit"
+    },
+    "common": {
+      "cancel": "Annuler",
+      "upload": "Téléverser",
+      "uploading": "Téléversement…",
+      "create": "Créer",
+      "creating": "Création…",
+      "delete": "Supprimer",
+      "restore": "Restaurer",
+      "loading": "Chargement…",
+      "actions": "Actions",
+      "status": "Statut",
+      "name": "Nom",
+      "email": "E-mail",
+      "role": "Rôle",
+      "created": "Créé",
+      "notes-optional": "Notes (facultatif)",
+      "current": "actuel",
+      "active": "actif",
+      "deleted": "supprimé",
+      "unexpected": "Une erreur est survenue. Veuillez réessayer.",
+      "unknown-user": "inconnu",
+      "system": "système",
+      "close": "Fermer"
+    },
+    "dashboard": {
+      "welcome": "Bienvenue, {name}",
+      "role-label": "Rôle : {role}",
+      "stats": {
+        "filters": "Filtres",
+        "objects": "Objets",
+        "users": "Utilisateurs",
+        "params-version": "Version des paramètres"
+      },
+      "recent-activity": "Activité récente",
+      "no-activity": "Aucune activité pour l'instant."
+    },
+    "filters": {
+      "title": "Filtres",
+      "subtitle": "Gérez les courbes de transmission des filtres. Les nouvelles versions sont ajoutées sans perdre l'historique.",
+      "active-card": "Filtres actifs",
+      "headers": {
+        "slug": "Slug",
+        "wavelength": "Longueur d'onde",
+        "version": "Version"
+      },
+      "upload-version": "Nouvelle version",
+      "history": "Historique",
+      "new-filter": "Nouveau filtre",
+      "upload-dialog": {
+        "title": "Nouvelle version : {slug}",
+        "file-label": "Fichier du filtre (.txt)",
+        "eff-wavelength": "Longueur d'onde effective (nm)",
+        "unit": "Unité",
+        "zero-point": "Point zéro"
+      },
+      "new-dialog": {
+        "title": "Nouveau filtre",
+        "slug": "Slug",
+        "slug-placeholder": "ex. y_band",
+        "display-name": "Nom affiché",
+        "name-placeholder": "ex. Y (1.05 μm)"
+      },
+      "history-dialog": {
+        "title": "Historique : {slug}",
+        "no-versions": "Aucune version pour l'instant."
+      },
+      "toasts": {
+        "uploaded": "Filtre téléversé",
+        "created": "Filtre créé",
+        "restored": "Restauré",
+        "upload-failed": "Échec du téléversement : {status}",
+        "create-failed": "Échec de la création : {status}",
+        "restore-failed": "Échec de la restauration : {status}"
+      }
+    },
+    "params": {
+      "title": "Paramètres de l'instrument",
+      "subtitle": "Modifiez le sous-ensemble éditable des constantes MOSAIC. Chaque sauvegarde crée un nouvel instantané.",
+      "current-card": "Valeurs actuelles (v{version})",
+      "sections": {
+        "telescope": "Télescope",
+        "mos-vis": "MOS VIS",
+        "mos-nir": "MOS NIR",
+        "ifu": "IFU",
+        "detectors": "Détecteurs"
+      },
+      "fields": {
+        "elt-diameter": "Diamètre de l'ELT (m)",
+        "manga-pixel-scale": "Échelle de pixel MaNGA (arcsec)",
+        "mosaic-pixel-scale": "Échelle de pixel MOSAIC (arcsec)",
+        "resolution": "Résolution",
+        "aperture": "Diamètre de l'ouverture (arcsec)",
+        "pixels-per-object": "Pixels par objet",
+        "spaxel-size": "Taille du spaxel (arcsec)",
+        "spaxels-per-spaxel": "Spaxels par spaxel",
+        "dark-current": "Courant d'obscurité (e⁻/s/pix)",
+        "ron": "RON (e⁻/pix)"
+      },
+      "detectors-vis": "VIS",
+      "detectors-nir": "NIR",
+      "save-snapshot": "Enregistrer comme nouvel instantané",
+      "saving": "Enregistrement…",
+      "history": "Historique",
+      "revert": "Restaurer",
+      "reverting": "Restauration…",
+      "notes-placeholder": "ex. recalibré après la mise en service 2026-04",
+      "toasts": {
+        "saved": "Instantané enregistré",
+        "reverted": "Restauré",
+        "save-failed": "Échec de l'enregistrement : {status}",
+        "revert-failed": "Échec de la restauration : {status}"
+      }
+    },
+    "users": {
+      "title": "Utilisateurs",
+      "subtitle": "Modifiez les rôles ou supprimez des comptes. Le dernier utilisateur détenant une permission critique ne peut pas être supprimé ou rétrogradé.",
+      "all-card": "Tous les utilisateurs",
+      "delete-confirm": "Supprimer l'utilisateur {email} ? Cette action est irréversible.",
+      "toasts": {
+        "updated": "Rôle mis à jour",
+        "deleted": "Utilisateur supprimé",
+        "update-failed": "Échec de la mise à jour : {status}",
+        "delete-failed": "Échec de la suppression : {status}"
+      }
+    },
+    "invites": {
+      "title": "Invitations",
+      "subtitle": "Générez des liens d'inscription à usage unique. Les invités choisissent un nom et un mot de passe pour activer leur compte.",
+      "create-invite": "Créer une invitation",
+      "expires": "Expire",
+      "email-placeholder": "collaborateur@exemple.org",
+      "copy-link": "Copier le lien",
+      "revoke": "Révoquer",
+      "revoking": "Révocation…",
+      "revoke-confirm": "Révoquer cette invitation ?",
+      "status": {
+        "active": "actif",
+        "consumed": "consommé",
+        "expired": "expiré"
+      },
+      "toasts": {
+        "created": "Invitation créée",
+        "revoked": "Révoquée",
+        "copied": "URL de l'invitation copiée",
+        "copy-failed": "Impossible de copier l'URL",
+        "create-failed": "Échec de la création : {status}",
+        "revoke-failed": "Échec de la révocation : {status}"
+      }
+    },
+    "coming-soon": {
+      "label": "Bientôt disponible",
+      "objects": {
+        "title": "Objets",
+        "description": "Gérez les uploads jumelés preview + cube. UI pas encore construite — les endpoints API à /api/admin/objects sont fonctionnels."
+      },
+      "tables": {
+        "title": "Tables",
+        "description": "Remplacez les 4 tables CSV de référence. UI pas encore construite — les endpoints API à /api/admin/tables sont fonctionnels."
+      },
+      "roles": {
+        "title": "Rôles",
+        "description": "Créez des rôles et ajustez leur jeu de permissions. UI pas encore construite — les endpoints API à /api/admin/roles sont fonctionnels."
+      },
+      "audit": {
+        "title": "Audit",
+        "description": "Parcourez toutes les actions administratives. UI pas encore construite — l'endpoint API à /api/admin/audit est fonctionnel."
+      }
+    }
+  },
   "etc": {
     "title": "Calculateur de Temps d'Exposition",
     "subtitle": "Estimation du rapport signal-sur-bruit",

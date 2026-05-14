@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -22,6 +23,7 @@ type RoleOption = { id: string; name: string };
 
 export function InvitesAdminClient({ invites, roles }: { invites: InviteRow[]; roles: RoleOption[] }) {
   const router = useRouter();
+  const t = useTranslations("admin");
   const [email, setEmail] = useState("");
   const [roleId, setRoleId] = useState(roles[0]?.id ?? "");
   const [submitting, setSubmitting] = useState(false);
@@ -38,10 +40,10 @@ export function InvitesAdminClient({ invites, roles }: { invites: InviteRow[]; r
       });
       if (!res.ok) {
         const body = (await res.json().catch(() => ({}))) as { error?: string };
-        toast.error(body.error ?? `Create failed: ${res.status}`);
+        toast.error(body.error ?? t("invites.toasts.create-failed", { status: res.status }));
         return;
       }
-      toast.success("Invite created");
+      toast.success(t("invites.toasts.created"));
       setEmail("");
       router.refresh();
     } finally {
@@ -50,16 +52,16 @@ export function InvitesAdminClient({ invites, roles }: { invites: InviteRow[]; r
   }
 
   async function revoke(id: string) {
-    if (!confirm("Revoke this invite?")) return;
+    if (!confirm(t("invites.revoke-confirm"))) return;
     setRevoking(id);
     try {
       const res = await fetch(`/api/admin/invites/${id}`, { method: "DELETE" });
       if (!res.ok) {
         const body = (await res.json().catch(() => ({}))) as { error?: string };
-        toast.error(body.error ?? `Revoke failed: ${res.status}`);
+        toast.error(body.error ?? t("invites.toasts.revoke-failed", { status: res.status }));
         return;
       }
-      toast.success("Revoked");
+      toast.success(t("invites.toasts.revoked"));
       router.refresh();
     } finally {
       setRevoking(null);
@@ -69,20 +71,27 @@ export function InvitesAdminClient({ invites, roles }: { invites: InviteRow[]; r
   function copyInviteUrl(token: string) {
     const url = `${window.location.origin}/accept-invite/${token}`;
     navigator.clipboard.writeText(url).then(
-      () => toast.success("Invite URL copied"),
-      () => toast.error("Could not copy URL"),
+      () => toast.success(t("invites.toasts.copied")),
+      () => toast.error(t("invites.toasts.copy-failed")),
     );
   }
 
   return (
     <div className="space-y-6">
       <form onSubmit={createInvite} className="flex flex-wrap items-end gap-3">
-        <div className="flex-1 min-w-[14rem]">
-          <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="collaborator@example.org" />
+        <div className="flex-1 min-w-56">
+          <Label htmlFor="email">{t("common.email")}</Label>
+          <Input
+            id="email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            placeholder={t("invites.email-placeholder")}
+          />
         </div>
         <div>
-          <Label htmlFor="roleId">Role</Label>
+          <Label htmlFor="roleId">{t("common.role")}</Label>
           <select
             id="roleId"
             value={roleId}
@@ -94,36 +103,38 @@ export function InvitesAdminClient({ invites, roles }: { invites: InviteRow[]; r
             ))}
           </select>
         </div>
-        <Button type="submit" disabled={submitting || !email}>{submitting ? "Creating…" : "Create invite"}</Button>
+        <Button type="submit" disabled={submitting || !email}>
+          {submitting ? t("common.creating") : t("invites.create-invite")}
+        </Button>
       </form>
 
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="text-left text-muted-foreground border-b">
             <tr>
-              <th className="py-2 pr-3 font-medium">Email</th>
-              <th className="py-2 pr-3 font-medium">Role</th>
-              <th className="py-2 pr-3 font-medium">Status</th>
-              <th className="py-2 pr-3 font-medium">Expires</th>
-              <th className="py-2 font-medium text-right">Actions</th>
+              <th className="py-2 pr-3 font-medium">{t("common.email")}</th>
+              <th className="py-2 pr-3 font-medium">{t("common.role")}</th>
+              <th className="py-2 pr-3 font-medium">{t("common.status")}</th>
+              <th className="py-2 pr-3 font-medium">{t("invites.expires")}</th>
+              <th className="py-2 font-medium text-right">{t("common.actions")}</th>
             </tr>
           </thead>
           <tbody>
             {invites.map((i) => {
               const now = new Date();
               const expired = new Date(i.expiresAt) < now;
-              const status = i.consumedAt ? "consumed" : expired ? "expired" : "active";
+              const statusKey = i.consumedAt ? "consumed" : expired ? "expired" : "active";
               return (
                 <tr key={i.id} className="border-b last:border-b-0">
                   <td className="py-2 pr-3 font-mono text-xs">{i.email}</td>
                   <td className="py-2 pr-3">{i.roleName}</td>
                   <td className="py-2 pr-3">
                     <span className={`text-xs px-2 py-0.5 rounded ${
-                      status === "active" ? "bg-green-500/10 text-green-600"
-                        : status === "consumed" ? "bg-blue-500/10 text-blue-600"
+                      statusKey === "active" ? "bg-green-500/10 text-green-600"
+                        : statusKey === "consumed" ? "bg-blue-500/10 text-blue-600"
                         : "bg-orange-500/10 text-orange-600"
                     }`}>
-                      {status}
+                      {t(`invites.status.${statusKey}`)}
                     </span>
                   </td>
                   <td className="py-2 pr-3 text-muted-foreground text-xs">
@@ -131,10 +142,14 @@ export function InvitesAdminClient({ invites, roles }: { invites: InviteRow[]; r
                   </td>
                   <td className="py-2 text-right">
                     <div className="flex justify-end gap-2">
-                      {status === "active" && (
+                      {statusKey === "active" && (
                         <>
-                          <Button size="sm" variant="outline" onClick={() => copyInviteUrl(i.token)}>Copy link</Button>
-                          <Button size="sm" variant="ghost" disabled={revoking === i.id} onClick={() => revoke(i.id)}>Revoke</Button>
+                          <Button size="sm" variant="outline" onClick={() => copyInviteUrl(i.token)}>
+                            {t("invites.copy-link")}
+                          </Button>
+                          <Button size="sm" variant="ghost" disabled={revoking === i.id} onClick={() => revoke(i.id)}>
+                            {revoking === i.id ? t("invites.revoking") : t("invites.revoke")}
+                          </Button>
                         </>
                       )}
                     </div>

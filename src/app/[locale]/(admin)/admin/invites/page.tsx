@@ -1,9 +1,12 @@
+import { getTranslations } from "next-intl/server";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { prisma } from "@/lib/prisma";
 
 import { InvitesAdminClient } from "./client";
 
 export default async function InvitesAdminPage() {
+  const t = await getTranslations("admin.invites");
   const [invites, roles] = await Promise.all([
     prisma.invite.findMany({
       orderBy: { createdAt: "desc" },
@@ -18,11 +21,11 @@ export default async function InvitesAdminPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-bold text-3xl tracking-tight">Invites</h1>
-        <p className="text-muted-foreground">Generate one-time signup links. Invitees pick a name and password to activate their account.</p>
+        <h1 className="font-bold text-3xl tracking-tight">{t("title")}</h1>
+        <p className="text-muted-foreground">{t("subtitle")}</p>
       </div>
       <Card>
-        <CardHeader><CardTitle>Invites</CardTitle></CardHeader>
+        <CardHeader><CardTitle>{t("title")}</CardTitle></CardHeader>
         <CardContent>
           <InvitesAdminClient
             invites={invites.map((i) => ({
