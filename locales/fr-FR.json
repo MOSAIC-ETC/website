@@ -85,7 +85,6 @@
       "placeholder": "***********"
     },
     "remember-me": "Se souvenir de moi",
-    "forgot-password": "Mot de passe oublié ?",
     "submit": "Se connecter",
     "submitting": "Connexion...",
     "errors": {
@@ -105,9 +104,15 @@
   "accept-invite": {
     "welcome": "Acceptez votre invitation",
     "subtitle": "Vous êtes invité à rejoindre en tant que {role} ({email}). Définissez un mot de passe pour activer votre compte.",
-    "name": { "label": "Nom complet" },
-    "password": { "label": "Mot de passe" },
-    "confirm-password": { "label": "Confirmer le mot de passe" },
+    "name": {
+      "label": "Nom complet"
+    },
+    "password": {
+      "label": "Mot de passe"
+    },
+    "confirm-password": {
+      "label": "Confirmer le mot de passe"
+    },
     "submit": "Créer le compte",
     "submitting": "Création du compte...",
     "errors": {
@@ -115,39 +120,6 @@
       "password-min": "Le mot de passe doit comporter au moins 8 caractères",
       "passwords-dont-match": "Les mots de passe ne correspondent pas",
       "unknown": "Impossible de charger l'invitation. Le lien est peut-être invalide ou expiré."
-    }
-  },
-  "sign-up": {
-    "welcome": "Créez votre compte",
-    "subtitle": "Commencez votre parcours avec MOSAIC ETC",
-    "name": {
-      "label": "Nom complet",
-      "placeholder": "jeandupont@mail.com.fr"
-    },
-    "email": {
-      "label": "Adresse e-mail",
-      "placeholder": "mosaic.etc@uesc.br"
-    },
-    "password": {
-      "label": "Mot de passe",
-      "placeholder": "***********"
-    },
-    "confirm-password": {
-      "label": "Confirmez le mot de passe",
-      "placeholder": "***********"
-    },
-    "accept-terms": "J’accepte les Conditions d’utilisation et la Politique de confidentialité",
-    "submit": "Créer un compte",
-    "submitting": "Création du compte...",
-    "or-continue-with": "ou continuer avec",
-    "have-account": "Vous avez déjà un compte ?",
-    "sign-in": "Se connecter",
-    "errors": {
-      "name-required": "Le nom est requis",
-      "email-required": "L'adresse e-mail est requise",
-      "email-invalid": "Veuillez saisir une adresse e-mail valide",
-      "password-min": "Le mot de passe doit comporter au moins 8 caractères",
-      "passwords-dont-match": "Les mots de passe ne correspondent pas"
     }
   },
   "admin": {

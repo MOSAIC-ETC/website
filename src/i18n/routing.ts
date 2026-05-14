@@ -39,15 +39,10 @@ export const routing = defineRouting({
       "en-US": "/logout",
       "fr-FR": "/deconnexion",
     },
-    "/forgot-password": {
-      "pt-BR": "/esqueci-minha-senha",
-      "en-US": "/forgot-password",
-      "fr-FR": "/mot-de-passe-oublie",
-    },
-    "/reset-password": {
-      "pt-BR": "/redefinir-senha",
-      "en-US": "/reset-password",
-      "fr-FR": "/reinitialiser-le-mot-de-passe",
+    "/accept-invite/[token]": {
+      "pt-BR": "/aceitar-convite/[token]",
+      "en-US": "/accept-invite/[token]",
+      "fr-FR": "/accepter-invitation/[token]",
     },
 
     "/admin": "/admin",

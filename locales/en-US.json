@@ -85,7 +85,6 @@
       "placeholder": "***********"
     },
     "remember-me": "Remember me",
-    "forgot-password": "Forgot password?",
     "submit": "Sign In",
     "submitting": "Signing in...",
     "errors": {
@@ -105,9 +104,15 @@
   "accept-invite": {
     "welcome": "Accept your invite",
     "subtitle": "You're invited to join as {role} ({email}). Set a password to activate your account.",
-    "name": { "label": "Full name" },
-    "password": { "label": "Password" },
-    "confirm-password": { "label": "Confirm password" },
+    "name": {
+      "label": "Full name"
+    },
+    "password": {
+      "label": "Password"
+    },
+    "confirm-password": {
+      "label": "Confirm password"
+    },
     "submit": "Create account",
     "submitting": "Creating account...",
     "errors": {
@@ -115,39 +120,6 @@
       "password-min": "Password must be at least 8 characters",
       "passwords-dont-match": "Passwords don't match",
       "unknown": "Could not load invite. The link may be invalid or expired."
-    }
-  },
-  "sign-up": {
-    "welcome": "Create your account",
-    "subtitle": "Start your journey with MOSAIC ETC",
-    "name": {
-      "label": "Full name",
-      "placeholder": "John Doe"
-    },
-    "email": {
-      "label": "Email address",
-      "placeholder": "johndoe@mail.com"
-    },
-    "password": {
-      "label": "Password",
-      "placeholder": "***********"
-    },
-    "confirm-password": {
-      "label": "Confirm password",
-      "placeholder": "***********"
-    },
-    "accept-terms": "I accept the Terms of Service and Privacy Policy",
-    "submit": "Create account",
-    "submitting": "Creating account...",
-    "or-continue-with": "or continue with",
-    "have-account": "Already have an account?",
-    "sign-in": "Sign in",
-    "errors": {
-      "name-required": "Name is required",
-      "email-required": "Email is required",
-      "email-invalid": "Please enter a valid email",
-      "password-min": "Password must be at least 8 characters",
-      "passwords-dont-match": "Passwords don't match"
     }
   },
   "admin": {

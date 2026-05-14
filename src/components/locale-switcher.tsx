@@ -37,7 +37,9 @@ export function LocaleSwitcher({ variant = "icon", ...props }: LocaleSwitcherPro
   const current = locales[currentLocale];
 
   function switchTo(locale: string) {
-    router.replace(pathname || "/", { locale });
+    // Parameterized routes (e.g. /accept-invite/[token]) can't be switched directly; fall back to home
+    const dest = pathname && !pathname.includes("[") ? pathname : "/";
+    router.replace(dest as "/", { locale });
   }
 
   if (variant === "icon") {
