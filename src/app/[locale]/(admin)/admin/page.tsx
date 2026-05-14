@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server";
 
 import { auth } from "@/auth";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { prisma } from "@/lib/prisma";
 
 export default async function AdminDashboard() {
@@ -67,9 +67,13 @@ export default async function AdminDashboard() {
 
 function Stat({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-lg border bg-card p-4">
-      <div className="text-muted-foreground text-xs uppercase tracking-wider">{label}</div>
-      <div className="font-bold text-2xl mt-1">{value}</div>
-    </div>
+    <Card>
+      <CardHeader className="pb-2">
+        <CardDescription className="text-xs uppercase tracking-wider">{label}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="font-bold text-2xl">{value}</div>
+      </CardContent>
+    </Card>
   );
 }

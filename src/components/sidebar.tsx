@@ -1,33 +1,32 @@
 "use client";
 
-import { ChevronRightIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-import { useNavigation } from "@/hooks/use-navigation";
-import { Link } from "@/i18n/navigation";
+import { ADMIN_NAV, useAdminNav } from "@/components/admin/admin-nav-context";
 import { MosaicLogo } from "@/components/icons";
 import { LocaleSwitcher } from "@/components/locale-switcher";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
-  Sidebar as SidebarWrapper,
   SidebarContent,
-  SidebarGroupContent,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubItem,
-  SidebarMenuButton,
-  SidebarGroup,
-  SidebarGroupLabel,
-  SidebarMenuSubButton,
-  SidebarHeader,
   SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  Sidebar as SidebarWrapper,
 } from "@/components/ui/sidebar";
 import { User } from "@/components/user";
+import { useNavigation } from "@/hooks/use-navigation";
+import { Link, usePathname } from "@/i18n/navigation";
 
 export function Sidebar(props: React.ComponentProps<"div">) {
   const t = useTranslations("sidebar");
+  const tAdmin = useTranslations("admin.nav");
   const navigation = useNavigation();
+  const adminNav = useAdminNav();
+  const pathname = usePathname();
 
   return (
     <SidebarWrapper {...props}>
@@ -44,45 +43,6 @@ export function Sidebar(props: React.ComponentProps<"div">) {
           <SidebarGroupContent>
             <SidebarMenu>
               {navigation.map((item) => {
-                if (item.dropdown) {
-                  return (
-                    <Collapsible defaultOpen key={item.name}>
-                      <SidebarMenuItem>
-                        <CollapsibleTrigger asChild>
-                          <SidebarMenuButton className="group flex justify-between w-full">
-                            <div className="flex items-center gap-2">
-                              <item.icon size={16} />
-                              <span>{item.name}</span>
-                            </div>
-
-                            <ChevronRightIcon
-                              size={16}
-                              className="group-data-[state=open]:rotate-90 transition-transform duration-200 ease-in-out"
-                            />
-                          </SidebarMenuButton>
-                        </CollapsibleTrigger>
-                        <CollapsibleContent>
-                          <SidebarMenuSub key={item.name}>
-                            {item.dropdown.map((subItem) => (
-                              <SidebarMenuSubItem key={subItem.name}>
-                                <SidebarMenuSubButton asChild>
-                                  <Link
-                                    href={subItem.href as any}
-                                    className="flex items-center gap-2 hover:bg-accent py-2 rounded w-full"
-                                  >
-                                    <subItem.icon size={16} />
-                                    <span>{subItem.name}</span>
-                                  </Link>
-                                </SidebarMenuSubButton>
-                              </SidebarMenuSubItem>
-                            ))}
-                          </SidebarMenuSub>
-                        </CollapsibleContent>
-                      </SidebarMenuItem>
-                    </Collapsible>
-                  );
-                }
-
                 return (
                   <SidebarMenuItem key={item.name}>
                     <SidebarMenuButton asChild>
@@ -100,6 +60,32 @@ export function Sidebar(props: React.ComponentProps<"div">) {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+
+        {adminNav && (
+          <SidebarGroup>
+            <SidebarGroupLabel>{tAdmin("section")}</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {ADMIN_NAV.map((item) => {
+                  if (item.requires && !item.requires.some((p) => adminNav.permissions.includes(p))) return null;
+                  const Icon = item.icon;
+                  const isActive =
+                    pathname === item.href || (item.href !== "/admin" && pathname.startsWith(item.href));
+                  return (
+                    <SidebarMenuItem key={item.href}>
+                      <SidebarMenuButton asChild isActive={isActive}>
+                        <Link href={item.href as never} className="flex items-center gap-2 py-2 rounded w-full">
+                          <Icon className="w-4 h-4" />
+                          <span>{tAdmin(item.key)}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                })}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
       </SidebarContent>
 
       <SidebarFooter className="flex flex-col gap-4 mb-2">
