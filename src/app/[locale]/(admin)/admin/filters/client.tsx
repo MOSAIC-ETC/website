@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-import { HistoryIcon, PlusIcon, UploadIcon } from "lucide-react";
+import { DownloadIcon, HistoryIcon, PlusIcon, UploadIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -74,6 +74,21 @@ export function FilterAdminClient({ initial }: { initial: FilterRow[] }) {
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-1">
+                    {row.currentVersion && (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button size="icon-sm" variant="ghost" asChild>
+                            <a
+                              href={`/api/files/filters/${row.slug}`}
+                              download={row.currentVersion.filename}
+                            >
+                              <DownloadIcon className="size-4" />
+                            </a>
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>{t("common.download")}</TooltipContent>
+                      </Tooltip>
+                    )}
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <Button size="icon-sm" variant="ghost" onClick={() => setOpenUpload(row.slug)}>

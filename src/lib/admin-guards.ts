@@ -1,6 +1,6 @@
-// Guards that prevent the system from locking itself out. See TCC.md §3 — the
-// "last-admin" problem: any mutation that could remove the only user holding
-// `users.manage` or `roles.manage` must be rejected, or there'd be no path back.
+// Guards that prevent the system from locking itself out — the "last-admin"
+// problem: any mutation that could remove the only user holding `users.manage`
+// or `roles.manage` must be rejected, or there'd be no path back.
 
 import { PERMISSIONS } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";

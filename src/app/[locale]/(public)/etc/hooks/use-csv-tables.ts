@@ -20,7 +20,7 @@ export interface UseCSVTablesReturn {
 }
 
 // IndexedDB entries are { data, hash } so we can detect when the server has a
-// newer version and evict on hash mismatch. See TCC.md §3.7.
+// newer version and evict on hash mismatch.
 type Cached = { data: CSVFile; hash: string };
 
 export function useCSVTables(): UseCSVTablesReturn {

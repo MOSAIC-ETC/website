@@ -1,5 +1,5 @@
 // Public file streaming: serves the current FileVersion for a slot.
-// No auth — files are publicly downloadable. See TCC.md §3.7 for caching.
+// No auth — files are publicly downloadable.
 
 import { Readable } from "node:stream";
 

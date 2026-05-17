@@ -102,24 +102,56 @@
     }
   },
   "accept-invite": {
-    "welcome": "Acceptez votre invitation",
-    "subtitle": "Vous êtes invité à rejoindre en tant que {role} ({email}). Définissez un mot de passe pour activer votre compte.",
+    "welcome": "Accepter l'invitation",
+    "subtitle": "Définissez un mot de passe pour activer votre compte.",
+    "invitee-line": "Vous rejoindrez en tant que {role}",
     "name": {
-      "label": "Nom complet"
+      "label": "Nom complet",
+      "placeholder": "Ada Lovelace"
     },
     "password": {
-      "label": "Mot de passe"
+      "label": "Mot de passe",
+      "placeholder": "Au moins 8 caractères"
     },
     "confirm-password": {
-      "label": "Confirmer le mot de passe"
+      "label": "Confirmer le mot de passe",
+      "placeholder": "Répétez le mot de passe"
     },
+    "show-password": "Afficher le mot de passe",
+    "hide-password": "Masquer le mot de passe",
     "submit": "Créer le compte",
-    "submitting": "Création du compte...",
+    "submitting": "Création du compte…",
+    "have-account": "Vous avez déjà un compte ?",
+    "sign-in": "Se connecter",
+    "expires-on": "Expire le {date}",
+    "expires-soon": "Expire dans moins de 24 heures",
+    "loading": "Chargement de l'invitation…",
+    "success": "Compte créé. Bienvenue !",
     "errors": {
       "name-required": "Le nom est requis",
       "password-min": "Le mot de passe doit comporter au moins 8 caractères",
       "passwords-dont-match": "Les mots de passe ne correspondent pas",
-      "unknown": "Impossible de charger l'invitation. Le lien est peut-être invalide ou expiré."
+      "submit-failed": "Impossible de créer votre compte. {message}",
+      "not-found": {
+        "title": "Invitation introuvable",
+        "description": "Ce lien ne correspond à aucune invitation active. Elle a peut-être été révoquée, ou l'URL est incomplète.",
+        "action": "Aller à l'accueil"
+      },
+      "consumed": {
+        "title": "Invitation déjà utilisée",
+        "description": "Cette invitation a déjà été utilisée. Si c'était vous, connectez-vous avec le mot de passe que vous avez défini.",
+        "action": "Se connecter"
+      },
+      "expired": {
+        "title": "Invitation expirée",
+        "description": "Cette invitation a dépassé sa date d'expiration. Demandez à la personne qui vous a invité un nouveau lien.",
+        "action": "Aller à l'accueil"
+      },
+      "unknown": {
+        "title": "Une erreur est survenue",
+        "description": "Impossible de charger cette invitation. Vérifiez votre connexion et réessayez.",
+        "action": "Aller à l'accueil"
+      }
     }
   },
   "admin": {
@@ -157,7 +189,8 @@
       "unexpected": "Une erreur est survenue. Veuillez réessayer.",
       "unknown-user": "inconnu",
       "system": "système",
-      "close": "Fermer"
+      "close": "Fermer",
+      "download": "Télécharger"
     },
     "dashboard": {
       "welcome": "Bienvenue, {name}",
@@ -284,24 +317,133 @@
         "revoke-failed": "Échec de la révocation : {status}"
       }
     },
-    "coming-soon": {
-      "label": "Bientôt disponible",
-      "objects": {
-        "title": "Objets",
-        "description": "Gérez les uploads jumelés preview + cube. UI pas encore construite — les endpoints API à /api/admin/objects sont fonctionnels."
+    "objects": {
+      "title": "Objets",
+      "subtitle": "Gérer les téléversements appariés (aperçu + cube). Les nouvelles versions sont ajoutées sans perdre l'historique.",
+      "all-card": "Tous les objets",
+      "empty": "Aucun objet pour le moment.",
+      "headers": {
+        "slug": "Slug",
+        "version": "Version",
+        "size": "Taille"
       },
-      "tables": {
-        "title": "Tables",
-        "description": "Remplacez les 4 tables CSV de référence. UI pas encore construite — les endpoints API à /api/admin/tables sont fonctionnels."
+      "upload-version": "Téléverser une nouvelle version",
+      "history": "Historique",
+      "new-object": "Nouvel objet",
+      "delete-confirm": "Supprimer {name} ? Cela désactive l'aperçu et le cube.",
+      "upload-dialog": {
+        "title": "Nouvelle version : {slug}",
+        "description": "Les deux fichiers (aperçu et cube) doivent être téléversés ensemble pour préserver la cohérence du couple de versions.",
+        "preview-label": "Aperçu (.fits)",
+        "cube-label": "Cube (.fits)"
       },
-      "roles": {
-        "title": "Rôles",
-        "description": "Créez des rôles et ajustez leur jeu de permissions. UI pas encore construite — les endpoints API à /api/admin/roles sont fonctionnels."
+      "new-dialog": {
+        "title": "Nouvel objet",
+        "description": "Crée un emplacement d'objet. La première version est initialisée avec les fichiers fournis ici.",
+        "slug": "Slug",
+        "slug-placeholder": "ex. ngc1234",
+        "display-name": "Nom d'affichage",
+        "name-placeholder": "ex. NGC 1234"
       },
-      "audit": {
-        "title": "Audit",
-        "description": "Parcourez toutes les actions administratives. UI pas encore construite — l'endpoint API à /api/admin/audit est fonctionnel."
+      "history-dialog": {
+        "title": "Historique : {slug}",
+        "no-versions": "Aucune version."
+      },
+      "toasts": {
+        "uploaded": "Version téléversée",
+        "created": "Objet créé",
+        "restored": "Restauré",
+        "deleted": "Objet supprimé",
+        "upload-failed": "Échec du téléversement : {status}",
+        "create-failed": "Échec de la création : {status}",
+        "restore-failed": "Échec de la restauration : {status}",
+        "delete-failed": "Échec de la suppression : {status}"
+      },
+      "download-preview": "Télécharger l'aperçu",
+      "download-cube": "Télécharger le cube"
+    },
+    "tables": {
+      "title": "Tables",
+      "subtitle": "Remplacer l'une des tables CSV initialement chargées. L'ensemble des emplacements est fixé.",
+      "seeded-card": "Tables préchargées",
+      "headers": {
+        "slug": "Slug",
+        "version": "Version",
+        "size": "Taille"
+      },
+      "replace": "Remplacer par une nouvelle version",
+      "history": "Historique",
+      "replace-dialog": {
+        "title": "Remplacer la table : {slug}",
+        "description": "Téléversez un nouveau CSV. La version précédente est conservée dans l'historique.",
+        "file-label": "Fichier CSV"
+      },
+      "history-dialog": {
+        "title": "Historique : {slug}",
+        "no-versions": "Aucune version."
+      },
+      "toasts": {
+        "uploaded": "Table mise à jour",
+        "restored": "Restaurée",
+        "upload-failed": "Échec du téléversement : {status}",
+        "restore-failed": "Échec de la restauration : {status}"
       }
+    },
+    "roles": {
+      "title": "Rôles",
+      "subtitle": "Définir les rôles et attribuer des permissions. La suppression est bloquée si des utilisateurs ont le rôle.",
+      "all-card": "Tous les rôles",
+      "headers": {
+        "permissions": "Permissions",
+        "users": "Utilisateurs"
+      },
+      "new-role": "Nouveau rôle",
+      "edit": "Modifier",
+      "delete-confirm": "Supprimer le rôle {name} ? Cette action est irréversible.",
+      "delete-blocked-users": "Impossible de supprimer un rôle avec des utilisateurs",
+      "no-permissions": "aucune permission",
+      "permissions": "Permissions",
+      "description": "Description",
+      "description-placeholder": "Bref résumé de ce que ce rôle peut faire",
+      "name-placeholder": "ex. editor",
+      "save": "Enregistrer",
+      "saving": "Enregistrement…",
+      "dialog-description": "Choisissez les permissions attribuées à ce rôle. Les changements s'appliquent à la prochaine connexion.",
+      "new-dialog": {
+        "title": "Nouveau rôle"
+      },
+      "edit-dialog": {
+        "title": "Modifier le rôle"
+      },
+      "toasts": {
+        "created": "Rôle créé",
+        "updated": "Rôle mis à jour",
+        "deleted": "Rôle supprimé",
+        "create-failed": "Échec de la création : {status}",
+        "update-failed": "Échec de la mise à jour : {status}",
+        "delete-failed": "Échec de la suppression : {status}"
+      }
+    },
+    "audit": {
+      "title": "Journal d'audit",
+      "subtitle": "Toutes les actions administratives, les plus récentes en premier.",
+      "recent-card": "Activité",
+      "headers": {
+        "when": "Quand",
+        "performer": "Auteur",
+        "action": "Action",
+        "resource": "Ressource",
+        "description": "Description"
+      },
+      "filters": {
+        "action": "Action",
+        "resource": "Type de ressource",
+        "performer": "Auteur"
+      },
+      "any": "Tous",
+      "clear-filters": "Effacer les filtres",
+      "load-more": "Charger plus",
+      "empty": "Aucune entrée ne correspond."
     }
   },
   "etc": {

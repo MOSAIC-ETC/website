@@ -1,7 +1,6 @@
 // Prisma 7 requires a driver adapter — the connection string is no longer read
 // from the schema. Keep one PrismaClient + one pg pool per Node process to avoid
 // connection storms in Next.js dev mode (which reloads modules on file change).
-// See TCC.md §2.1 for the rationale on Prisma; §6.1 will document the singleton.
 
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";

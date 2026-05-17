@@ -1,5 +1,5 @@
 // Shared helpers for admin API routes: permission gating, audit logging,
-// and consistent error responses. See TCC.md §3.1, §3.9.
+// and consistent error responses.
 
 import type { Session } from "next-auth";
 

@@ -1,5 +1,5 @@
 // Manifest endpoint — clients fetch this to decide whether their IndexedDB
-// cache entries are still valid. See TCC.md §3.7.
+// cache entries are still valid.
 
 import { prisma } from "@/lib/prisma";
 import { DEFAULT_INSTRUMENT_PARAMS, instrumentParamsSchema, type InstrumentParams } from "@/lib/schemas/instrument-params";
@@ -90,7 +90,7 @@ async function loadObjects(): Promise<ObjectEntry[]> {
     out.push({
       slug,
       name,
-      version: previewVersion.versionNum, // invariant: preview.versionNum === cube.versionNum (TCC §4.3)
+      version: previewVersion.versionNum, // invariant: preview.versionNum === cube.versionNum
       previewHash: previewVersion.fileHash,
       cubeHash: cubeVersion.fileHash,
     });

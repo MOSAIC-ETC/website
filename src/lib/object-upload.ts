@@ -1,5 +1,5 @@
-// Paired upload of an object (preview + cube). See TCC.md §4.3 — the two
-// assets must be uploaded together so they never drift in version number.
+// Paired upload of an object (preview + cube): the two assets must be
+// uploaded together so they never drift in version number.
 
 import { Readable } from "node:stream";
 
@@ -132,7 +132,7 @@ export async function uploadNewObjectVersion(args: {
 
   try {
     const result = await prisma.$transaction(async (tx) => {
-      // Lock both parent rows to serialize concurrent uploads. See TCC §3.6.
+      // Lock both parent rows to serialize concurrent uploads.
       await tx.$queryRaw`SELECT id FROM "File" WHERE id IN (${previewSlot.id}, ${cubeSlot.id}) FOR UPDATE`;
 
       const previewCount = await tx.fileVersion.count({ where: { fileId: previewSlot.id } });

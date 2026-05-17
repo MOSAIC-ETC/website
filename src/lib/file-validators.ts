@@ -1,5 +1,5 @@
 // Server-side format validation for uploads. Reject before any DB or storage
-// writes. See TCC.md §3.5 — "validate before persist".
+// writes — "validate before persist".
 
 import type { AssetRole, FileCategory } from "@prisma/client";
 
