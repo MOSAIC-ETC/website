@@ -1,5 +1,5 @@
 // Canonical list of permission keys used across the system. Keep in sync with
-// the seeded `admin` role and any documentation. See TCC.md §3.1.
+// the seeded `admin` role and any documentation.
 
 export const PERMISSIONS = {
   FILES_UPLOAD: "files.upload",

@@ -1,4 +1,4 @@
-// Bootstrap script: seeds roles, the first admin user, all files in /public/data/,
+// Bootstrap script: seeds roles, the first admin user, all files in prisma/seed-data/,
 // and an initial InstrumentParameter snapshot. Idempotent — safe to re-run.
 //
 // Run via `prisma db seed` (configured in prisma.config.ts).
@@ -18,7 +18,7 @@ import { ALL_PERMISSIONS } from "../src/lib/permissions";
 import { DEFAULT_INSTRUMENT_PARAMS } from "../src/lib/schemas/instrument-params";
 import { importLocalFile } from "../src/lib/storage";
 
-const PUBLIC_DATA_DIR = path.resolve("public", "data");
+const SEED_DATA_DIR = path.resolve("prisma", "seed-data");
 
 type FilterSeed = {
   slug: string;
@@ -158,7 +158,7 @@ async function seedFile(
         fileHash: stored.fileHash,
         fileSize: BigInt(stored.fileSize),
         mimeType: stored.mimeType,
-        notes: "Seeded from /public/data/",
+        notes: "Seeded from prisma/seed-data/",
       },
     });
     await tx.file.update({
@@ -188,7 +188,7 @@ async function seedFilters(prisma: PrismaClient) {
       slug: f.slug,
       assetRole: "DATA",
       name: f.name,
-      sourcePath: path.join(PUBLIC_DATA_DIR, "filters", f.filename),
+      sourcePath: path.join(SEED_DATA_DIR, "filters", f.filename),
       filterMetadata: {
         effWavelengthNm: f.effWavelengthNm,
         effWavelengthUnit: f.effWavelengthUnit,
@@ -206,7 +206,7 @@ async function seedTables(prisma: PrismaClient) {
       slug: t.slug,
       assetRole: "DATA",
       name: t.name,
-      sourcePath: path.join(PUBLIC_DATA_DIR, "tables", t.filename),
+      sourcePath: path.join(SEED_DATA_DIR, "tables", t.filename),
     });
   }
 }
@@ -219,14 +219,14 @@ async function seedObjects(prisma: PrismaClient) {
       slug: o.slug,
       assetRole: "PREVIEW",
       name: `${o.name} (preview)`,
-      sourcePath: path.join(PUBLIC_DATA_DIR, "objects", o.dirname, o.preview),
+      sourcePath: path.join(SEED_DATA_DIR, "objects", o.dirname, o.preview),
     });
     await seedFile(prisma, {
       category: "OBJECT",
       slug: o.slug,
       assetRole: "CUBE",
       name: `${o.name} (cube)`,
-      sourcePath: path.join(PUBLIC_DATA_DIR, "objects", o.dirname, o.cube),
+      sourcePath: path.join(SEED_DATA_DIR, "objects", o.dirname, o.cube),
     });
   }
 }

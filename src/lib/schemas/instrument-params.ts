@@ -1,8 +1,8 @@
 // Schema for InstrumentParameter.params (the editable subset of physical / instrumental
-// constants). Physical constants like Planck or c stay hardcoded — see TCC.md §4.1.
+// constants). Physical constants like Planck or c stay hardcoded.
 //
 // `schemaVersion` is bumped whenever the shape changes so old snapshots remain
-// interpretable on read. See TCC.md §3.8.
+// interpretable on read.
 
 import { z } from "zod";
 

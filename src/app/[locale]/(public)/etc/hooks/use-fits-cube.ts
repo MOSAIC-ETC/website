@@ -25,7 +25,7 @@ export interface UseFITSCubeReturn {
   error: string | null;
 }
 
-// IndexedDB shape: { data: ArrayBuffer; hash: string }. See TCC.md §3.7.
+// IndexedDB shape: { data: ArrayBuffer; hash: string }.
 type CachedBuffer = { data: ArrayBuffer; hash: string };
 
 export function useFITSCube(object: ObjectEntry | null): UseFITSCubeReturn {

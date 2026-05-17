@@ -102,24 +102,56 @@
     }
   },
   "accept-invite": {
-    "welcome": "Aceite seu convite",
-    "subtitle": "Você foi convidado para entrar como {role} ({email}). Defina uma senha para ativar sua conta.",
+    "welcome": "Aceitar convite",
+    "subtitle": "Defina uma senha para ativar sua conta.",
+    "invitee-line": "Você entrará como {role}",
     "name": {
-      "label": "Nome completo"
+      "label": "Nome completo",
+      "placeholder": "Ada Lovelace"
     },
     "password": {
-      "label": "Senha"
+      "label": "Senha",
+      "placeholder": "Pelo menos 8 caracteres"
     },
     "confirm-password": {
-      "label": "Confirme a senha"
+      "label": "Confirmar senha",
+      "placeholder": "Repita a senha"
     },
+    "show-password": "Mostrar senha",
+    "hide-password": "Ocultar senha",
     "submit": "Criar conta",
-    "submitting": "Criando conta...",
+    "submitting": "Criando conta…",
+    "have-account": "Já tem uma conta?",
+    "sign-in": "Entrar",
+    "expires-on": "Expira em {date}",
+    "expires-soon": "Expira em menos de 24 horas",
+    "loading": "Carregando convite…",
+    "success": "Conta criada. Bem-vindo(a)!",
     "errors": {
-      "name-required": "Nome é obrigatório",
+      "name-required": "O nome é obrigatório",
       "password-min": "A senha deve ter pelo menos 8 caracteres",
-      "passwords-dont-match": "As senhas não coincidem",
-      "unknown": "Não foi possível carregar o convite. O link pode ser inválido ou estar expirado."
+      "passwords-dont-match": "As senhas não conferem",
+      "submit-failed": "Não foi possível criar sua conta. {message}",
+      "not-found": {
+        "title": "Convite não encontrado",
+        "description": "Este link não corresponde a nenhum convite ativo. Ele pode ter sido revogado ou a URL pode estar incompleta.",
+        "action": "Ir para o início"
+      },
+      "consumed": {
+        "title": "Convite já utilizado",
+        "description": "Este convite já foi resgatado. Se foi você, entre com a senha que definiu.",
+        "action": "Entrar"
+      },
+      "expired": {
+        "title": "Convite expirado",
+        "description": "Este convite passou da data de validade. Peça à pessoa que te convidou um novo link.",
+        "action": "Ir para o início"
+      },
+      "unknown": {
+        "title": "Algo deu errado",
+        "description": "Não foi possível carregar este convite. Verifique sua conexão e tente novamente.",
+        "action": "Ir para o início"
+      }
     }
   },
   "admin": {
@@ -157,7 +189,8 @@
       "unexpected": "Algo deu errado. Tente novamente.",
       "unknown-user": "desconhecido",
       "system": "sistema",
-      "close": "Fechar"
+      "close": "Fechar",
+      "download": "Baixar"
     },
     "dashboard": {
       "welcome": "Bem-vindo(a), {name}",
@@ -284,24 +317,133 @@
         "revoke-failed": "Falha na revogação: {status}"
       }
     },
-    "coming-soon": {
-      "label": "Em breve",
-      "objects": {
-        "title": "Objetos",
-        "description": "Gerencie uploads pareados de preview + cube. UI ainda não construída — os endpoints da API em /api/admin/objects estão funcionais."
+    "objects": {
+      "title": "Objetos",
+      "subtitle": "Gerencie uploads pareados (preview + cubo). Novas versões são adicionadas sem perder histórico.",
+      "all-card": "Todos os objetos",
+      "empty": "Nenhum objeto ainda.",
+      "headers": {
+        "slug": "Slug",
+        "version": "Versão",
+        "size": "Tamanho"
       },
-      "tables": {
-        "title": "Tabelas",
-        "description": "Substitua as 4 tabelas CSV semeadas. UI ainda não construída — os endpoints da API em /api/admin/tables estão funcionais."
+      "upload-version": "Enviar nova versão",
+      "history": "Histórico",
+      "new-object": "Novo objeto",
+      "delete-confirm": "Excluir {name}? Isso desativa preview e cubo.",
+      "upload-dialog": {
+        "title": "Nova versão: {slug}",
+        "description": "Os dois arquivos (preview e cubo) devem ser enviados juntos para manter o par de versões consistente.",
+        "preview-label": "Preview (.fits)",
+        "cube-label": "Cubo (.fits)"
       },
-      "roles": {
-        "title": "Funções",
-        "description": "Crie funções e ajuste seu conjunto de permissões. UI ainda não construída — os endpoints da API em /api/admin/roles estão funcionais."
+      "new-dialog": {
+        "title": "Novo objeto",
+        "description": "Cria um slot de objeto. A primeira versão é inicializada com os arquivos enviados aqui.",
+        "slug": "Slug",
+        "slug-placeholder": "ex.: ngc1234",
+        "display-name": "Nome de exibição",
+        "name-placeholder": "ex.: NGC 1234"
       },
-      "audit": {
-        "title": "Auditoria",
-        "description": "Navegue por todas as ações administrativas. UI ainda não construída — o endpoint da API em /api/admin/audit está funcional."
+      "history-dialog": {
+        "title": "Histórico: {slug}",
+        "no-versions": "Sem versões."
+      },
+      "toasts": {
+        "uploaded": "Versão enviada",
+        "created": "Objeto criado",
+        "restored": "Restaurado",
+        "deleted": "Objeto excluído",
+        "upload-failed": "Falha no upload: {status}",
+        "create-failed": "Falha na criação: {status}",
+        "restore-failed": "Falha na restauração: {status}",
+        "delete-failed": "Falha na exclusão: {status}"
+      },
+      "download-preview": "Baixar preview",
+      "download-cube": "Baixar cubo"
+    },
+    "tables": {
+      "title": "Tabelas",
+      "subtitle": "Substitua qualquer uma das tabelas CSV pré-carregadas. O conjunto de slots é fixo.",
+      "seeded-card": "Tabelas pré-carregadas",
+      "headers": {
+        "slug": "Slug",
+        "version": "Versão",
+        "size": "Tamanho"
+      },
+      "replace": "Substituir com nova versão",
+      "history": "Histórico",
+      "replace-dialog": {
+        "title": "Substituir tabela: {slug}",
+        "description": "Envie um novo CSV. A versão anterior fica preservada no histórico.",
+        "file-label": "Arquivo CSV"
+      },
+      "history-dialog": {
+        "title": "Histórico: {slug}",
+        "no-versions": "Sem versões."
+      },
+      "toasts": {
+        "uploaded": "Tabela atualizada",
+        "restored": "Restaurada",
+        "upload-failed": "Falha no upload: {status}",
+        "restore-failed": "Falha na restauração: {status}"
       }
+    },
+    "roles": {
+      "title": "Funções",
+      "subtitle": "Defina funções e atribua permissões. A exclusão é bloqueada se houver usuários com a função.",
+      "all-card": "Todas as funções",
+      "headers": {
+        "permissions": "Permissões",
+        "users": "Usuários"
+      },
+      "new-role": "Nova função",
+      "edit": "Editar",
+      "delete-confirm": "Excluir função {name}? Esta ação não pode ser desfeita.",
+      "delete-blocked-users": "Não é possível excluir uma função com usuários",
+      "no-permissions": "sem permissões",
+      "permissions": "Permissões",
+      "description": "Descrição",
+      "description-placeholder": "Resumo do que esta função pode fazer",
+      "name-placeholder": "ex.: editor",
+      "save": "Salvar",
+      "saving": "Salvando…",
+      "dialog-description": "Escolha as permissões atribuídas a esta função. As mudanças se aplicam no próximo login.",
+      "new-dialog": {
+        "title": "Nova função"
+      },
+      "edit-dialog": {
+        "title": "Editar função"
+      },
+      "toasts": {
+        "created": "Função criada",
+        "updated": "Função atualizada",
+        "deleted": "Função excluída",
+        "create-failed": "Falha na criação: {status}",
+        "update-failed": "Falha na atualização: {status}",
+        "delete-failed": "Falha na exclusão: {status}"
+      }
+    },
+    "audit": {
+      "title": "Log de auditoria",
+      "subtitle": "Todas as ações administrativas, mais recentes primeiro.",
+      "recent-card": "Atividade",
+      "headers": {
+        "when": "Quando",
+        "performer": "Autor",
+        "action": "Ação",
+        "resource": "Recurso",
+        "description": "Descrição"
+      },
+      "filters": {
+        "action": "Ação",
+        "resource": "Tipo de recurso",
+        "performer": "Autor"
+      },
+      "any": "Qualquer",
+      "clear-filters": "Limpar filtros",
+      "load-more": "Carregar mais",
+      "empty": "Nenhum registro corresponde."
     }
   },
   "etc": {

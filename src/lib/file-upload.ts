@@ -1,6 +1,6 @@
 // Core file-upload pipeline. Used by all admin file routes.
 // Implements: validate format → stream-write to temp → DB tx with row lock
-// → atomic rename → audit. See TCC.md §3.5, §3.6.
+// → atomic rename → audit.
 
 import { Readable } from "node:stream";
 
@@ -36,7 +36,7 @@ async function bufferToTempStream(bytes: Buffer) {
 
 async function nextVersionNum(tx: Prisma.TransactionClient, fileId: string): Promise<number> {
   // Row-level lock on the parent File serializes concurrent uploads for the
-  // same slot, preventing versionNum collisions. See TCC.md §3.6.
+  // same slot, preventing versionNum collisions.
   await tx.$queryRaw`SELECT id FROM "File" WHERE id = ${fileId} FOR UPDATE`;
   const count = await tx.fileVersion.count({ where: { fileId } });
   return count + 1;

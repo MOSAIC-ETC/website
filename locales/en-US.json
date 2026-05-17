@@ -103,23 +103,55 @@
   },
   "accept-invite": {
     "welcome": "Accept your invite",
-    "subtitle": "You're invited to join as {role} ({email}). Set a password to activate your account.",
+    "subtitle": "Set a password to activate your account.",
+    "invitee-line": "You're joining as {role}",
     "name": {
-      "label": "Full name"
+      "label": "Full name",
+      "placeholder": "Ada Lovelace"
     },
     "password": {
-      "label": "Password"
+      "label": "Password",
+      "placeholder": "At least 8 characters"
     },
     "confirm-password": {
-      "label": "Confirm password"
+      "label": "Confirm password",
+      "placeholder": "Repeat your password"
     },
+    "show-password": "Show password",
+    "hide-password": "Hide password",
     "submit": "Create account",
-    "submitting": "Creating account...",
+    "submitting": "Creating account…",
+    "have-account": "Already have an account?",
+    "sign-in": "Sign in",
+    "expires-on": "Expires {date}",
+    "expires-soon": "Expires in less than 24 hours",
+    "loading": "Loading invite…",
+    "success": "Account created. Welcome!",
     "errors": {
       "name-required": "Name is required",
       "password-min": "Password must be at least 8 characters",
       "passwords-dont-match": "Passwords don't match",
-      "unknown": "Could not load invite. The link may be invalid or expired."
+      "submit-failed": "Could not create your account. {message}",
+      "not-found": {
+        "title": "Invite not found",
+        "description": "This link doesn't match any active invite. It may have been revoked, or the URL may be incomplete.",
+        "action": "Go to home"
+      },
+      "consumed": {
+        "title": "Invite already used",
+        "description": "This invite has already been redeemed. If that was you, sign in with the password you set.",
+        "action": "Sign in"
+      },
+      "expired": {
+        "title": "Invite expired",
+        "description": "This invite is past its expiration date. Ask the person who invited you to send a new one.",
+        "action": "Go to home"
+      },
+      "unknown": {
+        "title": "Something went wrong",
+        "description": "We couldn't load this invite. Please check your connection and try again.",
+        "action": "Go to home"
+      }
     }
   },
   "admin": {
@@ -157,7 +189,8 @@
       "unexpected": "Something went wrong. Please try again.",
       "unknown-user": "unknown",
       "system": "system",
-      "close": "Close"
+      "close": "Close",
+      "download": "Download"
     },
     "dashboard": {
       "welcome": "Welcome, {name}",
@@ -284,24 +317,133 @@
         "revoke-failed": "Revoke failed: {status}"
       }
     },
-    "coming-soon": {
-      "label": "Coming soon",
-      "objects": {
-        "title": "Objects",
-        "description": "Manage paired preview + cube uploads. UI not yet built — the API endpoints at /api/admin/objects are functional."
+    "objects": {
+      "title": "Objects",
+      "subtitle": "Manage paired preview + cube uploads. New versions are added without losing history.",
+      "all-card": "All objects",
+      "empty": "No objects yet.",
+      "headers": {
+        "slug": "Slug",
+        "version": "Version",
+        "size": "Size"
       },
-      "tables": {
-        "title": "Tables",
-        "description": "Replace the 4 seeded CSV lookup tables. UI not yet built — the API endpoints at /api/admin/tables are functional."
+      "upload-version": "Upload new version",
+      "history": "History",
+      "new-object": "New object",
+      "delete-confirm": "Delete {name}? This soft-deletes preview and cube.",
+      "upload-dialog": {
+        "title": "Upload new version: {slug}",
+        "description": "Both files (preview and cube) must be uploaded together to keep the version pair consistent.",
+        "preview-label": "Preview (.fits)",
+        "cube-label": "Cube (.fits)"
       },
-      "roles": {
-        "title": "Roles",
-        "description": "Create roles and tune their permission set. UI not yet built — the API endpoints at /api/admin/roles are functional."
+      "new-dialog": {
+        "title": "New object",
+        "description": "Create an object slot. The first version is initialised with the files provided here.",
+        "slug": "Slug",
+        "slug-placeholder": "e.g. ngc1234",
+        "display-name": "Display name",
+        "name-placeholder": "e.g. NGC 1234"
       },
-      "audit": {
-        "title": "Audit log",
-        "description": "Browse all admin actions. UI not yet built — the API endpoint at /api/admin/audit is functional."
+      "history-dialog": {
+        "title": "History: {slug}",
+        "no-versions": "No versions yet."
+      },
+      "toasts": {
+        "uploaded": "Version uploaded",
+        "created": "Object created",
+        "restored": "Restored",
+        "deleted": "Object deleted",
+        "upload-failed": "Upload failed: {status}",
+        "create-failed": "Create failed: {status}",
+        "restore-failed": "Restore failed: {status}",
+        "delete-failed": "Delete failed: {status}"
+      },
+      "download-preview": "Download preview",
+      "download-cube": "Download cube"
+    },
+    "tables": {
+      "title": "Tables",
+      "subtitle": "Replace any of the seeded CSV lookup tables. The slot set is fixed.",
+      "seeded-card": "Seeded tables",
+      "headers": {
+        "slug": "Slug",
+        "version": "Version",
+        "size": "Size"
+      },
+      "replace": "Replace with new version",
+      "history": "History",
+      "replace-dialog": {
+        "title": "Replace table: {slug}",
+        "description": "Upload a new CSV. The previous version is preserved in history.",
+        "file-label": "CSV file"
+      },
+      "history-dialog": {
+        "title": "History: {slug}",
+        "no-versions": "No versions yet."
+      },
+      "toasts": {
+        "uploaded": "Table updated",
+        "restored": "Restored",
+        "upload-failed": "Upload failed: {status}",
+        "restore-failed": "Restore failed: {status}"
       }
+    },
+    "roles": {
+      "title": "Roles",
+      "subtitle": "Define roles and assign permissions. Deletion is blocked if any user holds the role.",
+      "all-card": "All roles",
+      "headers": {
+        "permissions": "Permissions",
+        "users": "Users"
+      },
+      "new-role": "New role",
+      "edit": "Edit",
+      "delete-confirm": "Delete role {name}? This cannot be undone.",
+      "delete-blocked-users": "Cannot delete a role with users",
+      "no-permissions": "no permissions",
+      "permissions": "Permissions",
+      "description": "Description",
+      "description-placeholder": "Short summary of what this role can do",
+      "name-placeholder": "e.g. editor",
+      "save": "Save",
+      "saving": "Saving…",
+      "dialog-description": "Choose the permissions assigned to this role. Changes apply on next sign-in.",
+      "new-dialog": {
+        "title": "New role"
+      },
+      "edit-dialog": {
+        "title": "Edit role"
+      },
+      "toasts": {
+        "created": "Role created",
+        "updated": "Role updated",
+        "deleted": "Role deleted",
+        "create-failed": "Create failed: {status}",
+        "update-failed": "Update failed: {status}",
+        "delete-failed": "Delete failed: {status}"
+      }
+    },
+    "audit": {
+      "title": "Audit log",
+      "subtitle": "All administrative actions, newest first.",
+      "recent-card": "Activity",
+      "headers": {
+        "when": "When",
+        "performer": "Performer",
+        "action": "Action",
+        "resource": "Resource",
+        "description": "Description"
+      },
+      "filters": {
+        "action": "Action",
+        "resource": "Resource type",
+        "performer": "Performer"
+      },
+      "any": "Any",
+      "clear-filters": "Clear filters",
+      "load-more": "Load more",
+      "empty": "No entries match."
     }
   },
   "etc": {

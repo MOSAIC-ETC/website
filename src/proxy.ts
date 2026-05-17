@@ -1,7 +1,7 @@
 // Chains next-intl routing with Auth.js v5 access checks.
 // Next.js 16 renamed `middleware.ts` to `proxy.ts`; the semantics are unchanged.
 // The intl middleware handles locale prefix rewrites; we layer permission gates
-// on top using the JWT carried by Auth.js. See TCC.md §3.1.
+// on top using the JWT carried by Auth.js.
 
 import createIntlMiddleware from "next-intl/middleware";
 import { NextResponse } from "next/server";

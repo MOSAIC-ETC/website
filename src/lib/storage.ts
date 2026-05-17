@@ -1,5 +1,5 @@
-// Filesystem abstraction for the file catalog. See TCC.md §3.5 for the atomic
-// upload pipeline (temp write → DB tx → atomic rename).
+// Filesystem abstraction for the file catalog.
+// Atomic upload pipeline: temp write → DB tx → atomic rename.
 
 import { createHash, randomUUID } from "node:crypto";
 import { createReadStream, createWriteStream } from "node:fs";
@@ -87,7 +87,7 @@ export async function abortTempFile(tmpPath: string): Promise<void> {
 }
 
 // Convenience for the seed script: copy a source file into storage at a final
-// path, computing hash + size. Used to bootstrap /public/data/ into the catalog.
+// path, computing hash + size. Used to bootstrap prisma/seed-data/ into the catalog.
 export async function importLocalFile(args: {
   sourcePath: string;
   category: FileCategory;

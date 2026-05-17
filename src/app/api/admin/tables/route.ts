@@ -1,4 +1,4 @@
-// GET /api/admin/tables — list (creation not allowed; see TCC.md §4.2)
+// GET /api/admin/tables — list (creation not allowed; the slot set is fixed)
 
 import { errorResponse, requirePermission } from "@/lib/api-helpers";
 import { PERMISSIONS } from "@/lib/permissions";

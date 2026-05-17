@@ -25,7 +25,7 @@ All pages live under `src/app/[locale]/`, where `[locale]` is the i18n dynamic s
 The calculator is self-contained under `src/app/[locale]/(public)/etc/`:
 
 - **`lib/`** — pure computation: `calculate.ts` (1D SNR across wavelengths), `calculate-2d.ts` (2D SNR maps), `conversions.ts` (magnitude/flux), `constants.ts` (physical constants + instrument specs for MOS VIS, MOS NIR, IFU), `schema.ts` (Zod form schemas), `filters.ts`, `objects.ts`, `db.ts` (IndexedDB persistence)
-- **`hooks/`** — `use-fits-cube.ts` and `use-csv-tables.ts` load binary FITS cubes and CSV lookup tables from `/public/data/` into memory, with IndexedDB caching
+- **`hooks/`** — `use-fits-cube.ts` and `use-csv-tables.ts` load binary FITS cubes and CSV lookup tables from `/api/files/...` into memory, with IndexedDB caching keyed on the manifest hash
 - **`components/`** — form inputs (`etc-form.tsx`, `subcube-form.tsx`) and visualizations (`snr-chart.tsx` with Recharts, `snr-map.tsx` backed by the custom heatmap)
 
 Data flow: user fills form → hooks load FITS/CSV data → `calculateSNR()` / `calculate2DSNR()` runs in the browser → Recharts line chart or custom heatmap renders results.

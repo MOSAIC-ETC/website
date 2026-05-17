@@ -1,4 +1,4 @@
-// Auth.js v5 — credentials provider only (see TCC.md §2.2, §3.1).
+// Auth.js v5 — credentials provider only.
 // JWT carries `roleId`, `roleName`, and `permissions` so per-request auth
 // decisions don't require a DB round-trip.
 

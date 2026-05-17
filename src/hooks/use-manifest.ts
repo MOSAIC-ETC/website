@@ -1,7 +1,7 @@
 "use client";
 
 // Client-side manifest fetch with a session-scoped memory cache.
-// One in-flight request is deduplicated across all consumers. See TCC.md §3.7.
+// One in-flight request is deduplicated across all consumers.
 
 import { useEffect, useState } from "react";
 

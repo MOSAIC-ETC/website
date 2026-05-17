@@ -1,10 +1,7 @@
 "use client";
 
-import { ChevronDownIcon } from "lucide-react";
-
 import { MosaicLogo } from "@/components/icons";
 import { LocaleSwitcher } from "@/components/locale-switcher";
-import { Search } from "@/components/search";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { User } from "@/components/user";
@@ -45,7 +42,6 @@ export function Navbar() {
       </ul>
 
       <div className="flex flex-1 justify-end items-center gap-4">
-        <Search />
         <ThemeToggle />
         <LocaleSwitcher className="hidden lg:flex" />
         <User />
