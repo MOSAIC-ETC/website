@@ -162,7 +162,7 @@ Em vez de tabelas de auditoria espalhadas (uma por entidade), há uma única tab
 
 ### 4.1. Constantes físicas permanecem *hardcoded*
 
-`PLANCK_CONSTANT`, `SPEED_OF_LIGHT` e `ZERO_POINT` continuam em `src/app/[locale]/(public)/etc/lib/constants.ts`. Apenas parâmetros **instrumentais** (que variam com calibração do MOSAIC) são editáveis via UI administrativa. Constantes da física não mudam, e expô-las à edição introduziria risco de erro sem benefício.
+`PLANCK_CONSTANT`, `SPEED_OF_LIGHT` e `ZERO_POINT` vivem em [src/app/[locale]/(public)/etc/lib/physics.ts](src/app/[locale]/\(public\)/etc/lib/physics.ts). Apenas parâmetros **instrumentais** (que variam com calibração do MOSAIC) são editáveis via UI administrativa. Constantes da física não mudam, e expô-las à edição introduziria risco de erro sem benefício.
 
 ### 4.2. Tabelas CSV têm conjunto fixo
 
@@ -288,3 +288,17 @@ O Prisma representa colunas Postgres `int8` (usadas para `fileSize`) como `BigIn
 ```
 
 Como tamanhos de arquivo do ETC nunca se aproximam de `Number.MAX_SAFE_INTEGER` (2⁵³ ≈ 9 PB), a conversão para `Number` é segura e os clientes recebem números nativos. Esta é uma das pegadinhas conhecidas do Prisma + Next.js que vale documentar no TCC porque a mensagem de erro original (`Do not know how to serialize a BigInt`) não aponta para a causa óbvia.
+
+### 6.7. Separação entre constantes de *seed* e parâmetros *runtime*
+
+Originalmente, todo o cálculo do ETC (`calculate.ts`, `calculate-2d.ts`) importava de um único `etc/lib/constants.ts` que misturava três categorias distintas: constantes físicas (h, c, ZP_AB), parâmetros instrumentais (diâmetro do ELT, escalas de pixel, especificações MOS/IFU, detectores) e mapeamentos de colunas CSV. O resultado era que mesmo após introduzir o modelo `InstrumentParameter` versionado no banco e o endpoint `/api/manifest`, o cálculo continuava lendo valores *hardcoded* — quebrando o loop "admin edita → manifest atualiza → ETC usa novo valor".
+
+A refatoração divide as três categorias por arquivo:
+
+- [physics.ts](src/app/\[locale\]/\(public\)/etc/lib/physics.ts) — `PLANCK_CONSTANT`, `SPEED_OF_LIGHT`, `ZERO_POINT` (não variam, não vão para o DB)
+- [csv-mappings.ts](src/app/\[locale\]/\(public\)/etc/lib/csv-mappings.ts) — `ENCLOSED_ENERGY_COLUMNS`, `BACKGROUND_COLUMNS`, `THROUGHPUT_COLUMNS` (metadados de estrutura de arquivo; não dependem de calibração)
+- [instrument.ts](src/app/\[locale\]/\(public\)/etc/lib/instrument.ts) — `getInstrumentSettings(instrument, params)` agora parametrizado pelo `InstrumentParams` lido do *manifest*
+
+`calculateSNR` e `calculate2DSNR` ganharam um parâmetro `instrumentParams: InstrumentParams` ao final de suas assinaturas. O *Web Worker* repassa o objeto recebido no `WorkerRequest`. A página `etc/page.tsx` lê via `useManifest()` (o mesmo *hook* já usado por `useFilters`/`useObjects`, com cache de módulo e deduplicação de *in-flight*), e o serializa para o *worker* a cada *dispatch*.
+
+O antigo `constants.ts` foi removido. A fonte da verdade para os valores iniciais é `DEFAULT_INSTRUMENT_PARAMS` em [src/lib/schemas/instrument-params.ts](src/lib/schemas/instrument-params.ts), consumido apenas pelo *seed* do Prisma. Esta é a mesma disciplina aplicada a `/public/data/` (servia o ETC, agora só alimenta o *seed*): valores iniciais ficam disponíveis em um local explicitamente marcado como "*seed-only*", e o *runtime* lê do banco através da API.
