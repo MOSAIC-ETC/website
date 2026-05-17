@@ -1,4 +1,4 @@
-import { PLANCK_CONSTANT, SPEED_OF_LIGHT, ZERO_POINT } from "./constants";
+import { PLANCK_CONSTANT, SPEED_OF_LIGHT, ZERO_POINT } from "./physics";
 import type { FilterEntry, MagnitudeUnit } from "./types";
 import { MagnitudeUnit as MU } from "./types";
 

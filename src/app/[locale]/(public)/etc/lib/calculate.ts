@@ -1,17 +1,12 @@
 import type { HeatmapCell } from "@/components/chart/heatmap";
 import type { CSVRow } from "@/lib/parser";
+import type { InstrumentParams } from "@/lib/schemas/instrument-params";
 
 import type { CSVTables } from "../hooks/use-csv-tables";
-import {
-  BACKGROUND_COLUMNS,
-  ELT_DIAMETER,
-  ENCLOSED_ENERGY_COLUMNS,
-  PLANCK_CONSTANT,
-  SPEED_OF_LIGHT,
-  THROUGHPUT_COLUMNS,
-  getInstrumentSettings,
-} from "./constants";
 import { convertToFluxLambda } from "./conversions";
+import { BACKGROUND_COLUMNS, ENCLOSED_ENERGY_COLUMNS, THROUGHPUT_COLUMNS } from "./csv-mappings";
+import { getInstrumentSettings } from "./instrument";
+import { PLANCK_CONSTANT, SPEED_OF_LIGHT } from "./physics";
 import { RedshiftUnit } from "./types";
 import type { ETCFormValues, FilterEntry, NMFile, SNRDataPoint } from "./types";
 
@@ -23,6 +18,7 @@ export function calculateSNR(
   flux: number[][][],
   wavelengths: number[],
   tables: CSVTables,
+  instrumentParams: InstrumentParams,
 ): SNRDataPoint[] {
   const {
     numberOfExposures,
@@ -85,10 +81,13 @@ export function calculateSNR(
   // Compute SNR for each wavelength
   const c = SPEED_OF_LIGHT * 1e9; // nm/s
   const h = PLANCK_CONSTANT; // J·s
-  const d = ELT_DIAMETER; // m
+  const d = instrumentParams.eltDiameterM; // m
   const eltArea = Math.PI * ((d * 100) / 2) ** 2; // cm²
 
-  const { resolution, pixelsPerObject, apertureArea, darkCurrent, readOutNoise } = getInstrumentSettings(instrument);
+  const { resolution, pixelsPerObject, apertureArea, darkCurrent, readOutNoise } = getInstrumentSettings(
+    instrument,
+    instrumentParams,
+  );
 
   const results: SNRDataPoint[] = [];
 

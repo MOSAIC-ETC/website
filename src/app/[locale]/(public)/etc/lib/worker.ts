@@ -1,3 +1,5 @@
+import type { InstrumentParams } from "@/lib/schemas/instrument-params";
+
 import type { CSVTables } from "../hooks/use-csv-tables";
 import { calculateSNR } from "./calculate";
 import { calculate2DSNR } from "./calculate-2d";
@@ -13,6 +15,7 @@ export type WorkerRequest =
       flux: number[][][];
       wavelengths: number[];
       tables: CSVTables;
+      instrumentParams: InstrumentParams;
     }
   | {
       id: number;
@@ -23,6 +26,7 @@ export type WorkerRequest =
       flux: number[][][];
       wavelengths: number[];
       tables: CSVTables;
+      instrumentParams: InstrumentParams;
     };
 
 export type WorkerResponse =
@@ -42,11 +46,20 @@ self.onmessage = (event: MessageEvent<WorkerRequest>) => {
         req.flux,
         req.wavelengths,
         req.tables,
+        req.instrumentParams,
       );
       const response: WorkerResponse = { id: req.id, type: "snr", data };
       self.postMessage(response);
     } else if (req.type === "snr-2d") {
-      const data = calculate2DSNR(req.values, req.filter, req.filterCurve, req.flux, req.wavelengths, req.tables);
+      const data = calculate2DSNR(
+        req.values,
+        req.filter,
+        req.filterCurve,
+        req.flux,
+        req.wavelengths,
+        req.tables,
+        req.instrumentParams,
+      );
       const response: WorkerResponse = { id: req.id, type: "snr-2d", data };
       self.postMessage(response);
     }

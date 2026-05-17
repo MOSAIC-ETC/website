@@ -1,19 +1,10 @@
+import type { InstrumentParams } from "@/lib/schemas/instrument-params";
+
 import type { CSVTables } from "../hooks/use-csv-tables";
 import { type Spectrum, lookupNearest, resampleFilter } from "./calculate";
-import {
-  BACKGROUND_COLUMNS,
-  ELT_DIAMETER,
-  ENCLOSED_ENERGY_COLUMNS,
-  MANGA_PIXEL_AREA,
-  MANGA_PIXEL_SCALE,
-  MOSAIC_PIXEL_AREA,
-  MOSAIC_PIXEL_SCALE,
-  PLANCK_CONSTANT,
-  SPEED_OF_LIGHT,
-  THROUGHPUT_COLUMNS,
-  ZERO_POINT,
-  getInstrumentSettings,
-} from "./constants";
+import { BACKGROUND_COLUMNS, ENCLOSED_ENERGY_COLUMNS, THROUGHPUT_COLUMNS } from "./csv-mappings";
+import { getInstrumentSettings } from "./instrument";
+import { PLANCK_CONSTANT, SPEED_OF_LIGHT, ZERO_POINT } from "./physics";
 import type { FilterEntry, NMFile, SubcubeFormValues } from "./types";
 import { MagnitudeUnit, RedshiftUnit } from "./types";
 
@@ -233,6 +224,7 @@ export function calculate2DSNR(
   flux: number[][][],
   wavelengths: number[],
   tables: CSVTables,
+  instrumentParams: InstrumentParams,
 ): number[][] {
   const {
     numberOfExposures,
@@ -259,24 +251,27 @@ export function calculate2DSNR(
   const mTarg = convertToABMag(magnitude, magnitudeUnit, targetWavelength, filter);
   const S = 10 ** (-0.4 * (mTarg - mTemp));
 
+  const mangaPixelArea = instrumentParams.mangaPixelScaleArcsec ** 2;
+  const mosaicPixelArea = instrumentParams.mosaicPixelScaleArcsec ** 2;
+
   // Step 4: Convert flux map to surface brightness
   // flux is in 10^-17 erg/s/cm²/Å, we keep the 10^-17 factor for later
-  const sbMap = fluxMap.map((row) => row.map((f) => (f * S) / MANGA_PIXEL_AREA));
+  const sbMap = fluxMap.map((row) => row.map((f) => (f * S) / mangaPixelArea));
 
   // Step 5: Resample to MOSAIC grid (area-weighted, strictly flux-conserving)
-  const scaleRatio = MANGA_PIXEL_SCALE / MOSAIC_PIXEL_SCALE;
+  const scaleRatio = instrumentParams.mangaPixelScaleArcsec / instrumentParams.mosaicPixelScaleArcsec;
   const resampledSB = areaWeightedResample(sbMap, scaleRatio);
 
   // Step 6: Convert back to flux per MOSAIC pixel
-  const mosaicFluxMap = resampledSB.map((row) => row.map((sb) => sb * MOSAIC_PIXEL_AREA));
+  const mosaicFluxMap = resampledSB.map((row) => row.map((sb) => sb * mosaicPixelArea));
 
   // Step 7: Compute SNR per pixel at targetWavelength
   const c = SPEED_OF_LIGHT * 1e9; // nm/s
   const h = PLANCK_CONSTANT; // J·s
-  const d = ELT_DIAMETER; // m
+  const d = instrumentParams.eltDiameterM; // m
   const eltAreaCm2 = Math.PI * ((d * 100) / 2) ** 2; // cm²
 
-  const { resolution, darkCurrent, readOutNoise } = getInstrumentSettings(instrument);
+  const { resolution, darkCurrent, readOutNoise } = getInstrumentSettings(instrument, instrumentParams);
 
   // Apply redshift to target wavelength
   let deltaLambda: number;
@@ -295,7 +290,7 @@ export function calculate2DSNR(
   const bg = lookupNearest(background, lambdaNm, BACKGROUND_COLUMNS[skyCondition]);
 
   const eltMirrorArea = Math.PI * (d / 2) ** 2; // m²
-  const backgroundFlux = bg * eltMirrorArea * (lambdaUm / resolution) * MOSAIC_PIXEL_AREA * gt; // photons/s
+  const backgroundFlux = bg * eltMirrorArea * (lambdaUm / resolution) * mosaicPixelArea * gt; // photons/s
   const backgroundCount = backgroundFlux * exposureTime;
 
   // pixelsPerObject = 1 (per-pixel)

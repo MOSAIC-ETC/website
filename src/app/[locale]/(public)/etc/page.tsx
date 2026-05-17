@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import type { HeatmapCell } from "@/components/chart/heatmap";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useManifest } from "@/hooks/use-manifest";
 
 import { ETCForm } from "./components/etc-form";
 import { SNRChart } from "./components/snr-chart";
@@ -34,6 +35,7 @@ export default function ETCPage() {
 
   const { filters } = useFilters();
   const { objects } = useObjects();
+  const { manifest } = useManifest();
 
   // Default-select the first object once the manifest loads.
   useEffect(() => {
@@ -90,6 +92,11 @@ export default function ETCPage() {
       return;
     }
 
+    if (!manifest) {
+      toast.error(t("instrument-params-not-loaded"));
+      return;
+    }
+
     const filter = filters.find((f) => f.id === values.filterId);
     if (!filter) return;
 
@@ -113,6 +120,7 @@ export default function ETCPage() {
           flux,
           wavelengths,
           tables: tables.tables,
+          instrumentParams: manifest.instrumentParams.params,
         }),
       );
       if (response.type === "error") {
@@ -134,6 +142,11 @@ export default function ETCPage() {
 
     if (!tables.tables) {
       toast.error(t("tables-not-loaded"));
+      return;
+    }
+
+    if (!manifest) {
+      toast.error(t("instrument-params-not-loaded"));
       return;
     }
 
@@ -159,6 +172,7 @@ export default function ETCPage() {
           flux,
           wavelengths,
           tables: tables.tables,
+          instrumentParams: manifest.instrumentParams.params,
         }),
       );
       if (response.type === "error") {

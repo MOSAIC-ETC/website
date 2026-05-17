@@ -380,6 +380,7 @@
       "empty-state": "Envie o formulário para gerar o mapa SNR.",
       "empty-state-hint": "Configure os parâmetros à esquerda e clique em Calcular Mapa SNR 2D.",
       "download-fits": "Baixar FITS"
-    }
+    },
+    "instrument-params-not-loaded": "Parâmetros do instrumento não carregados. Por favor, aguarde."
   }
 }
