@@ -42,6 +42,7 @@ export function FilterAdminClient({ initial }: { initial: FilterRow[] }) {
         <TableHeader>
           <TableRow>
             <TableHead>{t("common.name")}</TableHead>
+            <TableHead>{t("filters.headers.slug")}</TableHead>
             <TableHead>{t("filters.headers.wavelength")}</TableHead>
             <TableHead>{t("filters.headers.version")}</TableHead>
             <TableHead>{t("common.status")}</TableHead>
@@ -65,6 +66,7 @@ export function FilterAdminClient({ initial }: { initial: FilterRow[] }) {
             return (
               <TableRow key={row.id}>
                 <TableCell>{row.name}</TableCell>
+                <TableCell>{row.slug}</TableCell>
                 <TableCell>{wl}</TableCell>
                 <TableCell>v{row.currentVersion?.versionNum ?? "—"}</TableCell>
                 <TableCell>
@@ -78,10 +80,7 @@ export function FilterAdminClient({ initial }: { initial: FilterRow[] }) {
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <Button size="icon-sm" variant="ghost" asChild>
-                            <a
-                              href={`/api/files/filters/${row.slug}`}
-                              download={row.currentVersion.filename}
-                            >
+                            <a href={`/api/files/filters/${row.slug}`} download={row.currentVersion.filename}>
                               <DownloadIcon className="size-4" />
                             </a>
                           </Button>
