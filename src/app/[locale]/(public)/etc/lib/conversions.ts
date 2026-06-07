@@ -24,12 +24,14 @@ export function convertToFluxLambda(
       return (f_nu * c) / wavelength ** 2;
     }
     case MU.JY:
-      return ((value * c) / wavelength ** 2) * 1e-7;
+      // 1 Jy = 1e-23 erg/s/cm²/Hz; F_λ = F_ν × c/λ²
+      return (value * 1e-23 * c) / wavelength ** 2;
     case MU.W_M2_UM:
       return value; // 1 W/m²/μm ≡ 1 erg/s/cm²/nm
     case MU.ERGS_S_CM2_ANGSTROM:
       return value * 10; // 1 Å = 0.1 nm → multiply by 10
     case MU.ERGS_S_CM2_HZ:
-      return ((value * c) / wavelength ** 2) * 1e-7;
+      // value is already F_ν [erg/s/cm²/Hz]; F_λ = F_ν × c/λ²
+      return (value * c) / wavelength ** 2;
   }
 }
