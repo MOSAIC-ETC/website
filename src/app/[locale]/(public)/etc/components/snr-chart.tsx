@@ -107,6 +107,7 @@ export function SNRChart({ data, formValues, filters, objects }: SNRChartProps) 
           height={320}
           showLegend={false}
           resetLabel={<RotateCw />}
+          resetAriaLabel={t("reset-zoom")}
         />
       </CardContent>
     </Card>

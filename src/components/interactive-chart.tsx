@@ -26,6 +26,7 @@ export interface InteractiveChartProps<T extends Record<string, any>> {
   height?: number;
   showLegend?: boolean;
   resetLabel?: React.ReactElement | string;
+  resetAriaLabel?: string;
 }
 
 const SELECTION_COLOR = "oklch(0.488 0.243 264.376)";
@@ -232,6 +233,7 @@ export function InteractiveChart<T extends Record<string, any>>({
   height = 450,
   showLegend = true,
   resetLabel = "Reset",
+  resetAriaLabel,
 }: InteractiveChartProps<T>): React.JSX.Element {
   const { range, setRange, chartWrapperRef, overlayRef } = useChartInteraction(data.length, height);
   const brushY = Math.max(CHART_MARGIN.top, height - BRUSH_VISUAL_HEIGHT);
@@ -247,7 +249,7 @@ export function InteractiveChart<T extends Record<string, any>>({
       <div className="relative w-full select-none" style={{ height }} ref={chartWrapperRef}>
         {isZoomed && (
           <div className="top-0 right-0 z-20 absolute">
-            <Button size="sm" variant="outline" className="rounded" onClick={reset}>
+            <Button size="sm" variant="outline" className="rounded" onClick={reset} aria-label={resetAriaLabel}>
               {resetLabel}
             </Button>
           </div>

@@ -584,7 +584,7 @@ export function Heatmap({
               <Tooltip delayDuration={1000}>
                 <TooltipTrigger asChild>
                   <DropdownMenuTrigger asChild>
-                    <Button type="button" variant="outline" size="icon-sm">
+                    <Button type="button" variant="outline" size="icon-sm" aria-label={t("colormap")}>
                       <Palette />
                     </Button>
                   </DropdownMenuTrigger>
@@ -613,7 +613,7 @@ export function Heatmap({
               <Tooltip delayDuration={1000}>
                 <TooltipTrigger asChild>
                   <DropdownMenuTrigger asChild>
-                    <Button type="button" variant="outline" size="icon-sm">
+                    <Button type="button" variant="outline" size="icon-sm" aria-label={t("scale")}>
                       <Contrast />
                     </Button>
                   </DropdownMenuTrigger>
@@ -648,6 +648,7 @@ export function Heatmap({
                     onClick={() => heatmapContext.setSelectionMode("rectangle")}
                     variant={heatmapContext.selectionMode === "rectangle" ? "default" : "outline"}
                     size="icon-sm"
+                    aria-label={t("rectangle-selection")}
                   >
                     <SquareDashedMousePointer />
                   </Button>
@@ -664,6 +665,7 @@ export function Heatmap({
                     onClick={() => heatmapContext.setSelectionMode("polygon")}
                     variant={heatmapContext.selectionMode === "polygon" ? "default" : "outline"}
                     size="icon-sm"
+                    aria-label={t("polygon-selection")}
                   >
                     <PolygonDashedMousePointer />
                   </Button>
@@ -675,7 +677,7 @@ export function Heatmap({
 
               <Tooltip delayDuration={1000}>
                 <TooltipTrigger asChild>
-                  <Button type="button" onClick={heatmapContext.clearSelections} variant="destructive" size="icon-sm">
+                  <Button type="button" onClick={heatmapContext.clearSelections} variant="destructive" size="icon-sm" aria-label={t("erase-selection")}>
                     <Eraser />
                   </Button>
                 </TooltipTrigger>

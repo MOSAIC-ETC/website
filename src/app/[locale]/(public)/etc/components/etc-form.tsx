@@ -300,30 +300,36 @@ function ETCFormInner({ filters, objects, selectedObject, onSelectObject, object
               )}
 
               {preview && (
-                <div className="flex justify-center">
-                  <Heatmap
-                    values={preview}
-                    width={isMobile ? 260 : 440}
-                    height={isMobile ? 220 : 400}
-                    colormap="inferno"
-                    tooltip
-                    selectable
-                    selectionControls
-                    renderTooltip={(cell: HeatmapCellData) => (
-                      <>
-                        <p>
-                          x: {cell.x}, y: {cell.y}
-                        </p>
-                        <div className="flex items-center mt-2 min-w-25">
-                          <div style={{ backgroundColor: cell.color }} className="inline-block mr-2 w-3 h-3" />
-                          <p className="mr-auto pr-5 text-muted-foreground">Value</p>
-                          <span>{cell.value.toFixed(1)}</span>
-                        </div>
-                      </>
-                    )}
-                    className="max-w-full"
-                  />
-                </div>
+                <>
+                  <p className="flex items-center gap-1.5 text-muted-foreground text-xs">
+                    <Info className="size-3.5 shrink-0" />
+                    {t("object.selection-hint")}
+                  </p>
+                  <div className="flex justify-center">
+                    <Heatmap
+                      values={preview}
+                      width={isMobile ? 260 : 440}
+                      height={isMobile ? 220 : 400}
+                      colormap="inferno"
+                      tooltip
+                      selectable
+                      selectionControls
+                      renderTooltip={(cell: HeatmapCellData) => (
+                        <>
+                          <p>
+                            x: {cell.x}, y: {cell.y}
+                          </p>
+                          <div className="flex items-center mt-2 min-w-25">
+                            <div style={{ backgroundColor: cell.color }} className="inline-block mr-2 w-3 h-3" />
+                            <p className="mr-auto pr-5 text-muted-foreground">Value</p>
+                            <span>{cell.value.toFixed(1)}</span>
+                          </div>
+                        </>
+                      )}
+                      className="max-w-full"
+                    />
+                  </div>
+                </>
               )}
 
               {selectionError && <p className="text-destructive text-sm">{t("object.selection-required")}</p>}
@@ -353,7 +359,7 @@ function ETCFormInner({ filters, objects, selectedObject, onSelectObject, object
                         name="magnitudeUnit"
                         render={({ field: unitField }) => (
                           <Select value={unitField.value} onValueChange={unitField.onChange}>
-                            <SelectTrigger className="shadow-none rounded-l-none w-44">
+                            <SelectTrigger className="shadow-none rounded-l-none w-44" aria-label={t("magnitude-unit")}>
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>{enumOptions(MagnitudeUnit)}</SelectContent>
@@ -387,7 +393,7 @@ function ETCFormInner({ filters, objects, selectedObject, onSelectObject, object
                         name="redshiftUnit"
                         render={({ field: unitField }) => (
                           <Select value={unitField.value} onValueChange={unitField.onChange}>
-                            <SelectTrigger className="shadow-none rounded-l-none w-48">
+                            <SelectTrigger className="shadow-none rounded-l-none w-48" aria-label={t("redshift-unit")}>
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>{enumOptions(RedshiftUnit)}</SelectContent>
@@ -463,7 +469,7 @@ function ETCFormInner({ filters, objects, selectedObject, onSelectObject, object
 
                       <HoverCard openDelay={100} closeDelay={200}>
                         <HoverCardTrigger asChild>
-                          <Button type="button" variant="outline" size="icon" disabled={!field.value}>
+                          <Button type="button" variant="outline" size="icon" disabled={!field.value} aria-label={t("filter-chart.trigger")}>
                             <ChartLine className="size-4" />
                           </Button>
                         </HoverCardTrigger>

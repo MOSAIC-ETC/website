@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { MosaicLogo } from "@/components/icons";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -11,6 +13,7 @@ import { Link, usePathname } from "@/i18n/navigation";
 export function Navbar() {
   const navigation = useNavigation();
   const pathname = usePathname();
+  const t = useTranslations("navigation");
 
   return (
     <nav className="relative flex lg:justify-between items-center md:gap-12 bg-background px-4 lg:px-24 border-border border-b h-16 text-primary">
@@ -19,7 +22,7 @@ export function Navbar() {
       </div>
 
       <div className="flex lg:flex-none justify-center lg:justify-start">
-        <Link href="/">
+        <Link href="/" aria-label={t("home")}>
           <MosaicLogo height={32} className="fill-primary select-none" />
         </Link>
       </div>

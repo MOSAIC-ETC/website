@@ -92,10 +92,12 @@ function FormLabel({
   ...props
 }: React.ComponentProps<typeof LabelPrimitive.Root>) {
   const { error, formItemId } = useFormField()
+  const labelId = `${formItemId}-label`
 
   return (
     <Label
       data-slot="form-label"
+      id={labelId}
       data-error={!!error}
       className={cn("data-[error=true]:text-destructive", className)}
       htmlFor={formItemId}
@@ -111,6 +113,7 @@ function FormControl({ ...props }: React.ComponentProps<typeof Slot>) {
     <Slot
       data-slot="form-control"
       id={formItemId}
+      aria-labelledby={`${formItemId}-label`}
       aria-describedby={
         !error
           ? `${formDescriptionId}`

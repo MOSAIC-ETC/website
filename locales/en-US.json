@@ -459,6 +459,8 @@
       "number-of-exposures": "Number of Exposures",
       "exposure-time": "Exposure Time (s)",
       "magnitude": "Magnitude",
+      "magnitude-unit": "Magnitude unit",
+      "redshift-unit": "Redshift unit",
       "wavelength-range": "Wavelength range: {min} – {max} nm",
       "redshift": "Redshift",
       "filter": {
@@ -468,6 +470,7 @@
       "filter-chart": {
         "title": "Filter curve: {name}",
         "title-fallback": "Filter curve",
+        "trigger": "View filter transmission curve",
         "x-axis-label": "Wavelength (nm)",
         "y-axis-label": "Transmission",
         "tooltip": {
@@ -488,6 +491,7 @@
         "select-placeholder": "Select an object",
         "download": "Download data cube",
         "selection-required": "Please select an area of the map",
+        "selection-hint": "Select a region on the map below to define the calculation area.",
         "tooltip": "Select a non-stellar object from the list. It will show you the object's compressed spectrum as a 2D map. You can click on the map to select a specific area and use it for the exposure time calculation."
       },
       "selection-controls": {
@@ -507,7 +511,8 @@
       "empty-state-hint": "Configure parameters on the left and click Calculate SNR.",
       "wavelength-label": "Wavelength (nm)",
       "snr-label": "SNR",
-      "download-txt": "Download TXT"
+      "download-txt": "Download TXT",
+      "reset-zoom": "Reset zoom"
     },
     "object-not-loaded": "Object not loaded. Please download the object data cube before calculating.",
     "tables-not-loaded": "Data tables not loaded. Please wait.",

@@ -459,6 +459,8 @@
       "number-of-exposures": "Nombre d'Expositions",
       "exposure-time": "Temps d'Exposition (s)",
       "magnitude": "Magnitude",
+      "magnitude-unit": "Unité de magnitude",
+      "redshift-unit": "Unité de décalage spectral",
       "wavelength-range": "Plage de longueur d'onde : {min} – {max} nm",
       "redshift": "Décalage vers le Rouge",
       "filter": {
@@ -468,6 +470,7 @@
       "filter-chart": {
         "title": "Courbe du filtre : {name}",
         "title-fallback": "Courbe du filtre",
+        "trigger": "Voir la courbe de transmission du filtre",
         "x-axis-label": "Longueur d'onde (nm)",
         "y-axis-label": "Transmission",
         "tooltip": {
@@ -488,6 +491,7 @@
         "select-placeholder": "Sélectionner un objet",
         "download": "Télécharger le cube de données",
         "selection-required": "Veuillez sélectionner une zone de la carte",
+        "selection-hint": "Sélectionnez une région sur la carte ci-dessous pour définir la zone de calcul.",
         "tooltip": "Sélectionnez un objet non stellaire dans la liste. Son spectre compressé s'affichera sous forme de carte 2D. Cliquez sur la carte pour sélectionner une zone spécifique et l'utiliser pour le calcul du temps d'exposition."
       },
       "selection-controls": {
@@ -507,7 +511,8 @@
       "empty-state-hint": "Configurez les paramètres à gauche et cliquez sur Calculer le SNR.",
       "wavelength-label": "Longueur d'Onde (nm)",
       "snr-label": "SNR",
-      "download-txt": "Télécharger TXT"
+      "download-txt": "Télécharger TXT",
+      "reset-zoom": "Réinitialiser le zoom"
     },
     "object-not-loaded": "Objet non chargé. Veuillez télécharger le cube de données de l'objet avant de calculer.",
     "tables-not-loaded": "Tables de données non chargées. Veuillez patienter.",

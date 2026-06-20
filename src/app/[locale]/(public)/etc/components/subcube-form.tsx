@@ -312,7 +312,7 @@ export function SubcubeForm({
                         name="magnitudeUnit"
                         render={({ field: unitField }) => (
                           <Select value={unitField.value} onValueChange={unitField.onChange}>
-                            <SelectTrigger className="shadow-none rounded-l-none w-44">
+                            <SelectTrigger className="shadow-none rounded-l-none w-44" aria-label={t("form.magnitude-unit")}>
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>{enumOptions(MagnitudeUnit)}</SelectContent>
@@ -346,7 +346,7 @@ export function SubcubeForm({
                         name="redshiftUnit"
                         render={({ field: unitField }) => (
                           <Select value={unitField.value} onValueChange={unitField.onChange}>
-                            <SelectTrigger className="shadow-none rounded-l-none w-48">
+                            <SelectTrigger className="shadow-none rounded-l-none w-48" aria-label={t("form.redshift-unit")}>
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>{enumOptions(RedshiftUnit)}</SelectContent>
@@ -444,7 +444,7 @@ export function SubcubeForm({
 
                       <HoverCard openDelay={100} closeDelay={200}>
                         <HoverCardTrigger asChild>
-                          <Button type="button" variant="outline" size="icon" disabled={!field.value}>
+                          <Button type="button" variant="outline" size="icon" disabled={!field.value} aria-label={t("form.filter-chart.trigger")}>
                             <ChartLine className="size-4" />
                           </Button>
                         </HoverCardTrigger>
