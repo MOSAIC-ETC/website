@@ -1,2 +1,2 @@
-prisma/seed-data/objects/**/cube.fits filter=lfs diff=lfs merge=lfs -text
+# MaNGA spectral data cubes are large binaries — store via Git LFS.
 **/cube.fits filter=lfs diff=lfs merge=lfs -text

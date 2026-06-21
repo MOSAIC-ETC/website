@@ -63,6 +63,20 @@ const OBJECTS = [
     preview: "preview.fits",
     cube: "cube.fits",
   },
+  {
+    slug: "manga-8485-1901",
+    name: "MaNGA 8485-1901",
+    dirname: "MaNGA-8485-1901",
+    preview: "preview.fits",
+    cube: "cube.fits",
+  },
+  {
+    slug: "manga-7443-12701",
+    name: "MaNGA 7443-12701",
+    dirname: "MaNGA-7443-12701",
+    preview: "preview.fits",
+    cube: "cube.fits",
+  },
 ];
 
 function makePrisma(): PrismaClient {

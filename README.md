@@ -14,6 +14,31 @@ Web-based **Exposure Time Calculator** for the MOSAIC spectrograph on the *Extre
 
 - **Node.js 20+** and **npm**
 - **Docker** (for local PostgreSQL) — or an existing Postgres 16 instance
+- **[Git LFS](https://git-lfs.com)** — the MaNGA spectral cubes in `prisma/seed-data/objects/**/cube.fits` are stored via Git LFS (see below)
+
+## Cloning the repository
+
+The MaNGA data cubes are large binaries tracked with **Git LFS**, so install the LFS client *before* cloning:
+
+```bash
+# Install the Git LFS client (once per machine)
+#   Debian/Ubuntu:  sudo apt install git-lfs
+#   macOS (brew):   brew install git-lfs
+#   other:          https://git-lfs.com
+git lfs install
+
+# Clone — the cube.fits files are downloaded automatically
+git clone git@github.com:MOSAIC-ETC/website.git
+```
+
+If you cloned **before** installing Git LFS, the `cube.fits` files will be ~130-byte text pointers instead of real data. Fetch the actual binaries with:
+
+```bash
+git lfs install
+git lfs pull
+```
+
+> **CI / deployment:** make sure `git lfs` is installed and run `git lfs pull` *before* `npx prisma db seed` — otherwise the seed imports the LFS pointer files instead of the cubes, and the ETC fails to parse them.
 
 ## Quick start
 
