@@ -1,5 +1,7 @@
 "use client";
 
+import { useRef } from "react";
+
 import { ChartColumnIncreasing, Download, RotateCw } from "lucide-react";
 import { useTranslations } from "next-intl";
 
@@ -7,8 +9,14 @@ import { InteractiveChart } from "@/components/interactive-chart";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { ChartConfig } from "@/components/ui/chart";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
-import { downloadSNRSpectrumTXT } from "../lib/export";
+import { downloadSNRChartPNG, downloadSNRSpectrumTXT } from "../lib/export";
 import type { ETCFormValues, FilterEntry, ObjectEntry, SNRDataPoint } from "../lib/types";
 
 interface SNRChartProps {
@@ -61,6 +69,7 @@ export function SNRChart({ data, formValues, filters, objects }: SNRChartProps) 
   const t = useTranslations("etc.chart");
   const filter = formValues ? filters?.find((f) => f.id === formValues.filterId) : null;
   const object = formValues ? objects?.find((o) => o.id === formValues.objectId) : null;
+  const chartRef = useRef<HTMLDivElement>(null);
 
   if (data.length === 0) {
     return (
@@ -83,17 +92,24 @@ export function SNRChart({ data, formValues, filters, objects }: SNRChartProps) 
     <Card className="bg-background/60 backdrop-blur-sm border">
       <CardHeader className="flex flex-row justify-between items-center gap-2">
         <CardTitle>{t("title")}</CardTitle>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => downloadSNRSpectrumTXT(data, formValues, { filter, object })}
-          aria-label={t("download-txt")}
-        >
-          <Download />
-          {t("download-txt")}
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="sm" aria-label={t("download")}>
+              <Download />
+              {t("download")}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => downloadSNRSpectrumTXT(data, formValues, { filter, object })}>
+              {t("download-txt")}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => chartRef.current && downloadSNRChartPNG(chartRef.current)}>
+              {t("download-png")}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </CardHeader>
-      <CardContent>
+      <CardContent ref={chartRef}>
         <InteractiveChart
           data={data}
           chartConfig={chartConfig}

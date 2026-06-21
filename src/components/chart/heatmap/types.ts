@@ -85,7 +85,15 @@ export type HeatmapProps = {
   scaleSelector?: boolean;
   /** Default scale mode for value-to-color mapping (default: "minmax") */
   defaultScaleMode?: ScaleMode;
+  /** Imperative handle ref for image export (exposes the underlying canvas) */
+  imageRef?: React.Ref<HeatmapHandle>;
 } & React.HTMLAttributes<HTMLDivElement>;
+
+/** Imperative handle exposed by the Heatmap for image export */
+export interface HeatmapHandle {
+  /** Returns the underlying canvas element (or null before mount) */
+  getCanvas: () => HTMLCanvasElement | null;
+}
 
 /** Margins around the heatmap for axes and labels */
 export interface HeatmapMargins {

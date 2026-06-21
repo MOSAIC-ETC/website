@@ -1,8 +1,16 @@
+import { toBlob } from "html-to-image";
+
 import { type FITSHeaderCard, FITSWriter } from "@/lib/parser";
 
 import type { ETCFormValues, FilterEntry, ObjectEntry, SNRDataPoint, SubcubeFormValues } from "./types";
 
 type ExportContext = { filter?: FilterEntry | null; object?: ObjectEntry | null };
+
+/** Resolves the current theme's opaque page background, used to flatten transparent exports. */
+function pageBackgroundColor(): string {
+  const bg = getComputedStyle(document.body).backgroundColor;
+  return bg && bg !== "rgba(0, 0, 0, 0)" ? bg : "#ffffff";
+}
 
 /**
  * Triggers a download of a file with the given blob and filename.
@@ -114,4 +122,34 @@ export function downloadSNRMapFITS(data: number[][], values?: SubcubeFormValues,
   const buffer = FITSWriter.write2D(data, cards);
   const blob = new Blob([buffer], { type: "application/fits" });
   triggerDownload(blob, `mosaic-etc-snr-map-${timestamp()}.fits`);
+}
+
+/**
+ * Exports the 1D SNR chart as a PNG image by rasterizing its DOM node.
+ *
+ * @param node The DOM element wrapping the chart to be captured.
+ */
+export async function downloadSNRChartPNG(node: HTMLElement) {
+  const blob = await toBlob(node, { pixelRatio: 2, backgroundColor: pageBackgroundColor() });
+  if (blob) triggerDownload(blob, `mosaic-etc-snr-${timestamp()}.png`);
+}
+
+/**
+ * Exports the 2D SNR map as a PNG image, flattening the heatmap canvas onto an
+ * opaque background so the saved file is not transparent.
+ *
+ * @param canvas The heatmap canvas element to be exported.
+ */
+export async function downloadSNRMapPNG(canvas: HTMLCanvasElement | null) {
+  if (!canvas) return;
+  const out = document.createElement("canvas");
+  out.width = canvas.width;
+  out.height = canvas.height;
+  const ctx = out.getContext("2d");
+  if (!ctx) return;
+  ctx.fillStyle = pageBackgroundColor();
+  ctx.fillRect(0, 0, out.width, out.height);
+  ctx.drawImage(canvas, 0, 0);
+  const blob = await new Promise<Blob | null>((resolve) => out.toBlob(resolve, "image/png"));
+  if (blob) triggerDownload(blob, `mosaic-etc-snr-map-${timestamp()}.png`);
 }

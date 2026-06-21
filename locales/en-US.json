@@ -511,7 +511,9 @@
       "empty-state-hint": "Configure parameters on the left and click Calculate SNR.",
       "wavelength-label": "Wavelength (nm)",
       "snr-label": "SNR",
+      "download": "Download",
       "download-txt": "Download TXT",
+      "download-png": "Download PNG",
       "reset-zoom": "Reset zoom"
     },
     "object-not-loaded": "Object not loaded. Please download the object data cube before calculating.",
@@ -526,7 +528,9 @@
       "title": "2D SNR Map",
       "empty-state": "Submit the form to generate the SNR map.",
       "empty-state-hint": "Configure parameters on the left and click Calculate 2D SNR Map.",
-      "download-fits": "Download FITS"
+      "download": "Download",
+      "download-fits": "Download FITS",
+      "download-png": "Download PNG"
     },
     "instrument-params-not-loaded": "Instrument parameters not loaded. Please wait."
   }

@@ -7,6 +7,7 @@ export { HeatmapProvider, useHeatmapSelectionContext } from "./context";
 // Types
 export type {
   HeatmapProps,
+  HeatmapHandle,
   HeatmapCellData,
   HeatmapRect,
   HeatmapPoint,

@@ -1,14 +1,23 @@
 "use client";
 
+import { useRef } from "react";
+
 import { Download, Grid3X3 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Heatmap } from "@/components/chart/heatmap";
+import type { HeatmapHandle } from "@/components/chart/heatmap";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useIsMobile } from "@/hooks/use-mobile";
 
-import { downloadSNRMapFITS } from "../lib/export";
+import { downloadSNRMapFITS, downloadSNRMapPNG } from "../lib/export";
 import type { FilterEntry, ObjectEntry, SubcubeFormValues } from "../lib/types";
 
 interface SNRMapProps {
@@ -23,6 +32,7 @@ export function SNRMap({ data, formValues, filters, objects }: SNRMapProps) {
   const object = formValues ? objects?.find((o) => o.id === formValues.objectId) : null;
   const t = useTranslations("etc.snr-map");
   const isMobile = useIsMobile();
+  const heatmapRef = useRef<HeatmapHandle>(null);
 
   if (data.length === 0) {
     return (
@@ -45,18 +55,26 @@ export function SNRMap({ data, formValues, filters, objects }: SNRMapProps) {
     <Card className="bg-background/60 backdrop-blur-sm border">
       <CardHeader className="flex flex-row justify-between items-center gap-2">
         <CardTitle>{t("title")}</CardTitle>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => downloadSNRMapFITS(data, formValues, { filter, object })}
-          aria-label={t("download-fits")}
-        >
-          <Download />
-          {t("download-fits")}
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="sm" aria-label={t("download")}>
+              <Download />
+              {t("download")}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => downloadSNRMapFITS(data, formValues, { filter, object })}>
+              {t("download-fits")}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => downloadSNRMapPNG(heatmapRef.current?.getCanvas() ?? null)}>
+              {t("download-png")}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </CardHeader>
       <CardContent className="flex justify-center">
         <Heatmap
+          imageRef={heatmapRef}
           values={data}
           width={isMobile ? 340 : 520}
           height={isMobile ? 300 : 470}

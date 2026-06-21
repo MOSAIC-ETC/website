@@ -1,16 +1,18 @@
 /**
  * Performance benchmark for the client-side SNR computation kernels.
  *
- * Loads the real MaNGA 9041-6101 cube, calibration tables and a filter curve
- * straight from `storage/`, then times the exact functions the Web Worker calls
- * (`calculateSNR`, `calculate2DSNR`) plus the standalone drizzle resampler.
+ * Loads the three real MaNGA demonstration cubes (9041-6101, 8485-1901,
+ * 7443-12701), calibration tables and a filter curve straight from `storage/`,
+ * then times the exact functions the Web Worker calls (`calculateSNR`,
+ * `calculate2DSNR`) per cube, plus the standalone drizzle resampler. Reporting
+ * all three cubes shows how the cost scales with the spatial grid size.
  *
  * Run from the website root:  npx tsx scripts/benchmark.ts
  *
  * Caveat: this measures the compute kernel in Node's V8 (same engine family as
  * the browser); it excludes Web Worker postMessage/serialization overhead.
  */
-import { readFileSync, readdirSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import os from "node:os";
 import { performance } from "node:perf_hooks";
 
@@ -50,14 +52,16 @@ function tablePath(name: string): string {
   return `${base}/${latestVersionDir(base)}/data.csv`;
 }
 
-// --- Load the real input data (same parsers the browser uses) ---
-const cubeBase = `${STORAGE}/objects/manga-9041-6101`;
-const cubePath = `${cubeBase}/${latestVersionDir(cubeBase)}/cube.fits`;
-const cube = new FITSParser(readArrayBuffer(cubePath)).parse();
-const flux = cube.get("FLUX")?.data as number[][][] | undefined;
-const wavelengths = cube.get("WAVE")?.data as number[] | undefined;
-if (!flux || !wavelengths) throw new Error("cube missing FLUX/WAVE HDU");
+function cubePathFor(slug: string): string {
+  const base = `${STORAGE}/objects/${slug}`;
+  for (const d of readdirSync(base).filter((x) => !x.startsWith("."))) {
+    const p = `${base}/${d}/cube.fits`;
+    if (existsSync(p)) return p;
+  }
+  throw new Error(`cube.fits not found for ${slug}`);
+}
 
+// --- Load the calibration tables and filter once (shared across all cubes) ---
 const tables: CSVTables = {
   background: new CSVParser(readFileSync(tablePath("background"), "utf8")).parse(),
   enclosedEnergy: new CSVParser(readFileSync(tablePath("enclosedEnergy"), "utf8")).parse(),
@@ -80,35 +84,8 @@ const filter: FilterEntry = {
   hash: "",
 };
 
-const nWave = wavelengths.length;
-const nY = flux[0].length;
-const nX = flux[0][0].length;
-
-// Representative spatial selection for the 1D path: a centred square aperture.
-const side = Math.min(nY, nX, 20);
-const y0 = Math.floor((nY - side) / 2);
-const x0 = Math.floor((nX - side) / 2);
-const selection: HeatmapCell[] = [];
-for (let yy = 0; yy < side; yy++)
-  for (let xx = 0; xx < side; xx++) selection.push({ x: x0 + xx, y: y0 + yy });
-
-const baseForm = {
-  objectId: "manga-9041-6101",
-  numberOfExposures: 3,
-  exposureTime: 900,
-  magnitude: 21,
-  magnitudeUnit: MagnitudeUnit.AB,
-  redshift: 0.05,
-  redshiftUnit: RedshiftUnit.Z,
-  filterId: "v",
-  skyCondition: SkyCondition.NO_MOON,
-};
-const values1d: ETCFormValues = { ...baseForm, instrument: Instrument.MOS_VIS, selection };
-const values2d: SubcubeFormValues = {
-  ...baseForm,
-  instrument: Instrument.IFU,
-  targetWavelength: 650,
-};
+// The three demonstration cubes, in ascending fibre-bundle / grid size.
+const OBJECTS = ["manga-9041-6101", "manga-8485-1901", "manga-7443-12701"];
 
 // --- Timing harness ---
 function bench(label: string, fn: () => unknown, runs = 30) {
@@ -129,31 +106,57 @@ function bench(label: string, fn: () => unknown, runs = 30) {
 
 console.log("\n=== MOSAIC ETC — client-side compute benchmark ===");
 console.log(`Node ${process.version} | ${os.cpus()[0].model} | ${os.cpus().length} cores`);
-console.log(
-  `Cube MaNGA 9041-6101: λ×Y×X = ${nWave}×${nY}×${nX}  (${(nWave * nY * nX).toLocaleString()} voxels)`,
-);
-const outRows = Math.ceil(nY * (0.5 / 0.15));
-const outCols = Math.ceil(nX * (0.5 / 0.15));
-console.log(`2D drizzle output grid (MaNGA→MOSAIC, ×3.33): ${outRows}×${outCols}`);
-const mem = process.memoryUsage();
-console.log(
-  `Memory after parse: rss ${(mem.rss / 1e6).toFixed(0)} MB | heapUsed ${(mem.heapUsed / 1e6).toFixed(0)} MB` +
-    ` | raw cube ≈ ${((nWave * nY * nX * 8) / 1e6).toFixed(0)} MB (float64)\n`);
 
-console.log("Kernels (real cube, real tables):");
-bench("1D  calculateSNR  (MOS VIS)", () =>
-  calculateSNR(values1d, filter, filterCurve, selection, flux, wavelengths, tables, DEFAULT_INSTRUMENT_PARAMS),
-);
-bench("2D  calculate2DSNR (IFU)", () =>
-  calculate2DSNR(values2d, filter, filterCurve, flux, wavelengths, tables, DEFAULT_INSTRUMENT_PARAMS),
-);
+for (const slug of OBJECTS) {
+  // --- Load the real input data (same parsers the browser uses) ---
+  const cube = new FITSParser(readArrayBuffer(cubePathFor(slug))).parse();
+  const flux = cube.get("FLUX")?.data as number[][][] | undefined;
+  const wavelengths = cube.get("WAVE")?.data as number[] | undefined;
+  if (!flux || !wavelengths) throw new Error(`${slug}: cube missing FLUX/WAVE HDU`);
 
-// Drizzle in isolation, at the real 2D spatial scale.
-const sbMap: number[][] = Array.from({ length: nY }, () =>
-  Array.from({ length: nX }, () => Math.random()),
-);
-bench(`drizzle areaWeightedResample ${nY}×${nX}→${outRows}×${outCols}`, () =>
-  areaWeightedResample(sbMap, 0.5 / 0.15),
-);
+  const nWave = wavelengths.length;
+  const nY = flux[0].length;
+  const nX = flux[0][0].length;
+
+  // Representative spatial selection for the 1D path: a centred square aperture.
+  const side = Math.min(nY, nX, 20);
+  const y0 = Math.floor((nY - side) / 2);
+  const x0 = Math.floor((nX - side) / 2);
+  const selection: HeatmapCell[] = [];
+  for (let yy = 0; yy < side; yy++)
+    for (let xx = 0; xx < side; xx++) selection.push({ x: x0 + xx, y: y0 + yy });
+
+  const baseForm = {
+    objectId: slug,
+    numberOfExposures: 3,
+    exposureTime: 900,
+    magnitude: 21,
+    magnitudeUnit: MagnitudeUnit.AB,
+    redshift: 0.05,
+    redshiftUnit: RedshiftUnit.Z,
+    filterId: "v",
+    skyCondition: SkyCondition.NO_MOON,
+  };
+  const values1d: ETCFormValues = { ...baseForm, instrument: Instrument.MOS_VIS, selection };
+  const values2d: SubcubeFormValues = { ...baseForm, instrument: Instrument.IFU, targetWavelength: 650 };
+
+  const outRows = Math.ceil(nY * (0.5 / 0.15));
+  const outCols = Math.ceil(nX * (0.5 / 0.15));
+  console.log(`\n--- ${slug}: λ×Y×X = ${nWave}×${nY}×${nX}  (${(nWave * nY * nX).toLocaleString()} voxels)` +
+    ` | raw cube ≈ ${((nWave * nY * nX * 8) / 1e6).toFixed(0)} MB (float64) | drizzle ${nY}×${nX}→${outRows}×${outCols} ---`);
+
+  bench("1D  calculateSNR  (MOS VIS)", () =>
+    calculateSNR(values1d, filter, filterCurve, selection, flux, wavelengths, tables, DEFAULT_INSTRUMENT_PARAMS),
+  );
+  bench("2D  calculate2DSNR (IFU)", () =>
+    calculate2DSNR(values2d, filter, filterCurve, flux, wavelengths, tables, DEFAULT_INSTRUMENT_PARAMS),
+  );
+
+  // Drizzle in isolation, at the real 2D spatial scale.
+  const sbMap: number[][] = Array.from({ length: nY }, () => Array.from({ length: nX }, () => Math.random()));
+  bench(`drizzle areaWeightedResample ${nY}×${nX}→${outRows}×${outCols}`, () =>
+    areaWeightedResample(sbMap, 0.5 / 0.15),
+  );
+}
 
 console.log("");

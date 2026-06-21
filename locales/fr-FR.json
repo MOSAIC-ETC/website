@@ -511,7 +511,9 @@
       "empty-state-hint": "Configurez les paramètres à gauche et cliquez sur Calculer le SNR.",
       "wavelength-label": "Longueur d'Onde (nm)",
       "snr-label": "SNR",
+      "download": "Télécharger",
       "download-txt": "Télécharger TXT",
+      "download-png": "Télécharger PNG",
       "reset-zoom": "Réinitialiser le zoom"
     },
     "object-not-loaded": "Objet non chargé. Veuillez télécharger le cube de données de l'objet avant de calculer.",
@@ -526,7 +528,9 @@
       "title": "Carte SNR 2D",
       "empty-state": "Soumettez le formulaire pour générer la carte SNR.",
       "empty-state-hint": "Configurez les paramètres à gauche et cliquez sur Calculer la Carte SNR 2D.",
-      "download-fits": "Télécharger FITS"
+      "download": "Télécharger",
+      "download-fits": "Télécharger FITS",
+      "download-png": "Télécharger PNG"
     },
     "instrument-params-not-loaded": "Paramètres de l'instrument non chargés. Veuillez patienter."
   }

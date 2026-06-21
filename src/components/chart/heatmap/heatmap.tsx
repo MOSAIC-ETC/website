@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react";
 
 import { Contrast, Eraser, Palette, SquareDashedMousePointer } from "lucide-react";
 import { useTheme } from "next-themes";
@@ -54,9 +54,12 @@ export function Heatmap({
   scaleSelector = true,
   defaultScaleMode = "zscale",
   className,
+  imageRef,
   ...props
 }: HeatmapProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useImperativeHandle(imageRef, () => ({ getCanvas: () => canvasRef.current }), []);
   const { resolvedTheme } = useTheme();
   const t = useTranslations("heatmap.controls");
 
