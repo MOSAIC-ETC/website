@@ -1,85 +1,195 @@
-import { ExternalLinkIcon } from "lucide-react";
+import { ExternalLinkIcon, InfoIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 
-import { NextJSIcon, ReactIcon, ShadcnIcon, TailwindIcon, TypescriptIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Link } from "@/i18n/navigation";
-import { cn } from "@/lib/utils";
+
+import { ArchitectureSection } from "./components/architecture-section";
+import { CitationSection } from "./components/citation-section";
+import { DrizzleAnimation } from "./components/drizzle-animation";
+import { HeroMirror } from "./components/hero-mirror";
+import { InstrumentSection } from "./components/instrument-section";
+import { ModelSection } from "./components/model-section";
+import { Reveal } from "./components/reveal";
+
+import "./components/landing.css";
+
+const SPEC_ROWS = ["resolution", "aperture", "pixels", "dark", "ron"] as const;
 
 export default function Home() {
-  const t = useTranslations("home.hero");
-
-  const technologies = [
-    { name: "TypeScript", icon: TypescriptIcon, url: "https://www.typescriptlang.org/" },
-    { name: "Shadcn UI", icon: ShadcnIcon, url: "https://ui.shadcn.com/", invert: true },
-    { name: "React", icon: ReactIcon, url: "https://react.dev/" },
-    { name: "Tailwind CSS", icon: TailwindIcon, url: "https://tailwindcss.com/" },
-    { name: "Next.js", icon: NextJSIcon, url: "https://nextjs.org/", invert: true },
-  ];
+  const t = useTranslations("home");
 
   return (
-    <div>
-      <section className="relative py-40 h-[calc(100vh-4rem)] overflow-hidden">
+    <div className="landing">
+      {/* Hero */}
+      <section className="relative overflow-hidden">
         <div className="-z-10 absolute inset-0">
           <Image
             src="/assets/images/square-alt-grid.svg"
-            alt="Background Pattern"
-            className="opacity-60 dark:opacity-40 dark:invert object-cover mask-[radial-gradient(75%_75%_at_center,white,transparent)]"
+            alt=""
+            className="opacity-40 dark:opacity-25 dark:invert object-cover mask-[radial-gradient(75%_75%_at_center,white,transparent)]"
             priority
             fill
           />
         </div>
 
-        <div className="flex flex-col items-center gap-6 px-3 text-center">
-          <h1 className="opacity-0 font-bold text-2xl lg:text-5xl text-pretty tracking-tight animate-fade-in-up">
-            Lorem Ipsum Dolor Sit Amet
-          </h1>
-          <p className="opacity-0 mx-auto max-w-3xl text-muted-foreground lg:text-xl animate-fade-in-up delay-[90ms]">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Elig doloremque mollitia fugiat omnis! Porro
-            facilis quo animi consequatur. Explicabo.
-          </p>
-          <div className="flex flex-wrap justify-center gap-4 opacity-0 mt-8 animate-fade-in-up delay-[180ms]">
-            <Button asChild>
-              <Link href="/etc">{t("get-started")}</Link>
-            </Button>
-            <Button variant="outline" asChild>
-              <Link href="/about">
-                {t("learn-more")}
-                <ExternalLinkIcon />
-              </Link>
-            </Button>
+        <div className="items-center gap-10 lg:gap-16 grid lg:grid-cols-[1fr_460px] mx-auto px-4 lg:px-6 pt-16 lg:pt-24 pb-8 max-w-7xl">
+          <div className="max-lg:text-center">
+            <p className="opacity-0 font-mono text-muted-foreground text-xs lg:text-sm uppercase tracking-widest animate-fade-in-up">
+              {t("hero.eyebrow")}
+            </p>
+            <h1 className="opacity-0 mt-4 font-bold text-4xl lg:text-5xl text-pretty tracking-tight animate-fade-in-up delay-[90ms]">
+              {t("hero.title")}
+            </h1>
+            <p className="opacity-0 mt-6 max-w-2xl max-lg:mx-auto text-muted-foreground lg:text-lg leading-relaxed animate-fade-in-up delay-[180ms]">
+              {t("hero.subtitle")}
+            </p>
+            <div className="flex flex-wrap max-lg:justify-center gap-4 opacity-0 mt-8 animate-fade-in-up delay-[270ms]">
+              <Button size="lg" asChild>
+                <Link href="/etc">{t("hero.open-calculator")}</Link>
+              </Button>
+              <Button size="lg" variant="outline" asChild>
+                <Link href="/docs">
+                  {t("hero.read-docs")}
+                  <ExternalLinkIcon />
+                </Link>
+              </Button>
+            </div>
+            <p className="opacity-0 mt-6 text-muted-foreground text-sm animate-fade-in-up delay-[360ms]">
+              <a href="#disclaimer" className="underline underline-offset-4 decoration-dotted">
+                {t("hero.disclaimer-note")}
+              </a>
+            </p>
           </div>
 
-          <div className="flex flex-col items-center gap-5 mt-20">
-            <p className="opacity-0 font-medium text-muted-foreground lg:text-left animate-fade-in-up delay-[270ms]">
-              {t("built-with-open-source-technologies")}
-            </p>
+          <HeroMirror className="max-lg:hidden" />
+        </div>
 
-            <div className="flex flex-wrap justify-center items-center gap-4">
-              {technologies.map((tech, idx) => (
-                <Button
-                  key={tech.name}
-                  variant="outline"
-                  className="group opacity-0 size-12 animate-fade-in-up"
-                  style={{ animationDelay: `${300 + idx * 75}ms` }}
-                  asChild
-                >
-                  <a href={tech.url} target="_blank" rel="noopener noreferrer">
-                    <tech.icon
-                      className={cn(
-                        "saturate-0 group-hover:saturate-100 size-6 transition-all",
-                        tech.invert && "dark:invert",
-                      )}
-                    />
-                    <span className="sr-only">{tech.name}</span>
-                  </a>
-                </Button>
-              ))}
-            </div>
+        <div className="mx-auto px-4 lg:px-6 pb-16 lg:pb-24 max-w-5xl">
+          <div className="opacity-0 border rounded-xl overflow-hidden shadow-xl animate-fade-in-up delay-[450ms]">
+            <Image
+              src="/assets/images/landing/etc-snr-spectrum.png"
+              alt={t("hero.screenshot-alt")}
+              width={1920}
+              height={1500}
+              priority
+              className="w-full h-auto"
+            />
           </div>
         </div>
       </section>
+
+      {/* Disclaimer */}
+      <section id="disclaimer" className="bg-muted/50 border-y scroll-mt-20">
+        <div className="flex items-start gap-4 mx-auto px-4 lg:px-6 py-8 max-w-5xl">
+          <InfoIcon className="mt-1 size-5 text-muted-foreground shrink-0" aria-hidden="true" />
+          <div>
+            <h2 className="font-semibold">{t("disclaimer.title")}</h2>
+            <p className="mt-2 text-muted-foreground text-sm leading-relaxed">
+              {t.rich("disclaimer.body", {
+                b: (chunks) => <strong className="text-foreground">{chunks}</strong>,
+                link: (chunks) => (
+                  <a
+                    href="https://etc.eso.org"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline underline-offset-4"
+                  >
+                    {chunks}
+                  </a>
+                ),
+              })}
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Instrument overview */}
+      <InstrumentSection />
+
+      {/* SNR model */}
+      <ModelSection />
+
+      {/* 2D SNR maps */}
+      <section className="mx-auto px-4 lg:px-6 py-20 lg:py-28 max-w-7xl">
+        <div className="items-center gap-12 lg:gap-20 grid lg:grid-cols-2">
+          <Reveal className="max-lg:order-last">
+            <div className="border rounded-xl overflow-hidden shadow-lg">
+              <Image
+                src="/assets/images/landing/etc-snr-map.png"
+                alt={t("snr-map.screenshot-alt")}
+                width={1920}
+                height={1574}
+                className="w-full h-auto"
+              />
+            </div>
+          </Reveal>
+
+          <Reveal delay={150}>
+            <h2 className="font-bold text-3xl lg:text-4xl tracking-tight">{t("snr-map.title")}</h2>
+            <p className="mt-6 text-muted-foreground lg:text-lg leading-relaxed">{t("snr-map.body")}</p>
+            <div className="mt-10">
+              <DrizzleAnimation
+                inputLabel={t("snr-map.drizzle.input")}
+                outputLabel={t("snr-map.drizzle.output")}
+                arrowLabel="drizzle"
+              />
+            </div>
+            <p className="mt-6 text-muted-foreground text-xs leading-relaxed">{t("snr-map.caveat")}</p>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* Client-side architecture */}
+      <div className="bg-muted/40 border-y">
+        <ArchitectureSection />
+      </div>
+
+      {/* Technical specifications */}
+      <section className="mx-auto px-4 lg:px-6 py-20 lg:py-28 max-w-5xl">
+        <Reveal className="text-center">
+          <h2 className="font-bold text-3xl lg:text-4xl tracking-tight">{t("specs.title")}</h2>
+        </Reveal>
+        <Reveal delay={150} className="mt-10">
+          <div className="border rounded-lg overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>{t("specs.columns.parameter")}</TableHead>
+                  <TableHead className="text-right">MOS VIS</TableHead>
+                  <TableHead className="text-right">MOS NIR</TableHead>
+                  <TableHead className="text-right">IFU</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {SPEC_ROWS.map((row) => (
+                  <TableRow key={row}>
+                    <TableCell className="text-muted-foreground">{t(`specs.rows.${row}.label`)}</TableCell>
+                    <TableCell className="font-mono text-right">{t(`specs.rows.${row}.vis`)}</TableCell>
+                    <TableCell className="font-mono text-right">{t(`specs.rows.${row}.nir`)}</TableCell>
+                    <TableCell className="font-mono text-right">{t(`specs.rows.${row}.ifu`)}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+          <p className="mt-4 text-muted-foreground text-xs leading-relaxed">{t("specs.caption")}</p>
+        </Reveal>
+      </section>
+
+      {/* Provenance & citation */}
+      <div className="bg-muted/40 border-t">
+        <CitationSection />
+      </div>
     </div>
   );
 }

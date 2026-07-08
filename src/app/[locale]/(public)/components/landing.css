@@ -1,0 +1,214 @@
+/* Landing-page animations. Every animation lives inside the
+   no-preference media query so `prefers-reduced-motion: reduce`
+   renders the page fully static at its final state. */
+
+@media (prefers-reduced-motion: no-preference) {
+  /* --- Hero mirror ------------------------------------------------------ */
+
+  .landing .hex {
+    animation:
+      hex-in 0.7s cubic-bezier(0.22, 0.72, 0.28, 0.99) both,
+      hex-shimmer 7s ease-in-out infinite;
+    animation-delay: var(--hex-delay, 0s), calc(var(--hex-delay, 0s) + 2s);
+  }
+
+  .landing .beam {
+    stroke-dasharray: var(--beam-length, 300);
+    stroke-dashoffset: var(--beam-length, 300);
+    animation: beam-draw 1.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    animation-delay: var(--beam-delay, 1s);
+  }
+
+  /* --- Drizzle ---------------------------------------------------------- */
+
+  .landing .dz-packet {
+    translate: var(--fx) var(--fy);
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: dz-packet 9s cubic-bezier(0.45, 0, 0.35, 1) infinite backwards;
+    animation-delay: var(--dz-delay, 0s);
+  }
+
+  .landing .dz-fill {
+    opacity: 0;
+    animation: dz-fill 9s linear infinite backwards;
+    animation-delay: var(--dz-delay, 0s);
+  }
+
+  /* --- Web Worker pulse in the architecture diagram ---------------------- */
+
+  .landing .worker-pulse {
+    animation: worker-pulse 3s ease-out infinite;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  /* --- Detector noise labels -------------------------------------------- */
+
+  .landing .noise-pulse {
+    animation: noise-pulse 4s ease-in-out infinite;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing [class*="animate-"] {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .landing .dz-packet {
+    translate: var(--fx) var(--fy);
+    opacity: 0;
+  }
+
+  .landing .dz-fill {
+    opacity: 0.8;
+  }
+}
+
+@keyframes hex-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: var(--hex-opacity, 0.28);
+  }
+}
+
+@keyframes hex-shimmer {
+  0%,
+  100% {
+    opacity: var(--hex-opacity, 0.28);
+  }
+  50% {
+    opacity: calc(var(--hex-opacity, 0.28) * 0.55);
+  }
+}
+
+@keyframes beam-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes dz-packet {
+  0% {
+    translate: var(--fx) var(--fy);
+    scale: 1;
+    opacity: 0;
+  }
+  6% {
+    opacity: 0.9;
+  }
+  24% {
+    translate: var(--fx) var(--fy);
+    scale: 0.4;
+    opacity: 0.9;
+  }
+  30% {
+    scale: 0.4;
+  }
+  52% {
+    translate: var(--tx) var(--ty);
+    scale: 0.4;
+    opacity: 0.9;
+  }
+  60% {
+    translate: var(--tx) var(--ty);
+    scale: 0.4;
+    opacity: 0;
+  }
+  100% {
+    translate: var(--tx) var(--ty);
+    scale: 0.4;
+    opacity: 0;
+  }
+}
+
+@keyframes dz-fill {
+  0%,
+  48% {
+    opacity: 0;
+  }
+  56% {
+    opacity: 0.85;
+  }
+  88% {
+    opacity: 0.85;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes worker-pulse {
+  0% {
+    scale: 1;
+    opacity: 0.6;
+  }
+  70% {
+    scale: 1.9;
+    opacity: 0;
+  }
+  100% {
+    scale: 1.9;
+    opacity: 0;
+  }
+}
+
+@keyframes noise-pulse {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* --- Focal plane light-up (transitions, not animations, so the
+       reduced-motion guard above leaves the final state intact) --------- */
+
+.landing .fp-el {
+  opacity: 0;
+  transition: opacity 0.5s ease-out;
+  transition-delay: var(--fp-delay, 0s);
+}
+
+.landing .fp-lit .fp-el {
+  opacity: var(--fp-opacity, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing .fp-el {
+    opacity: var(--fp-opacity, 1) !important;
+    transition: none !important;
+  }
+}
+
+/* --- Cross-highlight dimming (focal plane ↔ fact rows, equation ↔
+       photon path ↔ cards). `data-highlight` is set by React state. ----- */
+
+.landing [data-highlight] .dim-target {
+  transition: opacity 0.25s ease;
+}
+
+.landing [data-highlight="vis"] .dim-target:not([data-mode~="vis"]),
+.landing [data-highlight="nir"] .dim-target:not([data-mode~="nir"]),
+.landing [data-highlight="ifu"] .dim-target:not([data-mode~="ifu"]),
+.landing [data-highlight="field"] .dim-target:not([data-mode~="field"]),
+.landing [data-highlight="signal"] .dim-target:not([data-term~="signal"]),
+.landing [data-highlight="background"] .dim-target:not([data-term~="background"]),
+.landing [data-highlight="noise"] .dim-target:not([data-term~="noise"]) {
+  opacity: 0.15;
+}
+
+/* Hero mirror segment hover — !important beats the shimmer animation. */
+.landing .hex {
+  opacity: var(--hex-opacity, 0.28);
+}
+
+.landing .hex:hover {
+  opacity: 0.75 !important;
+}

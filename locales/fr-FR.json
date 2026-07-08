@@ -59,7 +59,8 @@
     "contact": "Contact",
     "privacy-policy": "Politique de Confidentialité",
     "terms-of-service": "Conditions d'utilisation",
-    "developed-by": "Développé par"
+    "developed-by": "Développé par",
+    "disclaimer": "MOSAIC ETC est un projet académique indépendant, sans affiliation ni approbation de l'ESO ou du consortium MOSAIC."
   },
   "not-found": {
     "lost-in-space": "Perdu dans l'espace?",
@@ -68,9 +69,155 @@
   },
   "home": {
     "hero": {
-      "built-with-open-source-technologies": "Construit avec des technologies open source",
-      "learn-more": "Apprendre Encore Plus",
-      "get-started": "Commencez Maintenant"
+      "eyebrow": "Calculateur de Temps d'Exposition · MOSAIC @ ELT",
+      "title": "Planifiez vos observations MOSAIC avant la première lumière",
+      "subtitle": "Un calculateur de temps d'exposition ouvert, exécuté dans le navigateur, pour le spectrographe multi-objets MOSAIC de l'Extremely Large Telescope de 39 mètres. Calculez le rapport signal sur bruit en 1D et — fait unique — sous forme de cartes spatiales 2D, entièrement côté client, à partir de cubes de données spectraux réels.",
+      "open-calculator": "Ouvrir le Calculateur",
+      "read-docs": "Lire la Documentation",
+      "disclaimer-note": "Projet académique indépendant — sans affiliation ni approbation de l'ESO",
+      "screenshot-alt": "Interface de MOSAIC ETC montrant l'onglet spectre SNR : formulaire de configuration de l'observation et rapport signal sur bruit calculé en fonction de la longueur d'onde"
+    },
+    "disclaimer": {
+      "title": "Avis de projet indépendant",
+      "body": "MOSAIC ETC est un projet académique indépendant développé à l'Universidade Estadual de Santa Cruz (UESC, Brésil). Il n'est <b>ni associé, ni financé, ni approuvé par l'European Southern Observatory (ESO)</b> ni par le consortium de l'instrument MOSAIC. Les paramètres de l'instrument proviennent de documents publics du groupe de travail MOSAIC et peuvent ne pas refléter la conception finale de l'instrument. Pour les outils officiels, consultez le <link>Calculateur de Temps d'Exposition de l'ESO</link>."
+    },
+    "instrument": {
+      "title": "MOSAIC sur l'Extremely Large Telescope",
+      "body": "MOSAIC (Multi-Object Spectrograph for Astrophysics, Intergalactic-medium studies and Cosmology) est un instrument de seconde génération prévu pour l'Extremely Large Telescope de l'ESO, attendu vers 2035. En combinant la spectroscopie multi-objets à haut multiplexage et des unités de champ intégral déployables derrière un miroir primaire segmenté de 38,5 m, il permettra des programmes en cosmologie, évolution des galaxies, études du milieu intergalactique et caractérisation d'atmosphères d'exoplanètes.",
+      "facts-hint": "Survolez une ligne pour la repérer sur le schéma du plan focal.",
+      "facts": {
+        "aperture": {
+          "label": "Ouverture du télescope",
+          "value": "38,5 m"
+        },
+        "mos-vis": {
+          "label": "Multiplexage MOS VIS",
+          "value": "jusqu'à 200 objets"
+        },
+        "mos-nir": {
+          "label": "Multiplexage MOS NIR",
+          "value": "jusqu'à 80 objets"
+        },
+        "ifu": {
+          "label": "Unités de champ intégral",
+          "value": "8 × 2,5″ · 0,15″/spaxel"
+        },
+        "field": {
+          "label": "Champ de patrouille",
+          "value": "~40 arcmin"
+        },
+        "resolution": {
+          "label": "Pouvoir de résolution (conception)",
+          "value": "R 5 000 – 20 000"
+        }
+      },
+      "diagram": {
+        "field-label": "champ de 40′",
+        "caption": "Plan focal schématique : cibles MOS VIS (points), cibles MOS NIR (losanges) et IFU déployables (hexagones). Positions illustratives."
+      }
+    },
+    "model": {
+      "title": "Un modèle signal sur bruit transparent",
+      "intro": "Le SNR suit l'équation CCD standard (Howell, 2000) : comptages de la source face au fond de ciel tabulé et au bruit du détecteur par mode, accumulés sur NDIT poses de durée DIT.",
+      "equation-hint": "Survolez un terme pour le suivre le long du chemin optique ci-dessous.",
+      "diagram": {
+        "source": "Source",
+        "sky": "Atmosphère",
+        "telescope": "Télescope",
+        "disperser": "Disperseur",
+        "detector": "Détecteur"
+      },
+      "cards": {
+        "signal": {
+          "title": "Signal de la source",
+          "subtitle": "Cs",
+          "body": "Comptages de photons du spectre de la cible, mis à l'échelle par la surface collectrice effective de l'ELT, l'intervalle spectral λ/R, l'énergie encerclée tabulée et la transmission globale de l'instrument."
+        },
+        "background": {
+          "title": "Fond et bruit",
+          "subtitle": "Cb · RON · DARK",
+          "body": "Brillance de surface du ciel tabulée pour quatre conditions — ciel sombre ou clair, avec ou sans émission thermique du télescope — plus un bruit de lecture de 3 e⁻/px et un courant d'obscurité par mode."
+        },
+        "inputs": {
+          "title": "Configuration de l'observation",
+          "subtitle": "16 filtres · 6 systèmes de flux",
+          "body": "Normalisation spectrale avec les filtres Bessel UBVRI, GMOS ugrizZ, 2MASS JHKs et N/Q ; magnitudes en AB, Vega, Jansky, W m⁻² µm⁻¹, erg s⁻¹ cm⁻² Å⁻¹ ou erg s⁻¹ cm⁻² Hz⁻¹ ; redshift, DIT et NDIT."
+        }
+      }
+    },
+    "snr-map": {
+      "title": "Cartes spatiales de SNR pour la planification IFU",
+      "body": "Au-delà du spectre SNR en fonction de la longueur d'onde, MOSAIC ETC calcule des cartes bidimensionnelles de SNR sur une région sélectionnée d'un cube spectral réel — une capacité absente des calculateurs publics actuels. Les cubes d'entrée sont rééchantillonnés sur la grille de spaxels de 0,15″ de MOSAIC par drizzle à conservation de flux (Fruchter & Hook, 1997), et les cartes sont rendues avec des palettes perceptuellement uniformes, des échelles linéaire, logarithmique ou par percentile, et exportées en FITS, PNG ou texte brut.",
+      "caveat": "Le rééchantillonnage reproduit l'échantillonnage spatial de MOSAIC, pas sa résolution optique. Les cubes de démonstration fournis sont des observations MaNGA (SDSS DR17).",
+      "screenshot-alt": "Interface de MOSAIC ETC montrant l'onglet carte SNR : formulaire de sélection spatiale et carte bidimensionnelle du rapport signal sur bruit calculée",
+      "drizzle": {
+        "input": "0,5″ / pixel",
+        "output": "0,15″ / spaxel"
+      }
+    },
+    "architecture": {
+      "title": "Côté client par conception",
+      "body": "Chaque calcul s'exécute dans votre navigateur au sein d'un Web Worker — pas de serveur de calcul, pas de file d'attente, aucune donnée téléversée. Les cubes FITS et les tables de calibration sont mis en cache localement dans IndexedDB et versionnés contre un manifeste SHA-256. Le code source complet est ouvert.",
+      "diagram": {
+        "server": "Fichiers statiques",
+        "server-note": "calcul côté serveur",
+        "manifest": "manifeste SHA-256",
+        "cache": "cache local versionné",
+        "worker": "calcul du SNR",
+        "results": "spectres 1D · cartes 2D"
+      },
+      "stats": {
+        "computation": "calcul 1D médian",
+        "drizzle": "rééchantillonnage drizzle",
+        "modes": "modes d'observation",
+        "client-side": "calcul côté client"
+      },
+      "github": "Voir le code sur GitHub"
+    },
+    "specs": {
+      "title": "Spécifications techniques",
+      "columns": {
+        "parameter": "Paramètre"
+      },
+      "rows": {
+        "resolution": {
+          "label": "Pouvoir de résolution R (implémenté)",
+          "vis": "5 000",
+          "nir": "5 000",
+          "ifu": "5 000"
+        },
+        "aperture": {
+          "label": "Diamètre d'ouverture",
+          "vis": "0,7″",
+          "nir": "0,6″",
+          "ifu": "0,15″"
+        },
+        "pixels": {
+          "label": "Pixels par objet (Npix)",
+          "vis": "175",
+          "nir": "63",
+          "ifu": "27"
+        },
+        "dark": {
+          "label": "Courant d'obscurité (e⁻ s⁻¹ px⁻¹)",
+          "vis": "2,78 × 10⁻³",
+          "nir": "1 × 10⁻²",
+          "ifu": "1 × 10⁻²"
+        },
+        "ron": {
+          "label": "Bruit de lecture (e⁻ px⁻¹)",
+          "vis": "3",
+          "nir": "3",
+          "ifu": "3"
+        }
+      },
+      "caption": "La calibration actuelle implémente le mode basse résolution (R = 5 000) pour les trois modes. Les paramètres suivent les estimations du groupe de travail MOSAIC et peuvent évoluer avec la conception de l'instrument."
+    },
+    "citation": {
+      "title": "Provenance et citation",
+      "body": "MOSAIC ETC a été développé comme mémoire de licence en informatique à l'Universidade Estadual de Santa Cruz (UESC, Ilhéus, Brésil), sous la direction du Prof. Dr Henri Michel Pierre Plana et la codirection de la Prof. Luenne Nailam Sousa Nascimento, avec le soutien du CNPq et de la FAPESB.",
+      "copy": "Copier",
+      "copied": "Copié"
     }
   },
   "login": {

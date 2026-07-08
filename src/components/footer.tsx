@@ -82,7 +82,8 @@ export function Footer() {
 
       <Separator />
 
-      <div className="flex justify-center mx-auto px-4 sm:px-6 py-8 max-w-7xl">
+      <div className="flex flex-col items-center gap-3 mx-auto px-4 sm:px-6 py-8 max-w-7xl">
+        <p className="text-muted-foreground text-sm text-center text-balance">{t("disclaimer")}</p>
         <p className="font-medium text-center text-balance">
           {`©${new Date().getFullYear()}`}{" "}
           <a

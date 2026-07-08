@@ -59,7 +59,8 @@
     "contact": "Contact",
     "privacy-policy": "Privacy Policy",
     "terms-of-service": "Terms of Service",
-    "developed-by": "Developed by"
+    "developed-by": "Developed by",
+    "disclaimer": "MOSAIC ETC is an independent academic project and is not affiliated with or endorsed by ESO or the MOSAIC consortium."
   },
   "not-found": {
     "lost-in-space": "Lost in space?",
@@ -68,9 +69,155 @@
   },
   "home": {
     "hero": {
-      "built-with-open-source-technologies": "Built with open-source technologies",
-      "get-started": "Get Started Now",
-      "learn-more": "Learn More"
+      "eyebrow": "Exposure Time Calculator · MOSAIC @ ELT",
+      "title": "Plan MOSAIC observations before first light",
+      "subtitle": "An open, browser-based exposure time calculator for the MOSAIC multi-object spectrograph on the 39-metre Extremely Large Telescope. Compute signal-to-noise ratios in 1D and — uniquely — as 2D spatial maps, entirely client-side, from real spectral data cubes.",
+      "open-calculator": "Open the Calculator",
+      "read-docs": "Read the Documentation",
+      "disclaimer-note": "Independent academic project — not affiliated with or endorsed by ESO",
+      "screenshot-alt": "MOSAIC ETC interface showing the SNR spectrum tab: observation setup form and the computed signal-to-noise ratio versus wavelength"
+    },
+    "disclaimer": {
+      "title": "Independent project notice",
+      "body": "MOSAIC ETC is an independent academic project developed at the Universidade Estadual de Santa Cruz (UESC, Brazil). It is <b>not associated with, funded by, or endorsed by the European Southern Observatory (ESO)</b> or the MOSAIC instrument consortium. Instrument parameters are derived from publicly available MOSAIC working-group material and may not reflect the final instrument design. For official tools, refer to <link>ESO's Exposure Time Calculator</link>."
+    },
+    "instrument": {
+      "title": "MOSAIC on the Extremely Large Telescope",
+      "body": "MOSAIC (Multi-Object Spectrograph for Astrophysics, Intergalactic-medium studies and Cosmology) is a second-generation instrument planned for ESO's Extremely Large Telescope, expected around 2035. Combining high-multiplex multi-object spectroscopy with deployable integral-field units behind a 38.5 m segmented primary mirror, it will enable programmes in cosmology, galaxy evolution, intergalactic-medium studies and exoplanet atmosphere characterisation.",
+      "facts-hint": "Hover a row to locate it on the focal-plane schematic.",
+      "facts": {
+        "aperture": {
+          "label": "Telescope aperture",
+          "value": "38.5 m"
+        },
+        "mos-vis": {
+          "label": "MOS VIS multiplex",
+          "value": "up to 200 objects"
+        },
+        "mos-nir": {
+          "label": "MOS NIR multiplex",
+          "value": "up to 80 objects"
+        },
+        "ifu": {
+          "label": "Integral field units",
+          "value": "8 × 2.5″ · 0.15″/spaxel"
+        },
+        "field": {
+          "label": "Patrol field",
+          "value": "~40 arcmin"
+        },
+        "resolution": {
+          "label": "Resolving power (design)",
+          "value": "R 5 000 – 20 000"
+        }
+      },
+      "diagram": {
+        "field-label": "40′ patrol field",
+        "caption": "Schematic focal plane: MOS VIS targets (dots), MOS NIR targets (diamonds) and deployable IFUs (hexagons). Positions are illustrative."
+      }
+    },
+    "model": {
+      "title": "A transparent signal-to-noise model",
+      "intro": "SNR follows the standard CCD equation (Howell, 2000): source counts against tabulated sky background and per-mode detector noise, accumulated over NDIT exposures of length DIT.",
+      "equation-hint": "Hover a term to trace it through the optical path below.",
+      "diagram": {
+        "source": "Source",
+        "sky": "Atmosphere",
+        "telescope": "Telescope",
+        "disperser": "Disperser",
+        "detector": "Detector"
+      },
+      "cards": {
+        "signal": {
+          "title": "Source signal",
+          "subtitle": "Cs",
+          "body": "Photon counts from the target spectrum, scaled by the ELT's effective collecting area, the spectral bin λ/R, tabulated enclosed energy and the instrument's global throughput."
+        },
+        "background": {
+          "title": "Background & noise",
+          "subtitle": "Cb · RON · DARK",
+          "body": "Sky surface brightness tabulated for four conditions — dark or bright sky, with or without telescope thermal emission — plus a read noise of 3 e⁻/px and per-mode dark current."
+        },
+        "inputs": {
+          "title": "Observation setup",
+          "subtitle": "16 filters · 6 flux systems",
+          "body": "Spectral normalisation with Bessel UBVRI, GMOS ugrizZ, 2MASS JHKs and N/Q filters; magnitudes in AB, Vega, Jansky, W m⁻² µm⁻¹, erg s⁻¹ cm⁻² Å⁻¹ or erg s⁻¹ cm⁻² Hz⁻¹; redshift, DIT and NDIT."
+        }
+      }
+    },
+    "snr-map": {
+      "title": "Spatial SNR maps for IFU programme planning",
+      "body": "Beyond the conventional SNR-versus-wavelength spectrum, MOSAIC ETC computes two-dimensional SNR maps over a selected region of a real spectral cube — a capability not offered by current public exposure time calculators. Input cubes are resampled onto MOSAIC's 0.15″ spaxel grid with flux-conserving drizzle (Fruchter & Hook, 1997), and maps render with perceptually uniform colormaps, linear, logarithmic or percentile z-scaling, and export to FITS, PNG or plain text.",
+      "caveat": "Resampling reproduces MOSAIC's spatial sampling, not its optical resolution. Bundled demonstration cubes are MaNGA observations (SDSS DR17).",
+      "screenshot-alt": "MOSAIC ETC interface showing the SNR map tab: spatial selection form and the computed two-dimensional signal-to-noise map",
+      "drizzle": {
+        "input": "0.5″ / pixel",
+        "output": "0.15″ / spaxel"
+      }
+    },
+    "architecture": {
+      "title": "Client-side by design",
+      "body": "Every calculation runs in your browser inside a Web Worker — no compute server, no queue, nothing uploaded. FITS cubes and calibration tables are cached locally in IndexedDB and versioned against a SHA-256 manifest. The full source code is open.",
+      "diagram": {
+        "server": "Static files",
+        "server-note": "server-side compute",
+        "manifest": "SHA-256 manifest",
+        "cache": "local, versioned cache",
+        "worker": "SNR computation",
+        "results": "1D spectra · 2D maps"
+      },
+      "stats": {
+        "computation": "median 1D computation",
+        "drizzle": "drizzle resampling",
+        "modes": "observing modes",
+        "client-side": "client-side computation"
+      },
+      "github": "View source on GitHub"
+    },
+    "specs": {
+      "title": "Technical specifications",
+      "columns": {
+        "parameter": "Parameter"
+      },
+      "rows": {
+        "resolution": {
+          "label": "Resolving power R (implemented)",
+          "vis": "5 000",
+          "nir": "5 000",
+          "ifu": "5 000"
+        },
+        "aperture": {
+          "label": "Aperture diameter",
+          "vis": "0.7″",
+          "nir": "0.6″",
+          "ifu": "0.15″"
+        },
+        "pixels": {
+          "label": "Pixels per object (Npix)",
+          "vis": "175",
+          "nir": "63",
+          "ifu": "27"
+        },
+        "dark": {
+          "label": "Dark current (e⁻ s⁻¹ px⁻¹)",
+          "vis": "2.78 × 10⁻³",
+          "nir": "1 × 10⁻²",
+          "ifu": "1 × 10⁻²"
+        },
+        "ron": {
+          "label": "Read noise (e⁻ px⁻¹)",
+          "vis": "3",
+          "nir": "3",
+          "ifu": "3"
+        }
+      },
+      "caption": "Current calibration implements the low-resolution mode (R = 5 000) for all three modes. Parameters follow MOSAIC working-group estimates and may change as the instrument design matures."
+    },
+    "citation": {
+      "title": "Provenance & citation",
+      "body": "MOSAIC ETC was developed as an undergraduate thesis in Computer Science at the Universidade Estadual de Santa Cruz (UESC, Ilhéus, Brazil), advised by Prof. Dr. Henri Michel Pierre Plana and co-advised by Prof. Luenne Nailam Sousa Nascimento, with support from CNPq and FAPESB.",
+      "copy": "Copy",
+      "copied": "Copied"
     }
   },
   "login": {
