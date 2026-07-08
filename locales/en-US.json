@@ -73,9 +73,7 @@
       "title": "Plan MOSAIC observations before first light",
       "subtitle": "An open, browser-based exposure time calculator for the MOSAIC multi-object spectrograph on the 39-metre Extremely Large Telescope. Compute signal-to-noise ratios in 1D and — uniquely — as 2D spatial maps, entirely client-side, from real spectral data cubes.",
       "open-calculator": "Open the Calculator",
-      "read-docs": "Read the Documentation",
-      "disclaimer-note": "Independent academic project — not affiliated with or endorsed by ESO",
-      "screenshot-alt": "MOSAIC ETC interface showing the SNR spectrum tab: observation setup form and the computed signal-to-noise ratio versus wavelength"
+      "read-docs": "Read the Documentation"
     },
     "disclaimer": {
       "title": "Independent project notice",
@@ -118,7 +116,7 @@
     },
     "model": {
       "title": "A transparent signal-to-noise model",
-      "intro": "SNR follows the standard CCD equation (Howell, 2000): source counts against tabulated sky background and per-mode detector noise, accumulated over NDIT exposures of length DIT.",
+      "intro": "SNR follows the standard CCD signal-to-noise equation: source counts against tabulated sky background and per-mode detector noise, accumulated over NDIT exposures of length DIT.",
       "equation-hint": "Hover a term to trace it through the optical path below.",
       "diagram": {
         "source": "Source",
@@ -131,17 +129,29 @@
         "signal": {
           "title": "Source signal",
           "subtitle": "Cs",
-          "body": "Photon counts from the target spectrum, scaled by the ELT's effective collecting area, the spectral bin λ/R, tabulated enclosed energy and the instrument's global throughput."
+          "items": [
+            "Photon counts from the target spectrum",
+            "Scaled by the ELT's effective collecting area and the spectral bin λ/R",
+            "Weighted by tabulated enclosed energy and global throughput"
+          ]
         },
         "background": {
           "title": "Background & noise",
           "subtitle": "Cb · RON · DARK",
-          "body": "Sky surface brightness tabulated for four conditions — dark or bright sky, with or without telescope thermal emission — plus a read noise of 3 e⁻/px and per-mode dark current."
+          "items": [
+            "Sky surface brightness for four tabulated conditions — dark or bright sky, with or without telescope thermal emission",
+            "Read noise of 3 e⁻/px",
+            "Per-mode dark current"
+          ]
         },
         "inputs": {
           "title": "Observation setup",
           "subtitle": "16 filters · 6 flux systems",
-          "body": "Spectral normalisation with Bessel UBVRI, GMOS ugrizZ, 2MASS JHKs and N/Q filters; magnitudes in AB, Vega, Jansky, W m⁻² µm⁻¹, erg s⁻¹ cm⁻² Å⁻¹ or erg s⁻¹ cm⁻² Hz⁻¹; redshift, DIT and NDIT."
+          "items": [
+            "16 photometric filters: Bessel UBVRI, GMOS ugrizZ, 2MASS JHKs, N/Q",
+            "Six flux-unit systems: AB and Vega magnitudes, Jy, W m⁻² µm⁻¹, erg s⁻¹ cm⁻² Å⁻¹, erg s⁻¹ cm⁻² Hz⁻¹",
+            "Redshift, exposure time (DIT) and number of exposures (NDIT)"
+          ]
         }
       }
     },
@@ -149,7 +159,6 @@
       "title": "Spatial SNR maps for IFU programme planning",
       "body": "Beyond the conventional SNR-versus-wavelength spectrum, MOSAIC ETC computes two-dimensional SNR maps over a selected region of a real spectral cube — a capability not offered by current public exposure time calculators. Input cubes are resampled onto MOSAIC's 0.15″ spaxel grid with flux-conserving drizzle (Fruchter & Hook, 1997), and maps render with perceptually uniform colormaps, linear, logarithmic or percentile z-scaling, and export to FITS, PNG or plain text.",
       "caveat": "Resampling reproduces MOSAIC's spatial sampling, not its optical resolution. Bundled demonstration cubes are MaNGA observations (SDSS DR17).",
-      "screenshot-alt": "MOSAIC ETC interface showing the SNR map tab: spatial selection form and the computed two-dimensional signal-to-noise map",
       "drizzle": {
         "input": "0.5″ / pixel",
         "output": "0.15″ / spaxel"

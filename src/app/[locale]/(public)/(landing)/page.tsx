@@ -42,7 +42,7 @@ export default function Home() {
           />
         </div>
 
-        <div className="items-center gap-10 lg:gap-16 grid lg:grid-cols-[1fr_460px] mx-auto px-4 lg:px-6 pt-16 lg:pt-24 pb-8 max-w-7xl">
+        <div className="items-center gap-10 lg:gap-16 grid lg:grid-cols-[1fr_460px] mx-auto px-4 lg:px-6 py-16 lg:py-24 max-w-7xl min-h-[calc(100vh-4rem)] content-center">
           <div className="max-lg:text-center">
             <p className="opacity-0 font-mono text-muted-foreground text-xs lg:text-sm uppercase tracking-widest animate-fade-in-up">
               {t("hero.eyebrow")}
@@ -64,32 +64,14 @@ export default function Home() {
                 </Link>
               </Button>
             </div>
-            <p className="opacity-0 mt-6 text-muted-foreground text-sm animate-fade-in-up delay-[360ms]">
-              <a href="#disclaimer" className="underline underline-offset-4 decoration-dotted">
-                {t("hero.disclaimer-note")}
-              </a>
-            </p>
           </div>
 
           <HeroMirror className="max-lg:hidden" />
         </div>
-
-        <div className="mx-auto px-4 lg:px-6 pb-16 lg:pb-24 max-w-5xl">
-          <div className="opacity-0 border rounded-xl overflow-hidden shadow-xl animate-fade-in-up delay-[450ms]">
-            <Image
-              src="/assets/images/landing/etc-snr-spectrum.png"
-              alt={t("hero.screenshot-alt")}
-              width={1920}
-              height={1500}
-              priority
-              className="w-full h-auto"
-            />
-          </div>
-        </div>
       </section>
 
       {/* Disclaimer */}
-      <section id="disclaimer" className="bg-muted/50 border-y scroll-mt-20">
+      <section className="bg-muted/50 border-y">
         <div className="flex items-start gap-4 mx-auto px-4 lg:px-6 py-8 max-w-5xl">
           <InfoIcon className="mt-1 size-5 text-muted-foreground shrink-0" aria-hidden="true" />
           <div>
@@ -122,28 +104,17 @@ export default function Home() {
       {/* 2D SNR maps */}
       <section className="mx-auto px-4 lg:px-6 py-20 lg:py-28 max-w-7xl">
         <div className="items-center gap-12 lg:gap-20 grid lg:grid-cols-2">
-          <Reveal className="max-lg:order-last">
-            <div className="border rounded-xl overflow-hidden shadow-lg">
-              <Image
-                src="/assets/images/landing/etc-snr-map.png"
-                alt={t("snr-map.screenshot-alt")}
-                width={1920}
-                height={1574}
-                className="w-full h-auto"
-              />
-            </div>
+          <Reveal className="max-lg:order-last mx-auto w-full max-w-lg lg:max-w-none">
+            <DrizzleAnimation
+              inputLabel={t("snr-map.drizzle.input")}
+              outputLabel={t("snr-map.drizzle.output")}
+              arrowLabel="drizzle"
+            />
           </Reveal>
 
           <Reveal delay={150}>
             <h2 className="font-bold text-3xl lg:text-4xl tracking-tight">{t("snr-map.title")}</h2>
             <p className="mt-6 text-muted-foreground lg:text-lg leading-relaxed">{t("snr-map.body")}</p>
-            <div className="mt-10">
-              <DrizzleAnimation
-                inputLabel={t("snr-map.drizzle.input")}
-                outputLabel={t("snr-map.drizzle.output")}
-                arrowLabel="drizzle"
-              />
-            </div>
             <p className="mt-6 text-muted-foreground text-xs leading-relaxed">{t("snr-map.caveat")}</p>
           </Reveal>
         </div>

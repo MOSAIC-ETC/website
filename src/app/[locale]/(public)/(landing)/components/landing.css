@@ -204,6 +204,36 @@
   opacity: 0.15;
 }
 
+/* Positive emphasis on the active group, in addition to dimming the rest.
+   Diagram strokes/labels use currentColor, so setting `color` tints them. */
+.landing [data-highlight="signal"] g[data-term~="signal"] {
+  color: var(--chart-1);
+}
+
+.landing [data-highlight="background"] g[data-term~="background"] {
+  color: var(--chart-3);
+}
+
+.landing [data-highlight="noise"] g[data-term~="noise"] {
+  color: var(--chart-5);
+}
+
+/* Noise electrons inside the detector, shown while the noise term is active. */
+.landing .noise-speckle {
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.landing [data-highlight="noise"] .noise-speckle {
+  opacity: 0.85;
+}
+
+.landing [data-highlight="noise"] .noise-pulse {
+  animation: none;
+  opacity: 1;
+  font-weight: 600;
+}
+
 /* Hero mirror segment hover — !important beats the shimmer animation. */
 .landing .hex {
   opacity: var(--hex-opacity, 0.28);

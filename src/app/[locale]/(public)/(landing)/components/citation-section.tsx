@@ -20,12 +20,6 @@ const BIBTEX = `@thesis{seara:mosaicetc2026,
   url         = {https://github.com/MOSAIC-ETC/website}
 }`;
 
-const INSTITUTIONS = [
-  { name: "UESC", href: "https://uesc.br", logo: "/assets/images/institutions/uesc.png" },
-  { name: "FAPESB", href: "https://www.fapesb.ba.gov.br/", logo: "/assets/images/institutions/fapesb.png" },
-  { name: "CNPq", href: "https://www.cnpq.br/", logo: "/assets/images/institutions/cnpq.png" },
-];
-
 export function CitationSection() {
   const t = useTranslations("home.citation");
   const [ref, inView] = useInView<HTMLElement>(0.2);
@@ -60,27 +54,6 @@ export function CitationSection() {
         </Button>
       </div>
 
-      <div className={cn("opacity-0 flex flex-wrap justify-center items-center gap-10 mt-12", inView && "animate-fade-in-up delay-300")}>
-        {INSTITUTIONS.map((institution) => (
-          <a
-            key={institution.name}
-            href={institution.href}
-            aria-label={`${institution.name} Website`}
-            target="_blank"
-            rel="noopener noreferrer"
-            title={institution.name}
-          >
-            <img
-              src={institution.logo}
-              alt={institution.name}
-              height={56}
-              width={896}
-              className="w-auto h-14 select-none"
-              draggable={false}
-            />
-          </a>
-        ))}
-      </div>
     </section>
   );
 }

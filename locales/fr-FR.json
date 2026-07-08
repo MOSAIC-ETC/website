@@ -73,9 +73,7 @@
       "title": "Planifiez vos observations MOSAIC avant la première lumière",
       "subtitle": "Un calculateur de temps d'exposition ouvert, exécuté dans le navigateur, pour le spectrographe multi-objets MOSAIC de l'Extremely Large Telescope de 39 mètres. Calculez le rapport signal sur bruit en 1D et — fait unique — sous forme de cartes spatiales 2D, entièrement côté client, à partir de cubes de données spectraux réels.",
       "open-calculator": "Ouvrir le Calculateur",
-      "read-docs": "Lire la Documentation",
-      "disclaimer-note": "Projet académique indépendant — sans affiliation ni approbation de l'ESO",
-      "screenshot-alt": "Interface de MOSAIC ETC montrant l'onglet spectre SNR : formulaire de configuration de l'observation et rapport signal sur bruit calculé en fonction de la longueur d'onde"
+      "read-docs": "Lire la Documentation"
     },
     "disclaimer": {
       "title": "Avis de projet indépendant",
@@ -118,7 +116,7 @@
     },
     "model": {
       "title": "Un modèle signal sur bruit transparent",
-      "intro": "Le SNR suit l'équation CCD standard (Howell, 2000) : comptages de la source face au fond de ciel tabulé et au bruit du détecteur par mode, accumulés sur NDIT poses de durée DIT.",
+      "intro": "Le SNR suit l'équation standard signal sur bruit des CCD : comptages de la source face au fond de ciel tabulé et au bruit du détecteur par mode, accumulés sur NDIT poses de durée DIT.",
       "equation-hint": "Survolez un terme pour le suivre le long du chemin optique ci-dessous.",
       "diagram": {
         "source": "Source",
@@ -131,17 +129,29 @@
         "signal": {
           "title": "Signal de la source",
           "subtitle": "Cs",
-          "body": "Comptages de photons du spectre de la cible, mis à l'échelle par la surface collectrice effective de l'ELT, l'intervalle spectral λ/R, l'énergie encerclée tabulée et la transmission globale de l'instrument."
+          "items": [
+            "Comptages de photons du spectre de la cible",
+            "Mis à l'échelle par la surface collectrice effective de l'ELT et l'intervalle spectral λ/R",
+            "Pondérés par l'énergie encerclée et la transmission globale tabulées"
+          ]
         },
         "background": {
           "title": "Fond et bruit",
           "subtitle": "Cb · RON · DARK",
-          "body": "Brillance de surface du ciel tabulée pour quatre conditions — ciel sombre ou clair, avec ou sans émission thermique du télescope — plus un bruit de lecture de 3 e⁻/px et un courant d'obscurité par mode."
+          "items": [
+            "Brillance de surface du ciel pour quatre conditions tabulées — ciel sombre ou clair, avec ou sans émission thermique du télescope",
+            "Bruit de lecture de 3 e⁻/px",
+            "Courant d'obscurité par mode"
+          ]
         },
         "inputs": {
           "title": "Configuration de l'observation",
           "subtitle": "16 filtres · 6 systèmes de flux",
-          "body": "Normalisation spectrale avec les filtres Bessel UBVRI, GMOS ugrizZ, 2MASS JHKs et N/Q ; magnitudes en AB, Vega, Jansky, W m⁻² µm⁻¹, erg s⁻¹ cm⁻² Å⁻¹ ou erg s⁻¹ cm⁻² Hz⁻¹ ; redshift, DIT et NDIT."
+          "items": [
+            "16 filtres photométriques : Bessel UBVRI, GMOS ugrizZ, 2MASS JHKs, N/Q",
+            "Six systèmes de flux : magnitudes AB et Vega, Jy, W m⁻² µm⁻¹, erg s⁻¹ cm⁻² Å⁻¹, erg s⁻¹ cm⁻² Hz⁻¹",
+            "Décalage vers le rouge, temps de pose (DIT) et nombre de poses (NDIT)"
+          ]
         }
       }
     },
@@ -149,7 +159,6 @@
       "title": "Cartes spatiales de SNR pour la planification IFU",
       "body": "Au-delà du spectre SNR en fonction de la longueur d'onde, MOSAIC ETC calcule des cartes bidimensionnelles de SNR sur une région sélectionnée d'un cube spectral réel — une capacité absente des calculateurs publics actuels. Les cubes d'entrée sont rééchantillonnés sur la grille de spaxels de 0,15″ de MOSAIC par drizzle à conservation de flux (Fruchter & Hook, 1997), et les cartes sont rendues avec des palettes perceptuellement uniformes, des échelles linéaire, logarithmique ou par percentile, et exportées en FITS, PNG ou texte brut.",
       "caveat": "Le rééchantillonnage reproduit l'échantillonnage spatial de MOSAIC, pas sa résolution optique. Les cubes de démonstration fournis sont des observations MaNGA (SDSS DR17).",
-      "screenshot-alt": "Interface de MOSAIC ETC montrant l'onglet carte SNR : formulaire de sélection spatiale et carte bidimensionnelle du rapport signal sur bruit calculée",
       "drizzle": {
         "input": "0,5″ / pixel",
         "output": "0,15″ / spaxel"

@@ -106,31 +106,30 @@ export function ModelSection() {
         </div>
 
         <div className={cn("opacity-0 gap-6 grid md:grid-cols-3 mt-12", inView && "animate-fade-in-up delay-[450ms]")}>
-          <Card className="dim-target" data-term="signal">
-            <CardHeader>
-              <CardTitle>{t("cards.signal.title")}</CardTitle>
-              <CardDescription>{t("cards.signal.subtitle")}</CardDescription>
-            </CardHeader>
-            <CardContent className="text-muted-foreground text-sm leading-relaxed">{t("cards.signal.body")}</CardContent>
-          </Card>
-
-          <Card className="dim-target" data-term="background noise">
-            <CardHeader>
-              <CardTitle>{t("cards.background.title")}</CardTitle>
-              <CardDescription>{t("cards.background.subtitle")}</CardDescription>
-            </CardHeader>
-            <CardContent className="text-muted-foreground text-sm leading-relaxed">
-              {t("cards.background.body")}
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>{t("cards.inputs.title")}</CardTitle>
-              <CardDescription>{t("cards.inputs.subtitle")}</CardDescription>
-            </CardHeader>
-            <CardContent className="text-muted-foreground text-sm leading-relaxed">{t("cards.inputs.body")}</CardContent>
-          </Card>
+          {(
+            [
+              { key: "signal", term: "signal" },
+              { key: "background", term: "background noise" },
+              { key: "inputs", term: undefined },
+            ] as const
+          ).map((card) => (
+            <Card key={card.key} className={cn(card.term && "dim-target")} data-term={card.term}>
+              <CardHeader>
+                <CardTitle>{t(`cards.${card.key}.title`)}</CardTitle>
+                <CardDescription>{t(`cards.${card.key}.subtitle`)}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2 text-muted-foreground text-sm leading-relaxed">
+                  {(t.raw(`cards.${card.key}.items`) as string[]).map((item) => (
+                    <li key={item} className="flex gap-2">
+                      <span className="mt-2 rounded-full size-1 bg-muted-foreground/60 shrink-0" aria-hidden="true" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       </div>
     </section>

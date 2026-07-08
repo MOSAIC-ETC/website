@@ -29,9 +29,10 @@ export function ArchitectureDiagram({ labels, className }: ArchitectureDiagramPr
         <path d="M 310 70 H 360" />
         <path d="M 480 70 H 560" />
       </g>
-      <text x="170" y="58" textAnchor="middle" fontSize="9" fill="currentColor" fillOpacity="0.55" className="font-mono">
+      <text x="170" y="24" textAnchor="middle" fontSize="9" fill="currentColor" fillOpacity="0.55" className="font-mono">
         {labels.manifest}
       </text>
+      <path d="M 170 30 V 64" stroke="currentColor" strokeOpacity="0.25" strokeWidth="1" strokeDasharray="2 3" fill="none" />
 
       {/* Server — static bytes only */}
       <g>

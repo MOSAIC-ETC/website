@@ -73,9 +73,7 @@
       "title": "Planeje observações com o MOSAIC antes da primeira luz",
       "subtitle": "Uma calculadora de tempo de exposição aberta, executada no navegador, para o espectrógrafo multiobjeto MOSAIC do Extremely Large Telescope de 39 metros. Calcule a razão sinal-ruído em 1D e — de forma inédita — como mapas espaciais 2D, inteiramente no cliente, a partir de cubos de dados espectrais reais.",
       "open-calculator": "Abrir a Calculadora",
-      "read-docs": "Ler a Documentação",
-      "disclaimer-note": "Projeto acadêmico independente — sem afiliação ou endosso do ESO",
-      "screenshot-alt": "Interface do MOSAIC ETC exibindo a aba de espectro SNR: formulário de configuração da observação e razão sinal-ruído calculada em função do comprimento de onda"
+      "read-docs": "Ler a Documentação"
     },
     "disclaimer": {
       "title": "Aviso de projeto independente",
@@ -118,7 +116,7 @@
     },
     "model": {
       "title": "Um modelo de sinal-ruído transparente",
-      "intro": "A SNR segue a equação padrão de CCD (Howell, 2000): contagens da fonte contra o fundo de céu tabelado e o ruído do detector por modo, acumuladas ao longo de NDIT exposições de duração DIT.",
+      "intro": "A SNR segue a equação padrão de sinal-ruído para CCDs: contagens da fonte contra o fundo de céu tabelado e o ruído do detector por modo, acumuladas ao longo de NDIT exposições de duração DIT.",
       "equation-hint": "Passe o cursor sobre um termo para rastreá-lo no caminho óptico abaixo.",
       "diagram": {
         "source": "Fonte",
@@ -131,17 +129,29 @@
         "signal": {
           "title": "Sinal da fonte",
           "subtitle": "Cs",
-          "body": "Contagens de fótons do espectro do alvo, escalonadas pela área coletora efetiva do ELT, pelo intervalo espectral λ/R, pela energia encapsulada tabelada e pela transmitância global do instrumento."
+          "items": [
+            "Contagens de fótons do espectro do alvo",
+            "Escalonadas pela área coletora efetiva do ELT e pelo intervalo espectral λ/R",
+            "Ponderadas pela energia encapsulada e pela transmitância global tabeladas"
+          ]
         },
         "background": {
           "title": "Fundo e ruído",
           "subtitle": "Cb · RON · DARK",
-          "body": "Brilho superficial do céu tabelado para quatro condições — céu escuro ou claro, com ou sem emissão térmica do telescópio — além de ruído de leitura de 3 e⁻/px e corrente de escuro por modo."
+          "items": [
+            "Brilho superficial do céu para quatro condições tabeladas — céu escuro ou claro, com ou sem emissão térmica do telescópio",
+            "Ruído de leitura de 3 e⁻/px",
+            "Corrente de escuro por modo"
+          ]
         },
         "inputs": {
           "title": "Configuração da observação",
           "subtitle": "16 filtros · 6 sistemas de fluxo",
-          "body": "Normalização espectral com filtros Bessel UBVRI, GMOS ugrizZ, 2MASS JHKs e N/Q; magnitudes em AB, Vega, Jansky, W m⁻² µm⁻¹, erg s⁻¹ cm⁻² Å⁻¹ ou erg s⁻¹ cm⁻² Hz⁻¹; redshift, DIT e NDIT."
+          "items": [
+            "16 filtros fotométricos: Bessel UBVRI, GMOS ugrizZ, 2MASS JHKs, N/Q",
+            "Seis sistemas de fluxo: magnitudes AB e Vega, Jy, W m⁻² µm⁻¹, erg s⁻¹ cm⁻² Å⁻¹, erg s⁻¹ cm⁻² Hz⁻¹",
+            "Desvio para o vermelho, tempo de exposição (DIT) e número de exposições (NDIT)"
+          ]
         }
       }
     },
@@ -149,7 +159,6 @@
       "title": "Mapas espaciais de SNR para planejamento com IFUs",
       "body": "Além do espectro convencional de SNR em função do comprimento de onda, o MOSAIC ETC calcula mapas bidimensionais de SNR sobre uma região selecionada de um cubo espectral real — capacidade ausente nas calculadoras públicas atuais. Os cubos de entrada são reamostrados para a grade de spaxels de 0,15″ do MOSAIC com o algoritmo drizzle, que conserva o fluxo (Fruchter & Hook, 1997), e os mapas são renderizados com mapas de cores perceptualmente uniformes, escalas linear, logarítmica ou por percentil, e exportação para FITS, PNG ou texto.",
       "caveat": "A reamostragem reproduz a amostragem espacial do MOSAIC, não sua resolução óptica. Os cubos de demonstração incluídos são observações do MaNGA (SDSS DR17).",
-      "screenshot-alt": "Interface do MOSAIC ETC exibindo a aba de mapa SNR: formulário de seleção espacial e o mapa bidimensional de razão sinal-ruído calculado",
       "drizzle": {
         "input": "0,5″ / pixel",
         "output": "0,15″ / spaxel"

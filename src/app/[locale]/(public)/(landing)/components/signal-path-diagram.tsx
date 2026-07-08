@@ -115,6 +115,19 @@ export function SignalPathDiagram({ labels, onHighlight, className }: SignalPath
         {[1, 2, 3, 4].map((i) => (
           <line key={`h${i}`} x1="606" y1={58 + i * 18.8} x2="682" y2={58 + i * 18.8} stroke="currentColor" strokeOpacity="0.25" strokeWidth="1" />
         ))}
+        {/* Noise electrons — revealed when the noise term is highlighted:
+            the detector itself is the noise source (RON + dark current). */}
+        {[
+          [616, 70],
+          [654, 66],
+          [672, 88],
+          [624, 105],
+          [662, 118],
+          [614, 140],
+          [644, 132],
+        ].map(([x, y]) => (
+          <circle key={`${x}-${y}`} className="noise-speckle" cx={x} cy={y} r="2.5" fill="var(--chart-5)" />
+        ))}
         <text x="644" y="178" textAnchor="middle" fontSize="10" fill="currentColor" className="noise-pulse font-mono">
           RON · DARK
         </text>
