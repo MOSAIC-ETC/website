@@ -1,5 +1,8 @@
 # MOSAIC ETC
 
+> [!NOTE]
+> Um guia de instalação em português está disponível em [COMO-RODAR.md](COMO-RODAR.md).
+
 Web-based **Exposure Time Calculator** for the MOSAIC spectrograph on the *Extremely Large Telescope* (ELT). All scientific computation (1D SNR across wavelengths, 2D SNR maps) runs in the browser; the server provides versioned file storage, admin tooling, and authentication.
 
 ## Tech stack
