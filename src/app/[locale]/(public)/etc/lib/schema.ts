@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { Instrument, MagnitudeUnit, RedshiftUnit, SkyCondition } from "./types";
+import { Instrument, MagnitudeUnit, RedshiftUnit, SkyCondition, SpatialSource } from "./types";
 
 type TranslationFn = (key: string, values?: Record<string, string | number | Date>) => string;
 
@@ -34,6 +34,7 @@ export function createSubcubeFormSchema(t: TranslationFn) {
     instrument: z.enum(Instrument),
     skyCondition: z.enum(SkyCondition),
     targetWavelength: z.coerce.number().positive(t("form.errors.target-wavelength")),
+    spatialSource: z.enum(SpatialSource),
   });
 }
 

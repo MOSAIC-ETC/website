@@ -27,6 +27,8 @@ export type WorkerRequest =
       wavelengths: number[];
       tables: CSVTables;
       instrumentParams: InstrumentParams;
+      /** Integrated-light preview used as the spatial template; omitted to use the cube itself. */
+      spatialTemplate?: number[][];
     };
 
 export type WorkerResponse =
@@ -59,6 +61,7 @@ self.onmessage = (event: MessageEvent<WorkerRequest>) => {
         req.wavelengths,
         req.tables,
         req.instrumentParams,
+        req.spatialTemplate,
       );
       const response: WorkerResponse = { id: req.id, type: "snr-2d", data };
       self.postMessage(response);

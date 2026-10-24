@@ -20,8 +20,11 @@ import { useFITSCube } from "./hooks/use-fits-cube";
 import { fetchFilterCurve, useFilters } from "./lib/filters";
 import { useObjects } from "./lib/objects";
 import type { ETCFormSchema, SubcubeFormSchema } from "./lib/schema";
-import type { ETCFormValues, ObjectEntry, SNRDataPoint } from "./lib/types";
+import { type ETCFormValues, type ObjectEntry, type SNRDataPoint, SpatialSource } from "./lib/types";
 import type { WorkerRequest, WorkerResponse } from "./lib/worker";
+
+/** Object used in the poster/demo examples; selected by default when present in the catalog. */
+const DEFAULT_OBJECT_ID = "manga-9041-6101";
 
 export default function ETCPage() {
   const t = useTranslations("etc");
@@ -37,9 +40,10 @@ export default function ETCPage() {
   const { objects } = useObjects();
   const { manifest } = useManifest();
 
-  // Default-select the first object once the manifest loads.
+  // Default-select the example object (falling back to the first one) once the manifest loads.
   useEffect(() => {
-    if (!selectedObject && objects.length > 0) setSelectedObject(objects[0]);
+    if (!selectedObject && objects.length > 0)
+      setSelectedObject(objects.find((o) => o.id === DEFAULT_OBJECT_ID) ?? objects[0]);
   }, [objects, selectedObject]);
 
   const object = useFITSCube(selectedObject);
@@ -160,12 +164,22 @@ export default function ETCPage() {
       return;
     }
 
+    let spatialTemplate: number[][] | undefined;
+    if (values.spatialSource === SpatialSource.INTEGRATED) {
+      spatialTemplate = object.preview?.get("FLUX")?.data as number[][] | undefined;
+      if (!spatialTemplate) {
+        toast.error(t("object-not-loaded"));
+        return;
+      }
+    }
+
     setIsCalculating(true);
     try {
       const filterCurve = await fetchFilterCurve(filter);
       const response = await dispatch(
         nextRequest({
           type: "snr-2d",
+          spatialTemplate,
           values,
           filter,
           filterCurve,

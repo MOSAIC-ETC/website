@@ -116,6 +116,7 @@ export function downloadSNRMapFITS(data: number[][], values?: SubcubeFormValues,
       { key: "REDSHIFT", value: values.redshift, comment: "Input redshift value" },
       { key: "REDUNIT", value: values.redshiftUnit, comment: "Redshift unit" },
       { key: "TARGWAV", value: values.targetWavelength, comment: "[nm] Target wavelength" },
+      { key: "SPATSRC", value: values.spatialSource, comment: "Spatial distribution source" },
     );
   }
 

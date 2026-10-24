@@ -32,6 +32,7 @@ import {
   type ObjectEntry,
   RedshiftUnit,
   SkyCondition,
+  SpatialSource,
 } from "../lib/types";
 
 interface SubcubeFormProps {
@@ -100,18 +101,20 @@ export function SubcubeForm({
 
   const form = useForm<SubcubeFormSchema>({
     resolver: zodResolver(createSubcubeFormSchema(t)) as Resolver<SubcubeFormSchema>,
+    // Defaults reproduce the 2D SNR map example (MaNGA 9041-6101 at 710.5 nm, 1 × 3600 s).
     defaultValues: {
       objectId: selectedObject?.id ?? "",
       numberOfExposures: 1,
-      exposureTime: 60,
-      magnitude: 21,
+      exposureTime: 3600,
+      magnitude: 15.53,
       magnitudeUnit: MagnitudeUnit.AB,
       redshift: 0,
       redshiftUnit: RedshiftUnit.Z,
-      filterId: filters[0]?.id || "",
+      filterId: "r_prime",
       instrument: Instrument.MOS_VIS,
-      skyCondition: SkyCondition.NO_MOON_TH,
-      targetWavelength: 550,
+      skyCondition: SkyCondition.NO_MOON,
+      targetWavelength: 710.5,
+      spatialSource: SpatialSource.INTEGRATED,
     },
   });
 
@@ -367,6 +370,35 @@ export function SubcubeForm({
               <p className="font-medium text-muted-foreground text-xs uppercase tracking-widest">
                 {t("form.section.observation")}
               </p>
+
+              <FormField
+                control={form.control}
+                name="spatialSource"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("subcube-form.spatial-source.label")}</FormLabel>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <FormControl>
+                        <SelectTrigger className="w-full">
+                          <SelectValue />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value={SpatialSource.INTEGRATED}>
+                          {t("subcube-form.spatial-source.integrated")}
+                        </SelectItem>
+                        <SelectItem value={SpatialSource.CUBE}>{t("subcube-form.spatial-source.cube")}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <p className="text-muted-foreground text-xs">
+                      {field.value === SpatialSource.INTEGRATED
+                        ? t("subcube-form.spatial-source.integrated-hint")
+                        : t("subcube-form.spatial-source.cube-hint")}
+                    </p>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
               <FormField
                 control={form.control}

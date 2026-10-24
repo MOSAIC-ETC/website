@@ -1,5 +1,6 @@
 import type { InstrumentParams } from "@/lib/schemas/instrument-params";
 import { areaWeightedResample } from "@/lib/resample";
+import { applySpatialTemplate } from "@/lib/spatial-template";
 
 import type { CSVTables } from "../hooks/use-csv-tables";
 import { type Spectrum, lookupNearest, resampleFilter } from "./calculate";
@@ -83,9 +84,10 @@ function syntheticPhotometry(totalSpectrum: Spectrum, filterCurve: NMFile[]): nu
 /**
  * Extract a sub-cube at targetWavelength ± halfWidth nm, collapsing along
  * the wavelength axis to produce a 2D flux map.
- * Returns the summed flux per spaxel (nY × nX).
+ * Returns the mean flux density per spaxel (nY × nX), so the map stays in the
+ * cube's f_λ units whatever the window width or channel sampling.
  */
-function extractSubCube(
+export function extractSubCube(
   flux: number[][][],
   wavelengths: number[],
   targetWavelength: number,
@@ -96,8 +98,10 @@ function extractSubCube(
 
   const result: number[][] = Array.from({ length: nY }, () => new Array<number>(nX).fill(0));
 
+  let channels = 0;
   for (let w = 0; w < wavelengths.length; w++) {
     if (Math.abs(wavelengths[w] - targetWavelength) <= halfWidth) {
+      channels++;
       for (let y = 0; y < nY; y++) {
         for (let x = 0; x < nX; x++) {
           result[y][x] += flux[w][y][x];
@@ -105,8 +109,9 @@ function extractSubCube(
       }
     }
   }
+  if (channels === 0) throw new Error(`No cube channels within ±${halfWidth} nm of ${targetWavelength} nm`);
 
-  return result;
+  return result.map((row) => row.map((v) => v / channels));
 }
 
 
@@ -175,6 +180,7 @@ export function calculate2DSNR(
   wavelengths: number[],
   tables: CSVTables,
   instrumentParams: InstrumentParams,
+  spatialTemplate?: number[][],
 ): number[][] {
   const {
     numberOfExposures,
@@ -190,8 +196,10 @@ export function calculate2DSNR(
 
   const { background, enclosedEnergy, lrThroughput } = tables;
 
-  // Step 1: Extract sub-cube
-  const fluxMap = extractSubCube(flux, wavelengths, targetWavelength);
+  // Step 1: Extract sub-cube. With a spatial template (the integrated-light preview),
+  // keep the sub-cube's total flux but take the template's morphology.
+  const subCube = extractSubCube(flux, wavelengths, targetWavelength);
+  const fluxMap = spatialTemplate ? applySpatialTemplate(subCube, spatialTemplate) : subCube;
 
   // Step 2: Synthetic photometry → m_temp
   const totalSpectrum = collapseToTotalSpectrum(flux, wavelengths);
@@ -248,9 +256,9 @@ export function calculate2DSNR(
 
   const snrMap = mosaicFluxMap.map((row) =>
     row.map((fluxVal) => {
-      // fluxVal is in 10^-17 erg/s/cm²/Å (surface brightness units carried through)
-      // Convert to actual flux: multiply by 1e-17
-      const actualFlux = fluxVal * 1e-17;
+      // fluxVal is in 10^-17 erg/s/cm²/Å (surface brightness units carried through).
+      // Convert to erg/s/cm²/nm (×1e-17, ×10 Å/nm) to match the λ/R bandwidth in nm.
+      const actualFlux = fluxVal * 1e-17 * 10;
       const sourceFlux = (actualFlux / energy) * eltAreaCm2 * (lambdaNm / resolution) * ee * gt; // photons/s
       const sourceCount = sourceFlux * exposureTime;
 
