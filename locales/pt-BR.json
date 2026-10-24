@@ -678,7 +678,14 @@
       "parameters": "Parâmetros",
       "target-wavelength": "Comprimento de Onda Alvo (nm)",
       "target-wavelength-placeholder": "ex. 550",
-      "calculate-snr-map": "Calcular Mapa SNR 2D"
+      "calculate-snr-map": "Calcular Mapa SNR 2D",
+      "spatial-source": {
+        "label": "Distribuição espacial",
+        "integrated": "Luz integrada (preview)",
+        "cube": "Cubo em torno do comprimento de onda alvo",
+        "integrated-hint": "Usa a forma da imagem integrada do objeto, mostrada acima, com o fluxo do cubo no comprimento de onda alvo.",
+        "cube-hint": "Usa o próprio cubo, somado numa janela de ±30 nm em torno do comprimento de onda alvo."
+      }
     },
     "snr-map": {
       "title": "Mapa SNR 2D",

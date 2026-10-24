@@ -23,6 +23,7 @@ import {
   MagnitudeUnit,
   RedshiftUnit,
   SkyCondition,
+  SpatialSource,
 } from "@/app/[locale]/(public)/etc/lib/types";
 import { CSVParser, FITSParser, NMParser, WavelengthUnit } from "@/lib/parser";
 import { areaWeightedResample } from "@/lib/resample";
@@ -138,7 +139,7 @@ for (const slug of OBJECTS) {
     skyCondition: SkyCondition.NO_MOON,
   };
   const values1d: ETCFormValues = { ...baseForm, instrument: Instrument.MOS_VIS, selection };
-  const values2d: SubcubeFormValues = { ...baseForm, instrument: Instrument.IFU, targetWavelength: 650 };
+  const values2d: SubcubeFormValues = { ...baseForm, instrument: Instrument.IFU, targetWavelength: 650, spatialSource: SpatialSource.CUBE };
 
   const outRows = Math.ceil(nY * (0.5 / 0.15));
   const outCols = Math.ceil(nX * (0.5 / 0.15));

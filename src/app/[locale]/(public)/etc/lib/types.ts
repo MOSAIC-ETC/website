@@ -31,6 +31,14 @@ export enum SkyCondition {
   ALL_TH = "Sky ALL+Th",
 }
 
+/** Where the 2D SNR map takes its spatial distribution from. */
+export enum SpatialSource {
+  /** Morphology of the object's integrated-light preview, scaled to the cube flux at the target wavelength. */
+  INTEGRATED = "integrated",
+  /** The cube itself, collapsed around the target wavelength. */
+  CUBE = "cube",
+}
+
 export interface FilterEntry {
   id: string;
   name: string;
@@ -83,4 +91,5 @@ export interface SubcubeFormValues {
   instrument: Instrument;
   skyCondition: SkyCondition;
   targetWavelength: number;
+  spatialSource: SpatialSource;
 }

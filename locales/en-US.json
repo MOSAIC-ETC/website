@@ -678,7 +678,14 @@
       "parameters": "Parameters",
       "target-wavelength": "Target Wavelength (nm)",
       "target-wavelength-placeholder": "e.g. 550",
-      "calculate-snr-map": "Calculate 2D SNR Map"
+      "calculate-snr-map": "Calculate 2D SNR Map",
+      "spatial-source": {
+        "label": "Spatial distribution",
+        "integrated": "Integrated light (preview)",
+        "cube": "Cube around the target wavelength",
+        "integrated-hint": "Uses the shape of the object's integrated image, shown above, with the cube flux at the target wavelength.",
+        "cube-hint": "Uses the cube itself, summed over a ±30 nm window around the target wavelength."
+      }
     },
     "snr-map": {
       "title": "2D SNR Map",

@@ -678,7 +678,14 @@
       "parameters": "Paramètres",
       "target-wavelength": "Longueur d'Onde Cible (nm)",
       "target-wavelength-placeholder": "ex. 550",
-      "calculate-snr-map": "Calculer la Carte SNR 2D"
+      "calculate-snr-map": "Calculer la Carte SNR 2D",
+      "spatial-source": {
+        "label": "Distribution spatiale",
+        "integrated": "Lumière intégrée (aperçu)",
+        "cube": "Cube autour de la longueur d'onde cible",
+        "integrated-hint": "Utilise la forme de l'image intégrée de l'objet, affichée ci-dessus, avec le flux du cube à la longueur d'onde cible.",
+        "cube-hint": "Utilise le cube lui-même, sommé sur une fenêtre de ±30 nm autour de la longueur d'onde cible."
+      }
     },
     "snr-map": {
       "title": "Carte SNR 2D",
